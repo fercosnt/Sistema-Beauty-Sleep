@@ -9,17 +9,23 @@
 
 ## 📊 Dados Sincronizados
 
+<<<<<<< HEAD
 ### Teste Inicial (Versão 21)
+=======
+>>>>>>> 8591cb7 (feat: Adicionar README e configurar repositório Git)
 - **Total de Exames:** 56
 - **Total de Pacientes:** 20
 - **Exames DONE (status 6):** 56
 
+<<<<<<< HEAD
 ### Migração Completa do Airtable (Atual)
 - **Total de Pacientes:** 268
 - **Total de Exames:** 2.522
 - **Exames vinculados:** 2.522 (100%)
 - **Ligação principal:** ID do Paciente (`biologix_id` ↔ `biologix_paciente_id`)
 
+=======
+>>>>>>> 8591cb7 (feat: Adicionar README e configurar repositório Git)
 ## ✅ Problema Resolvido
 
 O problema era que o secret `BIOLOGIX_PARTNER_ID` estava configurado incorretamente no Supabase, contendo o header Authorization em vez do valor correto `4798042LW`.

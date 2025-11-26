@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+<<<<<<< HEAD
 /* Fontes Helvetica - Beauty Smile LP */
 @font-face {
   font-family: 'Helvetica';
@@ -59,6 +60,8 @@
   font-display: swap;
 }
 
+=======
+>>>>>>> 8591cb7 (feat: Adicionar README e configurar repositório Git)
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -74,6 +77,7 @@
 }
 
 body {
+<<<<<<< HEAD
   color: #000000; /* Texto sempre preto em fundos brancos */
   background: #FFFFFF; /* Fundo branco como na LP */
   font-family: 'Helvetica', Arial, sans-serif; /* Fonte padrão Helvetica */
@@ -217,5 +221,14 @@ h6 {
 .sidebar-background > * {
   position: relative;
   z-index: 1;
+=======
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+>>>>>>> 8591cb7 (feat: Adicionar README e configurar repositório Git)
 }
 
