@@ -39,6 +39,16 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 
+# Airtable CSV exports (contain sensitive data)
+scripts/data/airtable/*.csv
+!scripts/data/airtable/.gitkeep
+!scripts/data/airtable/README.md
+
+# Invalid data reports (may contain sensitive data)
+scripts/data/invalid/*.csv
+!scripts/data/invalid/.gitkeep
+!scripts/data/invalid/README.md
+
 # Vite
 .vite/
 
@@ -89,3 +99,4 @@ Thumbs.db
 # Claude AI
 .claude/
 
+scripts/test-biologix-api.sh
