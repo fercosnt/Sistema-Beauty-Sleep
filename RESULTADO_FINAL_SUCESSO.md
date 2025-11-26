@@ -9,9 +9,16 @@
 
 ## 📊 Dados Sincronizados
 
+### Teste Inicial (Versão 21)
 - **Total de Exames:** 56
 - **Total de Pacientes:** 20
 - **Exames DONE (status 6):** 56
+
+### Migração Completa do Airtable (Atual)
+- **Total de Pacientes:** 268
+- **Total de Exames:** 2.522
+- **Exames vinculados:** 2.522 (100%)
+- **Ligação principal:** ID do Paciente (`biologix_id` ↔ `biologix_paciente_id`)
 
 ## ✅ Problema Resolvido
 

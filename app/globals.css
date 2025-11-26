@@ -2,6 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fontes Helvetica - Beauty Smile LP */
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/helvetica-255/Helvetica.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/helvetica-255/Helvetica-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/helvetica-255/Helvetica-Oblique.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/helvetica-255/Helvetica-BoldOblique.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/helvetica-255/helvetica-light-587ebe5a59211.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Rounded';
+  src: url('/helvetica-255/helvetica-rounded-bold-5871d05ead8de.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Compressed';
+  src: url('/helvetica-255/helvetica-compressed-5871d14b6903a.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -17,12 +74,148 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: #000000; /* Texto sempre preto em fundos brancos */
+  background: #FFFFFF; /* Fundo branco como na LP */
+  font-family: 'Helvetica', Arial, sans-serif; /* Fonte padrão Helvetica */
+}
+
+/* Garantir que todos os elementos em fundos brancos tenham texto preto */
+* {
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Texto preto por padrão em elementos com fundo branco */
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.bg-success-50,
+.bg-warning-50,
+.bg-danger-50,
+.bg-primary-50 {
+  color: #000000;
+}
+
+/* Inputs e textareas devem ter texto preto */
+input,
+textarea,
+select {
+  color: #000000;
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Labels devem ter texto preto */
+label {
+  color: #000000;
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Texto em tabelas com fundo branco */
+table {
+  color: #000000;
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Parágrafos e textos em geral */
+p,
+span,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Shepherd.js Custom Theme - Beauty Smile LP Colors */
+.shepherd-theme-custom {
+  max-width: 400px;
+}
+
+.shepherd-theme-custom .shepherd-header {
+  background-color: #12142B; /* lp-dark - Azul muito escuro da LP */
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.shepherd-theme-custom .shepherd-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.shepherd-theme-custom .shepherd-text {
+  color: #000000; /* Texto preto */
+  padding: 1rem;
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+.shepherd-theme-custom .shepherd-footer {
+  padding: 0.75rem;
+  border-top: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.shepherd-theme-custom .shepherd-button {
+  background: linear-gradient(90deg, #242859 0%, #5D64BB 100%); /* Gradiente da LP */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.shepherd-theme-custom .shepherd-button:hover {
+  background: linear-gradient(90deg, #262A5D 0%, #5A60B5 100%); /* Gradiente hover */
+}
+
+.shepherd-theme-custom .shepherd-button.shepherd-button-secondary {
+  background-color: #6b7280; /* gray-500 */
+}
+
+.shepherd-theme-custom .shepherd-button.shepherd-button-secondary:hover {
+  background-color: #4b5563; /* gray-600 */
+}
+
+.shepherd-theme-custom .shepherd-cancel-icon {
+  color: white;
+}
+
+.shepherd-theme-custom .shepherd-cancel-icon:hover {
+  color: #fca5a5; /* danger-300 */
+}
+
+/* Sidebar Background - Imagem de fundo texturizada */
+.sidebar-background {
+  position: relative;
+  background: #12142B; /* Cor de fallback */
+  background-image: url('/68a4d045b130b34b3614881d (1).jpeg'); /* Imagem de fundo */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Mantém a imagem fixa ao scroll */
+  image-rendering: -webkit-optimize-contrast; /* Melhora nitidez no Chrome/Safari */
+  image-rendering: crisp-edges; /* Melhora nitidez */
+  overflow: hidden;
+}
+
+/* Overlay muito sutil apenas para garantir legibilidade mínima do texto */
+.sidebar-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(18, 20, 43, 0.2); /* Overlay muito sutil (20% ao invés de 70%) */
+  z-index: 0;
+}
+
+/* Garantir que o conteúdo fique acima do fundo */
+.sidebar-background > * {
+  position: relative;
+  z-index: 1;
 }
 

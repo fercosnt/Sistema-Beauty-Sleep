@@ -189,8 +189,8 @@ node scripts/test-env-loading.js
 
 ### Sincronização Automática
 - Sincronização diária às 10h BRT com API Biologix
-- Criação automática de pacientes
-- Link automático de exames por CPF
+- Criação automática de pacientes (quando necessário)
+- Link automático de exames pelo ID do Paciente
 - Atualização de dados existentes
 
 ## 🔄 Sincronização com Biologix
@@ -199,10 +199,11 @@ O sistema sincroniza automaticamente os dados da API Biologix através de uma Ed
 
 **Fluxo de sincronização:**
 1. Autenticação na API Biologix
-2. Busca de todos os exames do centro credenciado
-3. Criação/atualização de pacientes por CPF
-4. Criação/atualização de exames
-5. Link automático de exames aos pacientes
+2. Busca de todos os exames do centro credenciado (status DONE)
+3. Extração de CPF do username do paciente (opcional)
+4. Criação/atualização de pacientes pelo ID do Paciente (biologix_id)
+5. Criação/atualização de exames pelo ID Exame (biologix_exam_id)
+6. Link automático de exames aos pacientes pelo ID do Paciente
 
 ## 📝 Licença
 

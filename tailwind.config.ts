@@ -8,19 +8,35 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Helvetica', 'Arial', 'sans-serif'],
+        helvetica: ['Helvetica', 'Arial', 'sans-serif'],
+        'helvetica-rounded': ['Helvetica Rounded', 'Helvetica', 'Arial', 'sans-serif'],
+        'helvetica-compressed': ['Helvetica Compressed', 'Helvetica', 'Arial', 'sans-serif'],
+      },
       colors: {
-        // Admin Theme Colors - Beauty Smile Design System
+        // Beauty Smile LP Colors - Baseado no CSS da Landing Page
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#f0f1f8',   // Muito claro (gerado)
+          100: '#e1e3f1',  // Claro (gerado)
+          200: '#c3c7e3',  // Claro médio (gerado)
+          300: '#a5abd5',  // Médio claro (gerado)
+          400: '#878fc7',  // Médio (gerado)
+          500: '#5D64BB',  // Azul médio da LP (botões e gradientes)
+          600: '#565CAE',  // Azul médio escuro da LP
+          700: '#5A60B5',  // Azul médio alternativo
+          800: '#272C62',  // Azul escuro da LP (cards)
+          900: '#12142B',  // Azul muito escuro da LP (quase preto)
+        },
+        // Cores específicas da LP
+        'lp-dark': {
+          DEFAULT: '#12142B',  // Azul muito escuro
+          light: '#1C1F46',     // Azul escuro para textos
+          medium: '#242859',    // Azul escuro médio
+        },
+        'lp-blue': {
+          DEFAULT: '#262A5D',  // Azul escuro
+          light: '#5D64BB',    // Azul médio
         },
         secondary: {
           50: '#faf5ff',

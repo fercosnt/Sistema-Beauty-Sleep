@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { BiologixClient } from './biologix-client.ts';
-import { ExamDto, EXAM_TYPE, IDO_CATEGORY } from './types.ts';
+import { ExamDto, EXAM_TYPE, EXAM_STATUS, IDO_CATEGORY } from './types.ts';
 
 interface Env {
   SUPABASE_URL: string;
