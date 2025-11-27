@@ -79,6 +79,13 @@ CREATE POLICY users_update ON users
     get_user_role() = 'admin'
   );
 
+-- Policy: users_delete - Only Admin can delete users
+CREATE POLICY users_delete ON users
+  FOR DELETE
+  USING (
+    get_user_role() = 'admin'
+  );
+
 -- ============================================
 -- PACIENTES TABLE POLICIES
 -- ============================================

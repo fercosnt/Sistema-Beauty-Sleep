@@ -1,5 +1,6 @@
 import { getUserRole } from '@/lib/utils/get-user-role'
 import { redirect } from 'next/navigation'
+import UsuariosTable from './components/UsuariosTable'
 
 export default async function UsuariosPage() {
   const userRole = await getUserRole()
@@ -16,9 +17,7 @@ export default async function UsuariosPage() {
         <p className="mt-2 text-gray-600">Gerencie usuários do sistema (apenas Admin)</p>
       </div>
       
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-500">Lista de usuários será implementada na Fase 7</p>
-      </div>
+      <UsuariosTable />
     </div>
   )
 }

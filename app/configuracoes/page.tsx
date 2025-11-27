@@ -76,10 +76,18 @@ export default function ConfiguracoesPage() {
           </button>
         </div>
 
-        {/* Outras configurações */}
+        {/* Gestão de Tags */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Outras Configurações</h2>
-          <p className="text-gray-500">Mais configurações serão adicionadas na Fase 7</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Gestão de Tags</h2>
+          <p className="text-gray-600 mb-4">
+            Gerencie as tags usadas para categorizar e organizar pacientes.
+          </p>
+          <button
+            onClick={() => router.push('/configuracoes/tags')}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Gerenciar Tags
+          </button>
         </div>
       </div>
     </div>

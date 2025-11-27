@@ -1,0 +1,39 @@
+# Source files (only dist will be published)
+src
+examples
+templates
+
+# Development
+.storybook
+storybook-static
+docs
+
+# Configuration files
+tsconfig.json
+vite.config.ts
+tailwind.config.ts
+.eslintrc.js
+.prettierrc
+
+# Git
+.git
+.gitignore
+
+# Editor
+.vscode
+.idea
+
+# CI/CD
+.github
+
+# Tests
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+coverage
+
+# Misc
+.DS_Store
+*.log
+node_modules
