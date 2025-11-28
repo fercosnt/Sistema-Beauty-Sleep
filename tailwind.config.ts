@@ -8,7 +8,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-<<<<<<< HEAD
       fontFamily: {
         sans: ['Helvetica', 'Arial', 'sans-serif'],
         helvetica: ['Helvetica', 'Arial', 'sans-serif'],
@@ -38,21 +37,6 @@ const config: Config = {
         'lp-blue': {
           DEFAULT: '#262A5D',  // Azul escuro
           light: '#5D64BB',    // Azul médio
-=======
-      colors: {
-        // Admin Theme Colors - Beauty Smile Design System
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
->>>>>>> 8591cb7 (feat: Adicionar README e configurar repositório Git)
         },
         secondary: {
           50: '#faf5ff',

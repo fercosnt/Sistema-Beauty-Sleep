@@ -1,0 +1,426 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - img "Beauty Sleep Logo" [ref=e5]
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e7] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e8]
+          - text: Dashboard
+        - link "Pacientes" [ref=e13] [cursor=pointer]:
+          - /url: /pacientes
+          - img [ref=e14]
+          - text: Pacientes
+        - link "Usuários" [ref=e19] [cursor=pointer]:
+          - /url: /usuarios
+          - img [ref=e20]
+          - text: Usuários
+        - link "Logs" [ref=e32] [cursor=pointer]:
+          - /url: /logs
+          - img [ref=e33]
+          - text: Logs
+      - button "Sair" [ref=e37] [cursor=pointer]:
+        - img [ref=e38]
+        - text: Sair
+    - generic [ref=e41]:
+      - banner [ref=e42]:
+        - generic [ref=e46]:
+          - img [ref=e47]
+          - textbox "Buscar paciente (CPF, nome ou telefone)..." [ref=e50]
+          - generic:
+            - generic: Ctrl
+            - generic: K
+        - button "A Administrador" [ref=e53] [cursor=pointer]:
+          - generic [ref=e54]: A
+          - generic [ref=e55]: Administrador
+          - img [ref=e56]
+      - main [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - heading "Pacientes" [level=1] [ref=e61]
+            - paragraph [ref=e62]: Gerencie todos os pacientes do sistema
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - img [ref=e66]
+                - textbox "Buscar por nome ou CPF..." [ref=e69]
+              - button "Novo Paciente" [ref=e70] [cursor=pointer]:
+                - img [ref=e71]
+                - text: Novo Paciente
+            - button "Filtros Avançados" [ref=e74] [cursor=pointer]:
+              - img [ref=e75]
+              - generic [ref=e77]: Filtros Avançados
+            - generic [ref=e78]:
+              - table [ref=e80]:
+                - rowgroup [ref=e81]:
+                  - row "Nome CPF Status Adesão Último Exame Ações" [ref=e82]:
+                    - columnheader "Nome" [ref=e83]
+                    - columnheader "CPF" [ref=e84]
+                    - columnheader "Status" [ref=e85]
+                    - columnheader "Adesão" [ref=e86]
+                    - columnheader "Último Exame" [ref=e87]
+                    - columnheader "Ações" [ref=e88]
+                - rowgroup [ref=e89]:
+                  - row "Ademar Miguel Junior Novo 313.680.038-93 ativo 0% 25/11/2025 Ver Detalhes" [ref=e90] [cursor=pointer]:
+                    - cell "Ademar Miguel Junior Novo" [ref=e91]:
+                      - generic [ref=e92]:
+                        - generic [ref=e93]: Ademar Miguel Junior
+                        - generic [ref=e94]: Novo
+                    - cell "313.680.038-93" [ref=e95]:
+                      - generic [ref=e96]: 313.680.038-93
+                    - cell "ativo" [ref=e97]:
+                      - generic [ref=e98]: ativo
+                    - cell "0%" [ref=e99]:
+                      - generic [ref=e100]: 0%
+                    - cell "25/11/2025" [ref=e101]:
+                      - generic [ref=e102]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e103]:
+                      - button "Ver Detalhes" [ref=e104]
+                  - row "Ademilson Garcia Guedes Novo 752.493.326-68 lead 0% 25/11/2025 Ver Detalhes" [ref=e105] [cursor=pointer]:
+                    - cell "Ademilson Garcia Guedes Novo" [ref=e106]:
+                      - generic [ref=e107]:
+                        - generic [ref=e108]: Ademilson Garcia Guedes
+                        - generic [ref=e109]: Novo
+                    - cell "752.493.326-68" [ref=e110]:
+                      - generic [ref=e111]: 752.493.326-68
+                    - cell "lead" [ref=e112]:
+                      - generic [ref=e113]: lead
+                    - cell "0%" [ref=e114]:
+                      - generic [ref=e115]: 0%
+                    - cell "25/11/2025" [ref=e116]:
+                      - generic [ref=e117]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e118]:
+                      - button "Ver Detalhes" [ref=e119]
+                  - row "Adilson Gabriel Batista Novo 056.157.068-05 lead 0% 25/11/2025 Ver Detalhes" [ref=e120] [cursor=pointer]:
+                    - cell "Adilson Gabriel Batista Novo" [ref=e121]:
+                      - generic [ref=e122]:
+                        - generic [ref=e123]: Adilson Gabriel Batista
+                        - generic [ref=e124]: Novo
+                    - cell "056.157.068-05" [ref=e125]:
+                      - generic [ref=e126]: 056.157.068-05
+                    - cell "lead" [ref=e127]:
+                      - generic [ref=e128]: lead
+                    - cell "0%" [ref=e129]:
+                      - generic [ref=e130]: 0%
+                    - cell "25/11/2025" [ref=e131]:
+                      - generic [ref=e132]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e133]:
+                      - button "Ver Detalhes" [ref=e134]
+                  - row "Adriana De Cerqueira Leite Novo 256.942.688-14 lead 0% 03/09/2023 Ver Detalhes" [ref=e135] [cursor=pointer]:
+                    - cell "Adriana De Cerqueira Leite Novo" [ref=e136]:
+                      - generic [ref=e137]:
+                        - generic [ref=e138]: Adriana De Cerqueira Leite
+                        - generic [ref=e139]: Novo
+                    - cell "256.942.688-14" [ref=e140]:
+                      - generic [ref=e141]: 256.942.688-14
+                    - cell "lead" [ref=e142]:
+                      - generic [ref=e143]: lead
+                    - cell "0%" [ref=e144]:
+                      - generic [ref=e145]: 0%
+                    - cell "03/09/2023" [ref=e146]:
+                      - generic [ref=e147]: 03/09/2023
+                    - cell "Ver Detalhes" [ref=e148]:
+                      - button "Ver Detalhes" [ref=e149]
+                  - row "Adriano Dos Santos Novo 134.393.938-01 lead 0% 25/11/2025 Ver Detalhes" [ref=e150] [cursor=pointer]:
+                    - cell "Adriano Dos Santos Novo" [ref=e151]:
+                      - generic [ref=e152]:
+                        - generic [ref=e153]: Adriano Dos Santos
+                        - generic [ref=e154]: Novo
+                    - cell "134.393.938-01" [ref=e155]:
+                      - generic [ref=e156]: 134.393.938-01
+                    - cell "lead" [ref=e157]:
+                      - generic [ref=e158]: lead
+                    - cell "0%" [ref=e159]:
+                      - generic [ref=e160]: 0%
+                    - cell "25/11/2025" [ref=e161]:
+                      - generic [ref=e162]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e163]:
+                      - button "Ver Detalhes" [ref=e164]
+                  - row "Adriano Lopes De Oliveira Novo 153.967.878-48 lead 0% 26/01/2025 Ver Detalhes" [ref=e165] [cursor=pointer]:
+                    - cell "Adriano Lopes De Oliveira Novo" [ref=e166]:
+                      - generic [ref=e167]:
+                        - generic [ref=e168]: Adriano Lopes De Oliveira
+                        - generic [ref=e169]: Novo
+                    - cell "153.967.878-48" [ref=e170]:
+                      - generic [ref=e171]: 153.967.878-48
+                    - cell "lead" [ref=e172]:
+                      - generic [ref=e173]: lead
+                    - cell "0%" [ref=e174]:
+                      - generic [ref=e175]: 0%
+                    - cell "26/01/2025" [ref=e176]:
+                      - generic [ref=e177]: 26/01/2025
+                    - cell "Ver Detalhes" [ref=e178]:
+                      - button "Ver Detalhes" [ref=e179]
+                  - row "Agacir Paulo Bettanin Novo 526.289.659-68 lead 0% 16/10/2025 Ver Detalhes" [ref=e180] [cursor=pointer]:
+                    - cell "Agacir Paulo Bettanin Novo" [ref=e181]:
+                      - generic [ref=e182]:
+                        - generic [ref=e183]: Agacir Paulo Bettanin
+                        - generic [ref=e184]: Novo
+                    - cell "526.289.659-68" [ref=e185]:
+                      - generic [ref=e186]: 526.289.659-68
+                    - cell "lead" [ref=e187]:
+                      - generic [ref=e188]: lead
+                    - cell "0%" [ref=e189]:
+                      - generic [ref=e190]: 0%
+                    - cell "16/10/2025" [ref=e191]:
+                      - generic [ref=e192]: 16/10/2025
+                    - cell "Ver Detalhes" [ref=e193]:
+                      - button "Ver Detalhes" [ref=e194]
+                  - row "Agatha Albuquerque De Mello Ananias Novo 410.015.148-90 lead 0% 08/08/2024 Ver Detalhes" [ref=e195] [cursor=pointer]:
+                    - cell "Agatha Albuquerque De Mello Ananias Novo" [ref=e196]:
+                      - generic [ref=e197]:
+                        - generic [ref=e198]: Agatha Albuquerque De Mello Ananias
+                        - generic [ref=e199]: Novo
+                    - cell "410.015.148-90" [ref=e200]:
+                      - generic [ref=e201]: 410.015.148-90
+                    - cell "lead" [ref=e202]:
+                      - generic [ref=e203]: lead
+                    - cell "0%" [ref=e204]:
+                      - generic [ref=e205]: 0%
+                    - cell "08/08/2024" [ref=e206]:
+                      - generic [ref=e207]: 08/08/2024
+                    - cell "Ver Detalhes" [ref=e208]:
+                      - button "Ver Detalhes" [ref=e209]
+                  - row "Agnaldo Vasconcelos Cavalcante Novo 112.514.628-12 lead 0% 25/11/2025 Ver Detalhes" [ref=e210] [cursor=pointer]:
+                    - cell "Agnaldo Vasconcelos Cavalcante Novo" [ref=e211]:
+                      - generic [ref=e212]:
+                        - generic [ref=e213]: Agnaldo Vasconcelos Cavalcante
+                        - generic [ref=e214]: Novo
+                    - cell "112.514.628-12" [ref=e215]:
+                      - generic [ref=e216]: 112.514.628-12
+                    - cell "lead" [ref=e217]:
+                      - generic [ref=e218]: lead
+                    - cell "0%" [ref=e219]:
+                      - generic [ref=e220]: 0%
+                    - cell "25/11/2025" [ref=e221]:
+                      - generic [ref=e222]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e223]:
+                      - button "Ver Detalhes" [ref=e224]
+                  - row "Aldenice Vieira Novo 030.398.998-05 lead 0% 25/11/2025 Ver Detalhes" [ref=e225] [cursor=pointer]:
+                    - cell "Aldenice Vieira Novo" [ref=e226]:
+                      - generic [ref=e227]:
+                        - generic [ref=e228]: Aldenice Vieira
+                        - generic [ref=e229]: Novo
+                    - cell "030.398.998-05" [ref=e230]:
+                      - generic [ref=e231]: 030.398.998-05
+                    - cell "lead" [ref=e232]:
+                      - generic [ref=e233]: lead
+                    - cell "0%" [ref=e234]:
+                      - generic [ref=e235]: 0%
+                    - cell "25/11/2025" [ref=e236]:
+                      - generic [ref=e237]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e238]:
+                      - button "Ver Detalhes" [ref=e239]
+                  - row "Alessandra Assui Magro Novo 147.709.498-98 lead 0% 11/10/2025 Ver Detalhes" [ref=e240] [cursor=pointer]:
+                    - cell "Alessandra Assui Magro Novo" [ref=e241]:
+                      - generic [ref=e242]:
+                        - generic [ref=e243]: Alessandra Assui Magro
+                        - generic [ref=e244]: Novo
+                    - cell "147.709.498-98" [ref=e245]:
+                      - generic [ref=e246]: 147.709.498-98
+                    - cell "lead" [ref=e247]:
+                      - generic [ref=e248]: lead
+                    - cell "0%" [ref=e249]:
+                      - generic [ref=e250]: 0%
+                    - cell "11/10/2025" [ref=e251]:
+                      - generic [ref=e252]: 11/10/2025
+                    - cell "Ver Detalhes" [ref=e253]:
+                      - button "Ver Detalhes" [ref=e254]
+                  - row "Alessandra Vidal de Negreiros Negrini Novo 180.183.838-04 lead 0% 25/11/2025 Ver Detalhes" [ref=e255] [cursor=pointer]:
+                    - cell "Alessandra Vidal de Negreiros Negrini Novo" [ref=e256]:
+                      - generic [ref=e257]:
+                        - generic [ref=e258]: Alessandra Vidal de Negreiros Negrini
+                        - generic [ref=e259]: Novo
+                    - cell "180.183.838-04" [ref=e260]:
+                      - generic [ref=e261]: 180.183.838-04
+                    - cell "lead" [ref=e262]:
+                      - generic [ref=e263]: lead
+                    - cell "0%" [ref=e264]:
+                      - generic [ref=e265]: 0%
+                    - cell "25/11/2025" [ref=e266]:
+                      - generic [ref=e267]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e268]:
+                      - button "Ver Detalhes" [ref=e269]
+                  - row "Alessandro Souza De Araujo Novo 289.596.258-84 lead 0% 27/08/2025 Ver Detalhes" [ref=e270] [cursor=pointer]:
+                    - cell "Alessandro Souza De Araujo Novo" [ref=e271]:
+                      - generic [ref=e272]:
+                        - generic [ref=e273]: Alessandro Souza De Araujo
+                        - generic [ref=e274]: Novo
+                    - cell "289.596.258-84" [ref=e275]:
+                      - generic [ref=e276]: 289.596.258-84
+                    - cell "lead" [ref=e277]:
+                      - generic [ref=e278]: lead
+                    - cell "0%" [ref=e279]:
+                      - generic [ref=e280]: 0%
+                    - cell "27/08/2025" [ref=e281]:
+                      - generic [ref=e282]: 27/08/2025
+                    - cell "Ver Detalhes" [ref=e283]:
+                      - button "Ver Detalhes" [ref=e284]
+                  - row "Alex Araujo Terras Gonçalves Novo 291.500.068-94 lead 0% 28/08/2025 Ver Detalhes" [ref=e285] [cursor=pointer]:
+                    - cell "Alex Araujo Terras Gonçalves Novo" [ref=e286]:
+                      - generic [ref=e287]:
+                        - generic [ref=e288]: Alex Araujo Terras Gonçalves
+                        - generic [ref=e289]: Novo
+                    - cell "291.500.068-94" [ref=e290]:
+                      - generic [ref=e291]: 291.500.068-94
+                    - cell "lead" [ref=e292]:
+                      - generic [ref=e293]: lead
+                    - cell "0%" [ref=e294]:
+                      - generic [ref=e295]: 0%
+                    - cell "28/08/2025" [ref=e296]:
+                      - generic [ref=e297]: 28/08/2025
+                    - cell "Ver Detalhes" [ref=e298]:
+                      - button "Ver Detalhes" [ref=e299]
+                  - row "Alexandre Astrogildo Dias Costa Novo 146.251.878-85 lead 0% 25/11/2025 Ver Detalhes" [ref=e300] [cursor=pointer]:
+                    - cell "Alexandre Astrogildo Dias Costa Novo" [ref=e301]:
+                      - generic [ref=e302]:
+                        - generic [ref=e303]: Alexandre Astrogildo Dias Costa
+                        - generic [ref=e304]: Novo
+                    - cell "146.251.878-85" [ref=e305]:
+                      - generic [ref=e306]: 146.251.878-85
+                    - cell "lead" [ref=e307]:
+                      - generic [ref=e308]: lead
+                    - cell "0%" [ref=e309]:
+                      - generic [ref=e310]: 0%
+                    - cell "25/11/2025" [ref=e311]:
+                      - generic [ref=e312]: 25/11/2025
+                    - cell "Ver Detalhes" [ref=e313]:
+                      - button "Ver Detalhes" [ref=e314]
+                  - row "Alexandre Caldeira Novo 266.692.178-62 lead 0% 18/11/2025 Ver Detalhes" [ref=e315] [cursor=pointer]:
+                    - cell "Alexandre Caldeira Novo" [ref=e316]:
+                      - generic [ref=e317]:
+                        - generic [ref=e318]: Alexandre Caldeira
+                        - generic [ref=e319]: Novo
+                    - cell "266.692.178-62" [ref=e320]:
+                      - generic [ref=e321]: 266.692.178-62
+                    - cell "lead" [ref=e322]:
+                      - generic [ref=e323]: lead
+                    - cell "0%" [ref=e324]:
+                      - generic [ref=e325]: 0%
+                    - cell "18/11/2025" [ref=e326]:
+                      - generic [ref=e327]: 18/11/2025
+                    - cell "Ver Detalhes" [ref=e328]:
+                      - button "Ver Detalhes" [ref=e329]
+                  - row "Alexssandro Garcia Viana Novo 163.392.498-09 lead 0% 20/09/2025 Ver Detalhes" [ref=e330] [cursor=pointer]:
+                    - cell "Alexssandro Garcia Viana Novo" [ref=e331]:
+                      - generic [ref=e332]:
+                        - generic [ref=e333]: Alexssandro Garcia Viana
+                        - generic [ref=e334]: Novo
+                    - cell "163.392.498-09" [ref=e335]:
+                      - generic [ref=e336]: 163.392.498-09
+                    - cell "lead" [ref=e337]:
+                      - generic [ref=e338]: lead
+                    - cell "0%" [ref=e339]:
+                      - generic [ref=e340]: 0%
+                    - cell "20/09/2025" [ref=e341]:
+                      - generic [ref=e342]: 20/09/2025
+                    - cell "Ver Detalhes" [ref=e343]:
+                      - button "Ver Detalhes" [ref=e344]
+                  - row "Alvaro Pinto de Oliveira Neto Novo 548.400.745-34 lead 0% 03/08/2025 Ver Detalhes" [ref=e345] [cursor=pointer]:
+                    - cell "Alvaro Pinto de Oliveira Neto Novo" [ref=e346]:
+                      - generic [ref=e347]:
+                        - generic [ref=e348]: Alvaro Pinto de Oliveira Neto
+                        - generic [ref=e349]: Novo
+                    - cell "548.400.745-34" [ref=e350]:
+                      - generic [ref=e351]: 548.400.745-34
+                    - cell "lead" [ref=e352]:
+                      - generic [ref=e353]: lead
+                    - cell "0%" [ref=e354]:
+                      - generic [ref=e355]: 0%
+                    - cell "03/08/2025" [ref=e356]:
+                      - generic [ref=e357]: 03/08/2025
+                    - cell "Ver Detalhes" [ref=e358]:
+                      - button "Ver Detalhes" [ref=e359]
+                  - row "Ana Beatriz Lemos Leal Novo 016.881.211-88 lead 0% 13/10/2025 Ver Detalhes" [ref=e360] [cursor=pointer]:
+                    - cell "Ana Beatriz Lemos Leal Novo" [ref=e361]:
+                      - generic [ref=e362]:
+                        - generic [ref=e363]: Ana Beatriz Lemos Leal
+                        - generic [ref=e364]: Novo
+                    - cell "016.881.211-88" [ref=e365]:
+                      - generic [ref=e366]: 016.881.211-88
+                    - cell "lead" [ref=e367]:
+                      - generic [ref=e368]: lead
+                    - cell "0%" [ref=e369]:
+                      - generic [ref=e370]: 0%
+                    - cell "13/10/2025" [ref=e371]:
+                      - generic [ref=e372]: 13/10/2025
+                    - cell "Ver Detalhes" [ref=e373]:
+                      - button "Ver Detalhes" [ref=e374]
+                  - row "Ana Claudia Borges Da Costa Novo 166.739.388-03 lead 0% 24/10/2025 Ver Detalhes" [ref=e375] [cursor=pointer]:
+                    - cell "Ana Claudia Borges Da Costa Novo" [ref=e376]:
+                      - generic [ref=e377]:
+                        - generic [ref=e378]: Ana Claudia Borges Da Costa
+                        - generic [ref=e379]: Novo
+                    - cell "166.739.388-03" [ref=e380]:
+                      - generic [ref=e381]: 166.739.388-03
+                    - cell "lead" [ref=e382]:
+                      - generic [ref=e383]: lead
+                    - cell "0%" [ref=e384]:
+                      - generic [ref=e385]: 0%
+                    - cell "24/10/2025" [ref=e386]:
+                      - generic [ref=e387]: 24/10/2025
+                    - cell "Ver Detalhes" [ref=e388]:
+                      - button "Ver Detalhes" [ref=e389]
+              - generic [ref=e390]:
+                - generic [ref=e391]: Página 1 de 19
+                - generic [ref=e392]:
+                  - button "Anterior" [disabled] [ref=e393]
+                  - button "Próxima" [ref=e394] [cursor=pointer]
+            - generic [ref=e396]:
+              - generic [ref=e397]:
+                - heading "Novo Paciente" [level=2] [ref=e398]
+                - button [ref=e399] [cursor=pointer]:
+                  - img [ref=e400]
+              - generic [ref=e403]:
+                - generic [ref=e404]:
+                  - generic [ref=e405]: ID do Paciente *(Identificador único do Biologix)
+                  - textbox "ID do Paciente *(Identificador único do Biologix)" [ref=e406]:
+                    - /placeholder: PAC-1234567890
+                    - text: PAC-1764357779861-9173
+                - generic [ref=e407]:
+                  - generic [ref=e408]: CPF (Opcional - usado apenas para validação e busca)
+                  - textbox "CPF (Opcional - usado apenas para validação e busca)" [ref=e409]:
+                    - /placeholder: 000.000.000-00
+                    - text: 111.111.111-11
+                - generic [ref=e410]:
+                  - generic [ref=e411]: Nome *
+                  - textbox "Nome *" [ref=e412]:
+                    - /placeholder: Nome completo
+                    - text: Teste Invalid CPF
+                - generic [ref=e413]:
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: Email
+                    - textbox "Email" [ref=e416]:
+                      - /placeholder: email@exemplo.com
+                  - generic [ref=e417]:
+                    - generic [ref=e418]: Telefone
+                    - textbox "Telefone" [ref=e419]:
+                      - /placeholder: (00) 00000-0000
+                - generic [ref=e420]:
+                  - generic [ref=e421]:
+                    - generic [ref=e422]: Data de Nascimento
+                    - textbox "Data de Nascimento" [ref=e423]
+                  - generic [ref=e424]:
+                    - generic [ref=e425]: Gênero
+                    - combobox "Gênero" [ref=e426]:
+                      - option "Selecione..." [selected]
+                      - option "Masculino"
+                      - option "Feminino"
+                      - option "Outro"
+                - generic [ref=e427]:
+                  - generic [ref=e428]: Status *
+                  - generic [ref=e429]:
+                    - generic [ref=e430] [cursor=pointer]:
+                      - radio "Lead" [checked] [ref=e431]
+                      - generic [ref=e432]: Lead
+                    - generic [ref=e433] [cursor=pointer]:
+                      - radio "Paciente" [ref=e434]
+                      - generic [ref=e435]: Paciente
+                - generic [ref=e436]:
+                  - button "Cancelar" [ref=e437] [cursor=pointer]
+                  - button "Salvar Paciente" [ref=e438] [cursor=pointer]
+  - alert [ref=e439]
+```

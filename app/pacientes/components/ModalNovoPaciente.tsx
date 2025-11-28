@@ -12,7 +12,8 @@ interface ModalNovoPacienteProps {
 }
 
 interface FormData {
-  cpf: string
+  idPaciente: string // ID do Paciente (biologix_id) - OBRIGATÓRIO (chave única)
+  cpf: string // CPF - OPCIONAL (usado apenas para validação e busca)
   nome: string
   email: string
   telefone: string
@@ -24,6 +25,7 @@ interface FormData {
 
 export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalNovoPacienteProps) {
   const [formData, setFormData] = useState<FormData>({
+    idPaciente: '',
     cpf: '',
     nome: '',
     email: '',
@@ -38,11 +40,15 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
   const [cpfValidating, setCpfValidating] = useState(false)
   const [cpfExists, setCpfExists] = useState(false)
   const [existingPaciente, setExistingPaciente] = useState<{ id: string; nome: string } | null>(null)
+  const [idPacienteValidating, setIdPacienteValidating] = useState(false)
+  const [idPacienteExists, setIdPacienteExists] = useState(false)
+  const [existingPacienteById, setExistingPacienteById] = useState<{ id: string; nome: string } | null>(null)
 
   useEffect(() => {
     if (!isOpen) {
       // Reset form when modal closes
       setFormData({
+        idPaciente: '',
         cpf: '',
         nome: '',
         email: '',
@@ -55,6 +61,8 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       setErrors({})
       setCpfExists(false)
       setExistingPaciente(null)
+      setIdPacienteExists(false)
+      setExistingPacienteById(null)
     }
   }, [isOpen])
 
@@ -155,6 +163,32 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     }
   }
 
+  const checkIdPacienteExists = async (idPaciente: string) => {
+    if (!idPaciente || idPaciente.trim() === '') {
+      return null
+    }
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pacientes')
+        .select('id, nome')
+        .eq('biologix_id', idPaciente.trim())
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 = no rows returned
+        console.error('Erro ao verificar ID do Paciente:', error)
+        return null
+      }
+
+      return data || null
+    } catch (error) {
+      console.error('Erro inesperado ao verificar ID do Paciente:', error)
+      return null
+    }
+  }
+
   const handleCPFBlur = async () => {
     const cpfLimpo = formData.cpf.replace(/\D/g, '')
     if (cpfLimpo.length === 0) {
@@ -198,14 +232,47 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     setCpfValidating(false)
   }
 
+  const handleIdPacienteBlur = async () => {
+    const idPaciente = formData.idPaciente.trim()
+    
+    if (!idPaciente) {
+      setErrors({ ...errors, idPaciente: 'ID do Paciente é obrigatório' })
+      setIdPacienteExists(false)
+      setExistingPacienteById(null)
+      return
+    }
+
+    setIdPacienteValidating(true)
+
+    // Verificar se ID do Paciente já existe
+    const existing = await checkIdPacienteExists(idPaciente)
+    if (existing) {
+      setIdPacienteExists(true)
+      setExistingPacienteById(existing)
+      setErrors({ ...errors, idPaciente: `ID do Paciente já cadastrado para: ${existing.nome}` })
+    } else {
+      setIdPacienteExists(false)
+      setExistingPacienteById(null)
+      setErrors({ ...errors, idPaciente: undefined })
+    }
+
+    setIdPacienteValidating(false)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // Validação básica
     const newErrors: Partial<Record<keyof FormData, string>> = {}
 
-    if (!formData.cpf || formData.cpf.replace(/\D/g, '').length !== 11) {
-      newErrors.cpf = 'CPF é obrigatório'
+    // ID do Paciente é OBRIGATÓRIO (chave única)
+    if (!formData.idPaciente || formData.idPaciente.trim() === '') {
+      newErrors.idPaciente = 'ID do Paciente é obrigatório'
+    }
+
+    // CPF agora é OPCIONAL (apenas para validação e busca)
+    if (formData.cpf && formData.cpf.replace(/\D/g, '').length !== 11) {
+      newErrors.cpf = 'CPF deve ter 11 dígitos'
     }
 
     if (!formData.nome.trim()) {
@@ -214,6 +281,11 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
 
     if (formData.status === 'ativo' && formData.sessoesCompradas < 0) {
       newErrors.sessoesCompradas = 'Sessões compradas deve ser um número positivo'
+    }
+
+    // Verificar duplicatas
+    if (idPacienteExists) {
+      newErrors.idPaciente = 'ID do Paciente já cadastrado. Por favor, verifique o paciente existente.'
     }
 
     if (cpfExists) {
@@ -229,14 +301,20 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
 
     try {
       const supabase = createClient()
-      const cpfLimpo = formData.cpf.replace(/\D/g, '')
+      const cpfLimpo = formData.cpf ? formData.cpf.replace(/\D/g, '') : ''
 
       const pacienteData: any = {
-        cpf: cpfLimpo,
+        biologix_id: formData.idPaciente.trim(), // Chave única
         nome: formData.nome.trim(),
         status: formData.status,
         sessoes_compradas: formData.status === 'ativo' ? formData.sessoesCompradas : 0,
       }
+
+      // CPF é opcional - só adicionar se válido e fornecido
+      if (cpfLimpo && cpfLimpo.length === 11) {
+        pacienteData.cpf = cpfLimpo
+      }
+      // Se CPF não for fornecido ou for inválido, não incluir no objeto (será NULL no banco)
 
       // Campos opcionais
       if (formData.email.trim()) {
@@ -252,15 +330,21 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
         pacienteData.genero = formData.genero
       }
 
-      const { data, error } = await supabase.from('pacientes').insert(pacienteData).select().single()
+      // Usar UPSERT com biologix_id como chave única
+      const { data, error } = await supabase
+        .from('pacientes')
+        .upsert(pacienteData, {
+          onConflict: 'biologix_id',
+          ignoreDuplicates: false
+        })
+        .select()
+        .single()
 
       if (error) {
-        console.error('Erro ao criar paciente:', error)
+        console.error('Erro ao criar/atualizar paciente:', error)
         if (error.code === '23505') {
           // Unique constraint violation
-          showError('CPF já cadastrado no sistema')
-        } else if (error.message.includes('CPF inválido')) {
-          showError('CPF inválido')
+          showError('ID do Paciente já cadastrado no sistema')
         } else {
           showError('Erro ao criar paciente. Tente novamente.')
         }
@@ -298,10 +382,51 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* CPF */}
+          {/* ID do Paciente - OBRIGATÓRIO (chave única) */}
+          <div>
+            <label htmlFor="idPaciente" className="block text-sm font-medium text-black mb-2">
+              ID do Paciente <span className="text-danger-600">*</span>
+              <span className="text-xs text-gray-500 ml-2">(Identificador único do Biologix)</span>
+            </label>
+            <input
+              id="idPaciente"
+              type="text"
+              value={formData.idPaciente}
+              onChange={(e) => {
+                setFormData({ ...formData, idPaciente: e.target.value.trim() })
+                if (errors.idPaciente) {
+                  setErrors({ ...errors, idPaciente: undefined })
+                }
+                if (idPacienteExists) {
+                  setIdPacienteExists(false)
+                  setExistingPacienteById(null)
+                }
+              }}
+              onBlur={handleIdPacienteBlur}
+              placeholder="PAC-1234567890"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                errors.idPaciente ? 'border-danger-500' : 'border-gray-300'
+              }`}
+              disabled={isSubmitting || idPacienteValidating}
+            />
+            {idPacienteValidating && <p className="mt-1 text-sm text-black">Verificando ID do Paciente...</p>}
+            {errors.idPaciente && <p className="mt-1 text-sm text-danger-600">{errors.idPaciente}</p>}
+            {idPacienteExists && existingPacienteById && (
+              <div className="mt-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
+                <p className="text-sm text-warning-800">
+                  <strong>Paciente já existe:</strong> {existingPacienteById.nome}
+                </p>
+                <p className="text-xs text-warning-600 mt-1">
+                  Considere buscar este paciente na lista ao invés de criar um novo.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* CPF - OPCIONAL */}
           <div>
             <label htmlFor="cpf" className="block text-sm font-medium text-black mb-2">
-              CPF <span className="text-danger-600">*</span>
+              CPF <span className="text-xs text-gray-500">(Opcional - usado apenas para validação e busca)</span>
             </label>
             <input
               id="cpf"
@@ -506,7 +631,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
             <button
               type="submit"
               className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSubmitting || cpfExists}
+              disabled={isSubmitting || cpfExists || idPacienteExists}
             >
               {isSubmitting ? 'Salvando...' : 'Salvar Paciente'}
             </button>

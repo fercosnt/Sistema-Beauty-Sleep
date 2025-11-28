@@ -79,7 +79,6 @@ CREATE POLICY users_update ON users
     get_user_role() = 'admin'
   );
 
-<<<<<<< HEAD
 -- Policy: users_delete - Only Admin can delete users
 CREATE POLICY users_delete ON users
   FOR DELETE
@@ -87,8 +86,6 @@ CREATE POLICY users_delete ON users
     get_user_role() = 'admin'
   );
 
-=======
->>>>>>> 8591cb7 (feat: Adicionar README e configurar repositório Git)
 -- ============================================
 -- PACIENTES TABLE POLICIES
 -- ============================================

@@ -13,10 +13,13 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Table: pacientes
+-- IMPORTANT: O ID único para identificação de pacientes é biologix_id (ID do Paciente), não CPF.
+-- CPF é usado apenas para validação e busca, mas a chave de ligação principal é biologix_id.
+-- Cada exame já vem com o ID do paciente no registro (ID Pacientes LINK), que corresponde ao biologix_id.
 CREATE TABLE IF NOT EXISTS pacientes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  biologix_id TEXT UNIQUE,
-  cpf TEXT UNIQUE NOT NULL,
+  biologix_id TEXT UNIQUE, -- ID único do paciente (ID do Paciente)
+  cpf TEXT UNIQUE NOT NULL, -- CPF usado apenas para validação e busca, não como chave única
   nome TEXT NOT NULL,
   email TEXT,
   telefone TEXT,

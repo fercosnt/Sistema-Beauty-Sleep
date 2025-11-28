@@ -20,20 +20,43 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
   useEffect(() => {
     const fetchUser = async () => {
       const supabase = createClient()
-      const { data: { user: authUser } } = await supabase.auth.getUser()
+      // Force refresh to get latest user data
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+
+      if (authError) {
+        console.error('Error fetching auth user:', authError)
+        return
+      }
+
       if (authUser?.email) {
         setUser(authUser)
-        const { data } = await supabase
+        // Fetch user data from users table
+        const { data, error } = await supabase
           .from('users')
           .select('*')
           .eq('email', authUser.email)
           .single()
-        if (data) {
+
+        if (error) {
+          console.error('Error fetching user data:', error)
+        } else if (data) {
           setUserData(data)
         }
       }
     }
     fetchUser()
+
+    // Listen for auth state changes (e.g., after login/logout)
+    const supabase = createClient()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        fetchUser()
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   const userInitials = userData?.nome
