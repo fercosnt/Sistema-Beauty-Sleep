@@ -113,12 +113,10 @@ Deno.serve(async (req: Request) => {
     await biologixClient.openSession();
     console.log('Session opened successfully');
 
-    // Fetch DONE exams (limitado a 100 para não sobrecarregar a API)
-    console.log('Fetching DONE exams from Biologix (limit: 100)...');
-    const examsResponse = await retryWithBackoff(() => biologixClient.getExams(0, 100));
-    // Filtrar apenas exames com status DONE (6)
-    const exams = examsResponse.exams.filter(exam => exam.status === EXAM_STATUS.DONE);
-    console.log(`Found ${exams.length} DONE exams (out of ${examsResponse.pagination.total} total exams in API)`);
+    // Fetch ALL DONE exams with automatic pagination
+    console.log('Fetching ALL DONE exams from Biologix (with pagination)...');
+    const exams = await retryWithBackoff(() => biologixClient.getAllDoneExams());
+    console.log(`Found ${exams.length} DONE exams from Biologix API`);
 
     let processed = 0;
     let created = 0;
@@ -129,40 +127,86 @@ Deno.serve(async (req: Request) => {
     // Process each exam
     for (const exam of exams) {
       try {
-        // Extract CPF from patient username
+        // Extract CPF from patient username (optional, used as fallback)
         const cpf = extractCPF(exam.patient.username);
         
-        if (!cpf) {
-          console.warn(`Could not extract CPF from username: ${exam.patient.username} (examId: ${exam.examId})`);
-          errors++;
-          errorDetails.push(`Exam ${exam.examId}: CPF not found in username`);
-          continue;
-        }
+        // Get biologix_id from exam (this is the primary identifier)
+        const biologixId = exam.patientUserId;
 
         // Find or create paciente
         let pacienteId: string;
+        let pacienteExisted = false;
         
-        const { data: existingPaciente } = await supabase
+        // 1. Try to find by biologix_id first (primary method)
+        let { data: existingPaciente } = await supabase
           .from('pacientes')
-          .select('id')
-          .eq('cpf', cpf)
+          .select('id, biologix_id, cpf')
+          .eq('biologix_id', biologixId)
           .single();
 
         if (existingPaciente) {
           pacienteId = existingPaciente.id;
-        } else {
+          pacienteExisted = true;
+          console.log(`Found paciente by biologix_id: ${biologixId} (${exam.patient.name})`);
+        } else if (cpf) {
+          // 2. Fallback: Try to find by CPF if biologix_id not found
+          const { data: pacienteByCpf } = await supabase
+            .from('pacientes')
+            .select('id, biologix_id, cpf')
+            .eq('cpf', cpf)
+            .single();
+
+          if (pacienteByCpf) {
+            pacienteId = pacienteByCpf.id;
+            pacienteExisted = true;
+            
+            // Update paciente with biologix_id if missing
+            if (!pacienteByCpf.biologix_id) {
+              const { error: updateError } = await supabase
+                .from('pacientes')
+                .update({ biologix_id: biologixId })
+                .eq('id', pacienteByCpf.id);
+              
+              if (updateError) {
+                console.warn(`Failed to update biologix_id for paciente ${pacienteByCpf.id}: ${updateError.message}`);
+              } else {
+                console.log(`Updated paciente with biologix_id: ${biologixId} (found by CPF: ${cpf})`);
+              }
+            }
+            
+            console.log(`Found paciente by CPF: ${cpf} (${exam.patient.name})`);
+          }
+        }
+
+        // 3. Create new paciente if not found
+        if (!pacienteId) {
+          // Validate that we have at least CPF or can create without it
+          if (!cpf && !biologixId) {
+            console.warn(`Cannot create paciente: missing both CPF and biologix_id (examId: ${exam.examId})`);
+            errors++;
+            errorDetails.push(`Exam ${exam.examId}: Cannot create paciente - missing CPF and biologix_id`);
+            continue;
+          }
+
           // Create new paciente as 'lead'
+          const newPacienteData: any = {
+            biologix_id: biologixId,
+            nome: exam.patient.name,
+            email: exam.patient.email || null,
+            telefone: exam.patient.phone || null,
+            data_nascimento: exam.patient.birthDate || null,
+            genero: exam.patient.gender === 'm' ? 'M' : exam.patient.gender === 'f' ? 'F' : 'Outro',
+            status: 'lead',
+          };
+
+          // Only include CPF if we have it
+          if (cpf) {
+            newPacienteData.cpf = cpf;
+          }
+
           const { data: newPaciente, error: createError } = await supabase
             .from('pacientes')
-            .insert({
-              cpf,
-              nome: exam.patient.name,
-              email: exam.patient.email || null,
-              telefone: exam.patient.phone || null,
-              data_nascimento: exam.patient.birthDate || null,
-              genero: exam.patient.gender === 'm' ? 'M' : exam.patient.gender === 'f' ? 'F' : 'Outro',
-              status: 'lead',
-            })
+            .insert(newPacienteData)
             .select('id')
             .single();
 
@@ -171,7 +215,7 @@ Deno.serve(async (req: Request) => {
           }
 
           pacienteId = newPaciente.id;
-          console.log(`Created new paciente: ${cpf} (${exam.patient.name})`);
+          console.log(`Created new paciente: biologix_id=${biologixId}, cpf=${cpf || 'N/A'} (${exam.patient.name})`);
         }
 
         // Calculate score_ronco if exam type is Ronco (0) and has snoring data

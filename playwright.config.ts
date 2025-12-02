@@ -24,7 +24,7 @@ if (fs.existsSync(envTestLocalPath)) {
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './__tests__/integration',
+  testDir: './__tests__',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -35,6 +35,12 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  /* Only run Playwright test files, ignore Jest test files */
+  testMatch: [
+    '**/*.spec.ts',
+    '**/integration/**/*.test.ts',
+    '!**/utils/**/*.test.ts', // Ignore Jest unit tests
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -48,7 +54,23 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'integration',
+      testMatch: '**/integration/**/*.test.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'e2e',
+      testMatch: '**/e2e/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Default project runs all tests
+    {
       name: 'chromium',
+      testMatch: [
+        '**/*.spec.ts',
+        '**/integration/**/*.test.ts',
+        '!**/utils/**/*.test.ts', // Ignore Jest unit tests
+      ],
       use: { ...devices['Desktop Chrome'] },
     },
 
@@ -69,6 +91,8 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    stdout: 'ignore',
+    stderr: 'pipe',
   },
 });
 

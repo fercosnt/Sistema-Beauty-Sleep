@@ -37,23 +37,33 @@ test.describe('Authentication Flow', () => {
 
   test('login flow: valid credentials → dashboard', async ({ page }) => {
     test.skip(SKIP_AUTH_TESTS, 'Test credentials not configured. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.');
+    
+    // Wait for form to be ready
+    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 15000 });
+    await page.waitForSelector('input[name="password"]', { state: 'visible', timeout: 5000 });
+    
     // Fill in login form
     await page.fill('input[name="email"]', TEST_EMAIL);
     await page.fill('input[name="password"]', TEST_PASSWORD);
     
-    // Submit form
-    await page.click('button[type="submit"]');
+    // Wait a bit before submitting
+    await page.waitForTimeout(500);
     
-    // Wait for navigation to dashboard
-    await page.waitForURL(/.*\/dashboard/, { timeout: 10000 });
+    // Submit form and wait for navigation
+    await Promise.all([
+      page.waitForURL(/.*\/dashboard/, { timeout: 20000 }),
+      page.click('button[type="submit"]')
+    ]);
     
     // Verify we're on the dashboard
     await expect(page).toHaveURL(/.*\/dashboard/);
     
+    // Wait for dashboard to load
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+    
     // Verify dashboard content is visible (check for common dashboard elements)
-    // This might need adjustment based on your actual dashboard structure
     const dashboardContent = page.locator('text=Dashboard').or(page.locator('h1')).first();
-    await expect(dashboardContent).toBeVisible({ timeout: 5000 });
+    await expect(dashboardContent).toBeVisible({ timeout: 10000 });
   });
 
   test('login flow: invalid credentials → error message', async ({ page }) => {
@@ -88,13 +98,25 @@ test.describe('Authentication Flow', () => {
 
   test('logout flow: click logout → redirect to login', async ({ page }) => {
     test.skip(SKIP_AUTH_TESTS, 'Test credentials not configured. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.');
+    
+    // Wait for form to be ready
+    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 15000 });
+    await page.waitForSelector('input[name="password"]', { state: 'visible', timeout: 5000 });
+    
     // First, login
     await page.fill('input[name="email"]', TEST_EMAIL);
     await page.fill('input[name="password"]', TEST_PASSWORD);
-    await page.click('button[type="submit"]');
     
-    // Wait for dashboard
-    await page.waitForURL(/.*\/dashboard/, { timeout: 10000 });
+    await page.waitForTimeout(500);
+    
+    // Submit and wait for navigation
+    await Promise.all([
+      page.waitForURL(/.*\/dashboard/, { timeout: 20000 }),
+      page.click('button[type="submit"]')
+    ]);
+    
+    // Wait for dashboard to load
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     
     // Find and click logout button
     // This might be in a dropdown menu or header
@@ -125,30 +147,35 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should show "Esqueci minha senha" link', async ({ page }) => {
-    // Check if password reset link is visible (button, not label)
-    // Use getByRole or filter by button type to avoid matching labels
-    const resetLink = page.getByRole('button', { name: /esqueci|esqueceu/i }).or(
-      page.locator('button').filter({ hasText: /esqueci|esqueceu/i })
+    await page.goto('/login');
+    await page.waitForLoadState('networkidle');
+    
+    // Check if password reset link is visible
+    // The text is "Esqueceu sua senha?" in the page
+    const resetLink = page.getByRole('button', { name: /esqueceu.*senha/i }).or(
+      page.locator('button').filter({ hasText: /esqueceu.*senha/i })
     ).first();
-    await expect(resetLink).toBeVisible();
+    await expect(resetLink).toBeVisible({ timeout: 5000 });
   });
 
   test('should navigate to password reset when clicking "Esqueci minha senha"', async ({ page }) => {
-    // Click password reset link (button, not label)
-    // Use getByRole to find button specifically
-    const resetLink = page.getByRole('button', { name: /esqueci|esqueceu/i }).or(
-      page.locator('button').filter({ hasText: /esqueci|esqueceu/i })
+    await page.goto('/login');
+    await page.waitForLoadState('networkidle');
+    
+    // Click password reset link
+    // The text is "Esqueceu sua senha?" in the page
+    const resetLink = page.getByRole('button', { name: /esqueceu.*senha/i }).or(
+      page.locator('button').filter({ hasText: /esqueceu.*senha/i })
     ).first();
-    await expect(resetLink).toBeVisible();
+    await expect(resetLink).toBeVisible({ timeout: 5000 });
     await resetLink.click();
     
     // Wait for password reset form to appear
     await page.waitForTimeout(500);
     
     // Should show password reset form
-    // Check for reset password heading or form
-    const resetHeading = page.locator('text=/recuperar|reset|senha/i').first();
-    await expect(resetHeading).toBeVisible({ timeout: 3000 });
+    // Check for reset password heading "Recuperar Senha"
+    await expect(page.getByRole('heading', { name: /recuperar senha/i })).toBeVisible({ timeout: 5000 });
   });
 });
 

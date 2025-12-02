@@ -12,6 +12,14 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  // Only run Jest tests (unit tests), exclude Playwright tests
+  testMatch: [
+    '**/__tests__/**/*.test.ts',
+    '!**/__tests__/**/*.spec.ts',
+    '!**/__tests__/integration/**',
+    '!**/__tests__/e2e/**',
+    '!**/__tests__/utils/test-helpers.ts',
+  ],
   collectCoverageFrom: [
     'lib/utils/cpf.ts',
     'lib/utils/calculos.ts',

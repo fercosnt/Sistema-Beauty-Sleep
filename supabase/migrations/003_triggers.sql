@@ -44,10 +44,24 @@ CREATE TRIGGER atualizar_status_ao_criar_sessao
 
 -- Trigger: calcular_proxima_manutencao_trigger
 -- Calculates proxima_manutencao when status changes to 'finalizado'
+-- Uses the date of the last session, not CURRENT_DATE
 CREATE OR REPLACE FUNCTION calcular_proxima_manutencao_trigger_func() RETURNS TRIGGER AS $$
+DECLARE
+  ultima_sessao_date DATE;
 BEGIN
   IF NEW.status = 'finalizado' AND (OLD.status IS NULL OR OLD.status != 'finalizado') THEN
-    NEW.proxima_manutencao := calcular_proxima_manutencao(CURRENT_DATE);
+    -- Get the date of the last session for this patient
+    SELECT MAX(data_sessao) INTO ultima_sessao_date
+    FROM sessoes
+    WHERE paciente_id = NEW.id;
+    
+    -- If there's a last session, use its date; otherwise use CURRENT_DATE as fallback
+    IF ultima_sessao_date IS NOT NULL THEN
+      NEW.proxima_manutencao := calcular_proxima_manutencao(ultima_sessao_date);
+    ELSE
+      -- Fallback: if no sessions found, use CURRENT_DATE
+      NEW.proxima_manutencao := calcular_proxima_manutencao(CURRENT_DATE);
+    END IF;
   END IF;
   RETURN NEW;
 END;

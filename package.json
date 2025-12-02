@@ -12,7 +12,11 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:complete": "playwright test --grep e2e",
+    "test:e2e:flow": "playwright test e2e/complete-flow",
+    "monitor:sync": "tsx scripts/monitor-sync-logs.ts",
+    "monitor": "tsx scripts/monitor-sync-logs.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -22,7 +26,7 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.84.0",
     "lucide-react": "^0.554.0",
-    "next": "14.2.5",
+    "next": "^14.2.33",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.66.1",
@@ -31,6 +35,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -42,8 +47,8 @@
     "csv-parse": "^5.5.6",
     "csv-stringify": "^6.4.5",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.5",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.33",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",

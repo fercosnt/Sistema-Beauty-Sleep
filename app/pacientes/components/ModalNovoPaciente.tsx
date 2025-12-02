@@ -13,7 +13,8 @@ interface ModalNovoPacienteProps {
 
 interface FormData {
   idPaciente: string // ID do Paciente (biologix_id) - OBRIGATÓRIO (chave única)
-  cpf: string // CPF - OPCIONAL (usado apenas para validação e busca)
+  cpf: string // CPF - OBRIGATÓRIO (ou documento estrangeiro)
+  documentoEstrangeiro: string // Documento para pacientes estrangeiros (passaporte, etc) - aceita números e letras
   nome: string
   email: string
   telefone: string
@@ -27,6 +28,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
   const [formData, setFormData] = useState<FormData>({
     idPaciente: '',
     cpf: '',
+    documentoEstrangeiro: '',
     nome: '',
     email: '',
     telefone: '',
@@ -50,6 +52,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       setFormData({
         idPaciente: '',
         cpf: '',
+        documentoEstrangeiro: '',
         nome: '',
         email: '',
         telefone: '',
@@ -249,7 +252,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     if (existing) {
       setIdPacienteExists(true)
       setExistingPacienteById(existing)
-      setErrors({ ...errors, idPaciente: `ID do Paciente já cadastrado para: ${existing.nome}` })
+      setErrors({ ...errors, idPaciente: `ID do Paciente "${idPaciente}" já cadastrado para: ${existing.nome}. Verifique o paciente existente na lista.` })
     } else {
       setIdPacienteExists(false)
       setExistingPacienteById(null)
@@ -257,6 +260,31 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     }
 
     setIdPacienteValidating(false)
+  }
+
+  const validateDate = (dateString: string): boolean => {
+    if (!dateString) return true // Data é opcional
+    
+    const date = new Date(dateString)
+    const today = new Date()
+    const minDate = new Date('1900-01-01')
+    
+    // Verificar se é uma data válida
+    if (isNaN(date.getTime())) {
+      return false
+    }
+    
+    // Verificar se não é data futura
+    if (date > today) {
+      return false
+    }
+    
+    // Verificar se não é muito antiga (antes de 1900)
+    if (date < minDate) {
+      return false
+    }
+    
+    return true
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -270,13 +298,40 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       newErrors.idPaciente = 'ID do Paciente é obrigatório'
     }
 
-    // CPF agora é OPCIONAL (apenas para validação e busca)
-    if (formData.cpf && formData.cpf.replace(/\D/g, '').length !== 11) {
-      newErrors.cpf = 'CPF deve ter 11 dígitos'
+    // CPF OU Documento Estrangeiro é OBRIGATÓRIO
+    const cpfLimpo = formData.cpf ? formData.cpf.replace(/\D/g, '') : ''
+    const documentoEstrangeiroLimpo = formData.documentoEstrangeiro ? formData.documentoEstrangeiro.trim() : ''
+    
+    if (!cpfLimpo && !documentoEstrangeiroLimpo) {
+      newErrors.cpf = 'CPF ou Documento Estrangeiro é obrigatório'
+    }
+    
+    // Se CPF foi preenchido, validar
+    if (cpfLimpo) {
+      if (cpfLimpo.length !== 11) {
+        newErrors.cpf = 'CPF deve ter 11 dígitos'
+      } else {
+        // Validar CPF se foi preenchido
+        const isValid = await validateCPF(formData.cpf)
+        if (!isValid) {
+          newErrors.cpf = 'CPF inválido'
+        }
+      }
+    }
+    
+    // Se documento estrangeiro foi preenchido, validar (mínimo 3 caracteres)
+    if (documentoEstrangeiroLimpo && documentoEstrangeiroLimpo.length < 3) {
+      newErrors.documentoEstrangeiro = 'Documento estrangeiro deve ter pelo menos 3 caracteres'
     }
 
+    // Nome é OBRIGATÓRIO
     if (!formData.nome.trim()) {
       newErrors.nome = 'Nome é obrigatório'
+    }
+
+    // Validar data de nascimento
+    if (formData.dataNascimento && !validateDate(formData.dataNascimento)) {
+      newErrors.dataNascimento = 'Data de nascimento inválida. Verifique se não é uma data futura ou muito antiga.'
     }
 
     if (formData.status === 'ativo' && formData.sessoesCompradas < 0) {
@@ -288,8 +343,22 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       newErrors.idPaciente = 'ID do Paciente já cadastrado. Por favor, verifique o paciente existente.'
     }
 
-    if (cpfExists) {
-      newErrors.cpf = 'CPF já cadastrado. Por favor, verifique o paciente existente.'
+    // Verificar duplicação de CPF no submit também
+    if (cpfLimpo && cpfLimpo.length === 11) {
+      const existing = await checkCPFExists(formData.cpf)
+      if (existing) {
+        setCpfExists(true)
+        setExistingPaciente(existing)
+        newErrors.cpf = `CPF já cadastrado para: ${existing.nome}`
+      } else {
+        setCpfExists(false)
+        setExistingPaciente(null)
+      }
+    }
+
+    // Se houver erro de CPF inválido, bloquear submit
+    if (errors.cpf && (errors.cpf.includes('inválido') || errors.cpf.includes('já cadastrado'))) {
+      newErrors.cpf = errors.cpf
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -310,11 +379,38 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
         sessoes_compradas: formData.status === 'ativo' ? formData.sessoesCompradas : 0,
       }
 
-      // CPF é opcional - só adicionar se válido e fornecido
+      // CPF é obrigatório se não houver documento estrangeiro
       if (cpfLimpo && cpfLimpo.length === 11) {
+        // Validar CPF novamente antes de salvar
+        const isValid = await validateCPF(formData.cpf)
+        if (!isValid) {
+          showError('CPF inválido. Não é possível criar o paciente.')
+          setIsSubmitting(false)
+          return
+        }
+        
+        // Verificar duplicação uma última vez antes de salvar
+        const existing = await checkCPFExists(formData.cpf)
+        if (existing) {
+          setCpfExists(true)
+          setExistingPaciente(existing)
+          showError(`CPF já cadastrado para: ${existing.nome}`)
+          setIsSubmitting(false)
+          return
+        }
+        
         pacienteData.cpf = cpfLimpo
+      } else if (documentoEstrangeiroLimpo) {
+        // Se não tem CPF mas tem documento estrangeiro, salvar documento estrangeiro
+        // Nota: pode precisar adicionar campo documento_estrangeiro na tabela pacientes
+        // Por enquanto, vamos salvar no campo observacoes_gerais como fallback
+        pacienteData.observacoes_gerais = `Documento Estrangeiro: ${documentoEstrangeiroLimpo}`
+      } else {
+        // Se não tem nem CPF nem documento estrangeiro, não pode criar
+        showError('CPF ou Documento Estrangeiro é obrigatório.')
+        setIsSubmitting(false)
+        return
       }
-      // Se CPF não for fornecido ou for inválido, não incluir no objeto (será NULL no banco)
 
       // Campos opcionais
       if (formData.email.trim()) {
@@ -323,7 +419,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       if (formData.telefone.replace(/\D/g, '')) {
         pacienteData.telefone = formData.telefone.replace(/\D/g, '')
       }
-      if (formData.dataNascimento) {
+      if (formData.dataNascimento && validateDate(formData.dataNascimento)) {
         pacienteData.data_nascimento = formData.dataNascimento
       }
       if (formData.genero) {
@@ -343,8 +439,12 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       if (error) {
         console.error('Erro ao criar/atualizar paciente:', error)
         if (error.code === '23505') {
-          // Unique constraint violation
-          showError('ID do Paciente já cadastrado no sistema')
+          // Unique constraint violation - Mensagem padronizada e clara
+          if (error.message.includes('biologix_id')) {
+            showError(`ID do Paciente "${formData.idPaciente.trim()}" já está cadastrado. Verifique o paciente existente na lista.`)
+          } else {
+            showError('Dados duplicados detectados. Verifique os campos e tente novamente.')
+          }
         } else {
           showError('Erro ao criar paciente. Tente novamente.')
         }
@@ -409,8 +509,14 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
               }`}
               disabled={isSubmitting || idPacienteValidating}
             />
-            {idPacienteValidating && <p className="mt-1 text-sm text-black">Verificando ID do Paciente...</p>}
-            {errors.idPaciente && <p className="mt-1 text-sm text-danger-600">{errors.idPaciente}</p>}
+            {idPacienteValidating && <p className="mt-1 text-sm text-gray-600 flex items-center gap-2">
+              <span className="animate-spin">⏳</span> Verificando ID do Paciente...
+            </p>}
+            {errors.idPaciente && (
+              <p className="mt-1 text-sm text-danger-600 font-medium flex items-center gap-1">
+                <span>⚠️</span> {errors.idPaciente}
+              </p>
+            )}
             {idPacienteExists && existingPacienteById && (
               <div className="mt-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
                 <p className="text-sm text-warning-800">
@@ -423,41 +529,82 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
             )}
           </div>
 
-          {/* CPF - OPCIONAL */}
-          <div>
-            <label htmlFor="cpf" className="block text-sm font-medium text-black mb-2">
-              CPF <span className="text-xs text-gray-500">(Opcional - usado apenas para validação e busca)</span>
-            </label>
-            <input
-              id="cpf"
-              type="text"
-              value={formData.cpf}
-              onChange={(e) => {
-                const formatted = formatCPF(e.target.value)
-                setFormData({ ...formData, cpf: formatted })
-                if (errors.cpf) {
-                  setErrors({ ...errors, cpf: undefined })
-                }
-              }}
-              onBlur={handleCPFBlur}
-              placeholder="000.000.000-00"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                errors.cpf ? 'border-danger-500' : 'border-gray-300'
-              }`}
-              disabled={isSubmitting || cpfValidating}
-            />
-            {cpfValidating && <p className="mt-1 text-sm text-black">Validando CPF...</p>}
-            {errors.cpf && <p className="mt-1 text-sm text-danger-600">{errors.cpf}</p>}
-            {cpfExists && existingPaciente && (
-              <div className="mt-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
-                <p className="text-sm text-warning-800">
-                  <strong>Paciente já existe:</strong> {existingPaciente.nome}
+          {/* CPF e Documento Estrangeiro - OBRIGATÓRIO (um ou outro) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="cpf" className="block text-sm font-medium text-black mb-2">
+                CPF <span className="text-danger-600">*</span>
+                <span className="text-xs text-gray-500 ml-2">(ou Documento Estrangeiro)</span>
+              </label>
+              <input
+                id="cpf"
+                type="text"
+                value={formData.cpf}
+                onChange={(e) => {
+                  const formatted = formatCPF(e.target.value)
+                  setFormData({ ...formData, cpf: formatted, documentoEstrangeiro: '' })
+                  if (errors.cpf) {
+                    setErrors({ ...errors, cpf: undefined })
+                  }
+                }}
+                onBlur={handleCPFBlur}
+                placeholder="000.000.000-00"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.cpf ? 'border-danger-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting || cpfValidating || !!formData.documentoEstrangeiro}
+              />
+              {cpfValidating && <p className="mt-1 text-sm text-gray-600 flex items-center gap-2">
+                <span className="animate-spin">⏳</span> Validando CPF...
+              </p>}
+              {errors.cpf && (
+                <p className="mt-1 text-sm text-danger-600 font-medium flex items-center gap-1">
+                  <span>⚠️</span> {errors.cpf}
                 </p>
-                <p className="text-xs text-warning-600 mt-1">
-                  Considere buscar este paciente na lista ao invés de criar um novo.
-                </p>
-              </div>
-            )}
+              )}
+              {cpfExists && existingPaciente && (
+                <div className="mt-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
+                  <p className="text-sm text-warning-800">
+                    <strong>Paciente já existe:</strong> {existingPaciente.nome}
+                  </p>
+                  <p className="text-xs text-warning-600 mt-1">
+                    Considere buscar este paciente na lista ao invés de criar um novo.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="documentoEstrangeiro" className="block text-sm font-medium text-black mb-2">
+                Documento Estrangeiro <span className="text-danger-600">*</span>
+                <span className="text-xs text-gray-500 ml-2">(Passaporte, etc - aceita números e letras)</span>
+              </label>
+              <input
+                id="documentoEstrangeiro"
+                type="text"
+                value={formData.documentoEstrangeiro}
+                onChange={(e) => {
+                  // Aceita números, letras e alguns caracteres especiais comuns em passaportes
+                  const value = e.target.value.replace(/[^a-zA-Z0-9\-_]/g, '')
+                  setFormData({ ...formData, documentoEstrangeiro: value, cpf: '' })
+                  if (errors.documentoEstrangeiro) {
+                    setErrors({ ...errors, documentoEstrangeiro: undefined })
+                  }
+                  if (errors.cpf) {
+                    setErrors({ ...errors, cpf: undefined })
+                  }
+                }}
+                placeholder="ABC123456 ou P1234567"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.documentoEstrangeiro ? 'border-danger-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting || !!formData.cpf}
+              />
+              {errors.documentoEstrangeiro && <p className="mt-1 text-sm text-danger-600">{errors.documentoEstrangeiro}</p>}
+              <p className="mt-1 text-xs text-gray-500">
+                Preencha CPF ou Documento Estrangeiro (não ambos)
+              </p>
+            </div>
           </div>
 
           {/* Nome */}
@@ -530,10 +677,20 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
                 id="dataNascimento"
                 type="date"
                 value={formData.dataNascimento}
-                onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                onChange={(e) => {
+                  setFormData({ ...formData, dataNascimento: e.target.value })
+                  if (errors.dataNascimento) {
+                    setErrors({ ...errors, dataNascimento: undefined })
+                  }
+                }}
+                max={new Date().toISOString().split('T')[0]} // Não permite datas futuras
+                min="1900-01-01" // Não permite datas muito antigas
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.dataNascimento ? 'border-danger-500' : 'border-gray-300'
+                }`}
                 disabled={isSubmitting}
               />
+              {errors.dataNascimento && <p className="mt-1 text-sm text-danger-600">{errors.dataNascimento}</p>}
             </div>
 
             <div>
@@ -631,7 +788,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
             <button
               type="submit"
               className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSubmitting || cpfExists || idPacienteExists}
+              disabled={isSubmitting || cpfExists || idPacienteExists || (errors.cpf && errors.cpf.includes('inválido')) || (errors.cpf && errors.cpf.includes('já cadastrado'))}
             >
               {isSubmitting ? 'Salvando...' : 'Salvar Paciente'}
             </button>
