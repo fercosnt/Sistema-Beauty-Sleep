@@ -208,6 +208,15 @@ export class BiologixClient {
       return this.getExams(offset, limit);
     }
 
+    if (response.status === 429) {
+      // Rate limiting - aguardar mais tempo antes de retry
+      const errorText = await response.text();
+      console.log(`Rate limit (429) detected. Waiting 60 seconds before retry...`);
+      await new Promise(resolve => setTimeout(resolve, 60000)); // Aguardar 60 segundos
+      // Retry após aguardar
+      return this.getExams(offset, limit);
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Failed to get exams: ${response.status} ${errorText}`);
@@ -244,11 +253,16 @@ export class BiologixClient {
       const doneExams = response.exams.filter(exam => exam.status === EXAM_STATUS.DONE);
       allExams.push(...doneExams);
 
+      console.log(`Fetched page: offset=${offset}, limit=${limit}, found=${doneExams.length} DONE exams, total so far: ${allExams.length}`);
+
       // Check if there are more pages
       if (offset + limit >= response.pagination.total) {
         hasMore = false;
       } else {
         offset += limit;
+        // Adicionar delay entre requisições para evitar rate limiting (1 segundo)
+        console.log('Waiting 1 second before next page to avoid rate limiting...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 

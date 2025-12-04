@@ -59,10 +59,24 @@ async function retryWithBackoff<T>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+      const errorMessage = lastError.message;
+      
+      // Detectar rate limiting (429) e aguardar mais tempo
+      const isRateLimit = errorMessage.includes('429') || errorMessage.includes('tooManyRequests');
       
       if (attempt < maxRetries) {
-        const delay = baseDelay * Math.pow(2, attempt);
-        console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        let delay: number;
+        
+        if (isRateLimit) {
+          // Para rate limiting, aguardar mais tempo: 60 segundos + backoff exponencial
+          delay = 60000 + (baseDelay * Math.pow(2, attempt));
+          console.log(`Rate limit detected. Waiting ${delay/1000} seconds before retry...`);
+        } else {
+          // Para outros erros, usar backoff exponencial normal
+          delay = baseDelay * Math.pow(2, attempt);
+          console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        }
+        
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
