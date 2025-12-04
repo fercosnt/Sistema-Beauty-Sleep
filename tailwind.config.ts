@@ -9,10 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Helvetica', 'Arial', 'sans-serif'],
-        helvetica: ['Helvetica', 'Arial', 'sans-serif'],
-        'helvetica-rounded': ['Helvetica Rounded', 'Helvetica', 'Arial', 'sans-serif'],
-        'helvetica-compressed': ['Helvetica Compressed', 'Helvetica', 'Arial', 'sans-serif'],
+        // Usando fontes do sistema - Helvetica nativa (macOS) ou Arial como fallback
+        sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        helvetica: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        // Variantes especializadas usam fontes do sistema com fallback
+        'helvetica-rounded': ['Helvetica Rounded Bold', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        'helvetica-compressed': ['Helvetica Compressed', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {
         // Beauty Smile LP Colors - Baseado no CSS da Landing Page
