@@ -41,13 +41,9 @@ export default function ResumoTratamento({
   const [isAdding, setIsAdding] = useState(false)
   const [isRemoving, setIsRemoving] = useState(false)
 
-  // Log para debug quando paciente muda
+  // Efeito para recálculo quando paciente muda
   useEffect(() => {
-    console.log('ResumoTratamento - paciente atualizado:', {
-      sessoes_adicionadas: paciente.sessoes_adicionadas,
-      sessoes_compradas: paciente.sessoes_compradas,
-      sessoes_utilizadas: paciente.sessoes_utilizadas
-    })
+    // Recalcula valores quando paciente é atualizado
   }, [paciente])
 
   // Buscar role do usuário
@@ -128,12 +124,6 @@ export default function ResumoTratamento({
       const supabase = createClient()
 
       const novoValor = (paciente.sessoes_adicionadas || 0) + quantidade
-      console.log('Adicionando sessões:', {
-        pacienteId: paciente.id,
-        quantidade,
-        valorAtual: paciente.sessoes_adicionadas || 0,
-        novoValor
-      })
 
       const { error, data } = await supabase
         .from('pacientes')
@@ -142,8 +132,6 @@ export default function ResumoTratamento({
         })
         .eq('id', paciente.id)
         .select()
-      
-      console.log('Resultado do update:', { error, data })
 
       if (error) {
         console.error('Erro ao adicionar sessões:', error)
@@ -196,7 +184,7 @@ export default function ResumoTratamento({
       const supabase = createClient()
 
       const novoValor = Math.max(0, sessoesAtuais - quantidade)
-      console.log('Removendo sessões:', {
+      // Removendo sessões
         pacienteId: paciente.id,
         quantidade,
         valorAtual: sessoesAtuais,
@@ -210,8 +198,6 @@ export default function ResumoTratamento({
         })
         .eq('id', paciente.id)
         .select()
-      
-      console.log('Resultado do update:', { error, data })
 
       if (error) {
         console.error('Erro ao remover sessões:', error)

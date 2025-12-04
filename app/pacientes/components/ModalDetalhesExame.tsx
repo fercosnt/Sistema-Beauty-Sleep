@@ -160,9 +160,6 @@ export default function ModalDetalhesExame({
 
     const pdfUrl = `https://api.biologixsleep.com/v2/exams/${examKey}/files/report.pdf`
     
-    // Log para debug
-    console.log('Tentando baixar PDF:', { examKey, pdfUrl, exameId: exame.id, status: exame.status })
-    
     // Verificar se o exame está completo (status = 6 = DONE)
     if (exame.status !== 6) {
       const confirmOpen = window.confirm(
