@@ -12,16 +12,15 @@ dist/
 build/
 *.local
 
-# Logs
-logs
+# Logs - apenas arquivos .log, não pastas chamadas "logs"
 *.log
-# Exception: app/logs is a route page, not a log directory
-!app/logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+# Garantir que a rota app/logs não seja ignorada
+!app/logs/
 
 # Editor directories and files
 .vscode/*

@@ -2,8 +2,6 @@ import { getUserRole } from '@/lib/utils/get-user-role'
 import { redirect } from 'next/navigation'
 import LogsTable from './components/LogsTable'
 
-export const dynamic = 'force-dynamic'
-
 export default async function LogsPage() {
   const userRole = await getUserRole()
   
