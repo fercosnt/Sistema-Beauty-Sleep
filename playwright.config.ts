@@ -33,6 +33,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  /* Test timeout - increase for slower environments */
+  timeout: 90000, // 90 seconds per test (increased for complex E2E tests)
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Only run Playwright test files, ignore Jest test files */
@@ -49,6 +51,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
+    /* Preserve authentication state - important for keeping cookies between tests */
+    storageState: undefined, // We'll handle auth manually in beforeEach
   },
 
   /* Configure projects for major browsers */

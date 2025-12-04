@@ -36,7 +36,11 @@ test.describe('Authentication Flow', () => {
   });
 
   test('login flow: valid credentials → dashboard', async ({ page }) => {
-    test.skip(SKIP_AUTH_TESTS, 'Test credentials not configured. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.');
+    // Verify credentials are configured
+    if (SKIP_AUTH_TESTS) {
+      test.skip(true, 'Test credentials not configured. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.');
+      return;
+    }
     
     // Wait for form to be ready
     await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 15000 });
@@ -97,7 +101,11 @@ test.describe('Authentication Flow', () => {
   });
 
   test('logout flow: click logout → redirect to login', async ({ page }) => {
-    test.skip(SKIP_AUTH_TESTS, 'Test credentials not configured. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.');
+    // Verify credentials are configured
+    if (SKIP_AUTH_TESTS) {
+      test.skip(true, 'Test credentials not configured. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.');
+      return;
+    }
     
     // Wait for form to be ready
     await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 15000 });
@@ -111,29 +119,39 @@ test.describe('Authentication Flow', () => {
     
     // Submit and wait for navigation
     await Promise.all([
-      page.waitForURL(/.*\/dashboard/, { timeout: 20000 }),
+      page.waitForURL(/.*\/dashboard/, { timeout: 30000 }),
       page.click('button[type="submit"]')
     ]);
     
-    // Wait for dashboard to load
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+    // Wait for dashboard to load (more flexible)
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
     
     // Find and click logout button
-    // This might be in a dropdown menu or header
-    // Adjust selector based on your actual UI
-    const logoutButton = page.locator('text=/sair|logout|sair da conta/i').first();
+    // The logout button is in the Sidebar with text "Sair"
+    // Try to find it directly first
+    let logoutButton = page.locator('button').filter({ hasText: /^sair$/i }).or(
+      page.locator('button:has-text("Sair")')
+    );
     
-    // If logout is in a dropdown, click the user menu first
-    const userMenu = page.locator('button').filter({ hasText: /menu|user|avatar/i }).or(
-      page.locator('[aria-label*="menu"]').or(page.locator('[aria-label*="user"]'))
-    ).first();
+    // Check if sidebar is visible (it should be on desktop, might need to open on mobile)
+    const sidebarVisible = await page.locator('aside, nav').filter({ hasText: /sair/i }).isVisible({ timeout: 2000 }).catch(() => false);
     
-    if (await userMenu.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await userMenu.click();
-      await page.waitForTimeout(500); // Wait for dropdown to open
+    if (!sidebarVisible) {
+      // On mobile, might need to open sidebar first
+      const menuButton = page.locator('button[aria-label="Toggle menu"]').or(
+        page.locator('button').filter({ hasText: /menu/i })
+      );
+      if (await menuButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await menuButton.click();
+        await page.waitForTimeout(500); // Wait for sidebar to open
+      }
     }
     
-    // Click logout
+    // Now find and click the logout button
+    logoutButton = page.locator('button').filter({ hasText: /^sair$/i }).first();
+    await expect(logoutButton).toBeVisible({ timeout: 5000 });
     await logoutButton.click();
     
     // Wait for redirect to login

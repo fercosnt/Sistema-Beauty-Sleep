@@ -73,6 +73,7 @@ Se você habilitou "Confirm email", certifique-se de que o template **Confirm si
 2. Verifique se o link de confirmação está correto:
    ```
    {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email
+   
    ```
 3. Se não estiver, atualize para o formato acima
 
