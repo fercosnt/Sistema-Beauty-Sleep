@@ -184,12 +184,6 @@ export default function ResumoTratamento({
       const supabase = createClient()
 
       const novoValor = Math.max(0, sessoesAtuais - quantidade)
-      // Removendo sessões
-        pacienteId: paciente.id,
-        quantidade,
-        valorAtual: sessoesAtuais,
-        novoValor
-      })
 
       const { error, data } = await supabase
         .from('pacientes')

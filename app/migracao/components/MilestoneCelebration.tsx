@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog'
-import { Trophy, Confetti, PartyPopper, Sparkles } from 'lucide-react'
+import { Trophy, PartyPopper, Sparkles } from 'lucide-react'
 
 interface MilestoneCelebrationProps {
   percentualCompleto: number
@@ -79,7 +79,7 @@ export default function MilestoneCelebration({
               {percentualCompleto >= 100 ? (
                 <Trophy className="h-12 w-12 text-yellow-500" />
               ) : (
-                <Confetti className="h-12 w-12 text-primary-600" />
+                <Sparkles className="h-12 w-12 text-primary-600" />
               )}
             </div>
             <div className={`text-3xl font-bold ${milestone.color}`}>
