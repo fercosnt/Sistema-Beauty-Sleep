@@ -167,7 +167,7 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
 
   // Verificar se está respondendo ao tratamento
   const melhoriasSignificativas = comparacoes.filter(
-    (c) => Math.abs(c.mudancaPercentual) >= 20 && c.melhorou
+    (c) => c.mudancaPercentual !== null && Math.abs(c.mudancaPercentual) >= 20 && c.melhorou
   )
   const estaRespondendo = melhoriasSignificativas.length > 0
 
@@ -175,7 +175,7 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
   const naoEstaRespondendo =
     sessoesCount >= 5 &&
     comparacoes.length > 0 &&
-    comparacoes.every((c) => Math.abs(c.mudancaPercentual) < 20 || !c.melhorou)
+    comparacoes.every((c) => c.mudancaPercentual === null || Math.abs(c.mudancaPercentual) < 20 || !c.melhorou)
 
   if (isLoading) {
     return (
@@ -386,7 +386,7 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
           <CardContent>
             <div className="space-y-4">
               {comparacoes.map((comp, index) => {
-                const mudancaPercentualAbs = Math.abs(comp.mudancaPercentual)
+                const mudancaPercentualAbs = comp.mudancaPercentual !== null ? Math.abs(comp.mudancaPercentual) : 0
                 const corBadge =
                   mudancaPercentualAbs >= 20 && comp.melhorou
                     ? 'bg-success-100 text-success-800 border-success-200'
@@ -404,8 +404,12 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
                         ) : (
                           <TrendingUp className="h-4 w-4 mr-1" />
                         )}
-                        {comp.mudancaPercentual > 0 ? '+' : ''}
-                        {comp.mudancaPercentual.toFixed(1)}%
+                        {comp.mudancaPercentual !== null && (
+                          <>
+                            {comp.mudancaPercentual > 0 ? '+' : ''}
+                            {comp.mudancaPercentual.toFixed(1)}%
+                          </>
+                        )}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
