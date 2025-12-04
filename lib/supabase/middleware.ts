@@ -32,17 +32,19 @@ export async function updateSession(request: NextRequest) {
   // issues with users being randomly logged out.
 
   // IMPORTANT: Don't remove getUser() - it refreshes the auth token
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
 
   // Protect routes - redirect to login if not authenticated
   // Allow access to login and auth callback routes
   if (
-    !user &&
+    (!user || authError) &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth')
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    // Clear any cached session data by adding a cache-busting param
+    url.searchParams.set('session_expired', 'true')
     return NextResponse.redirect(url)
   }
 

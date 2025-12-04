@@ -15,14 +15,38 @@ export default function LoginPage() {
   const [message, setMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkUser = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
+      
+      // If logout parameter is present, force sign out first
+      const logoutParam = searchParams.get('logout')
+      const sessionExpired = searchParams.get('session_expired')
+      
+      if (logoutParam === 'true' || sessionExpired === 'true') {
+        // Ensure complete sign out
+        await supabase.auth.signOut()
+        // Wait a bit to ensure sign out completes
+        await new Promise(resolve => setTimeout(resolve, 100))
+        // Force refresh session state
+        await supabase.auth.getSession()
+        // Remove params from URL
+        const newUrl = new URL(window.location.href)
+        newUrl.searchParams.delete('logout')
+        newUrl.searchParams.delete('session_expired')
+        window.history.replaceState({}, '', newUrl.toString())
+        return
+      }
+      
+      // Check if user is already logged in (with fresh check)
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      // Only redirect if user exists and no error
+      if (user && !error) {
         router.push('/dashboard')
+        router.refresh() // Force page refresh to clear any cached state
       }
     }
+    
     checkUser()
 
     // Get error/message from URL params

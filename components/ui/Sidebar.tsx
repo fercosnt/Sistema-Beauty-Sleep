@@ -48,9 +48,22 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
   }, [currentRole])
 
   const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
+    try {
+      const supabase = createClient()
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        console.error('Erro ao fazer logout:', error)
+      }
+      
+      // Force clear any cached data and redirect to login with cache bust
+      window.location.href = '/login?logout=true'
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error)
+      // Even if there's an error, redirect to login
+      window.location.href = '/login?logout=true'
+    }
   }
 
   const isAdmin = currentRole === 'admin'
