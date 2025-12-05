@@ -47,7 +47,7 @@ export default function ModalEditarUsuario({
   const [role, setRole] = useState<'admin' | 'equipe' | 'recepcao'>(user.role)
   const [ativo, setAtivo] = useState(user.ativo)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
 
   useEffect(() => {
     if (isOpen) {
@@ -145,7 +145,10 @@ export default function ModalEditarUsuario({
               value={nome}
               onChange={(e) => {
                 setNome(e.target.value)
-                setErrors((prev) => ({ ...prev, nome: undefined }))
+                setErrors((prev) => {
+                  const { nome: _, ...rest } = prev
+                  return rest
+                })
               }}
               placeholder="Nome completo"
               className={errors.nome ? 'border-danger-500' : ''}
