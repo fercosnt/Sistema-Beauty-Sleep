@@ -24,6 +24,7 @@ const nextConfig = {
         /node_modules/,
         /Design\//, // Ignorar pasta Design (Storybook)
         /meu-projeto-admin\//, // Ignorar pasta meu-projeto-admin (projeto Vite separado)
+        /supabase\/functions\//, // Ignorar Edge Functions do Supabase
         /\.stories\.(ts|tsx)$/, // Ignorar arquivos .stories
       ],
     })
