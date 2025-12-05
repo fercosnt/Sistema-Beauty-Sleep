@@ -286,8 +286,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       text: 'Bem-vindo ao Beauty Sleep System! 👋 Este tour vai te mostrar as principais funcionalidades do sistema.',
       title: 'Bem-vindo!',
       buttons: [
-        { text: 'Pular Tour', action: function() { this.cancel() } },
-        { text: 'Começar Tour', action: function() { this.next() } },
+        { text: 'Pular Tour', action: function(this: any) { return this.cancel() } },
+        { text: 'Começar Tour', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -374,8 +374,8 @@ function getRecepcaoTourSteps(): ShepherdStepOptions[] {
       text: 'Bem-vindo ao Beauty Sleep System! 👋 Como Recepcionista, você pode visualizar pacientes, buscar por CPF/nome e acompanhar ações pendentes.',
       title: 'Bem-vindo!',
       buttons: [
-        { text: 'Pular Tour', action: function() { this.cancel() } },
-        { text: 'Começar Tour', action: function() { this.next() } },
+        { text: 'Pular Tour', action: function(this: any) { return this.cancel() } },
+        { text: 'Começar Tour', action: function(this: any) { return this.next() } },
       ],
     },
     {
