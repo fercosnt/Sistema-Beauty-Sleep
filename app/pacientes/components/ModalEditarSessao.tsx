@@ -48,7 +48,7 @@ export default function ModalEditarSessao({ isOpen, onClose, sessao, onSuccess }
   const [contadorFinal, setContadorFinal] = useState<number | ''>(sessao.contador_pulsos_final)
   const [observacoes, setObservacoes] = useState(sessao.observacoes || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
   const [userId, setUserId] = useState<string | null>(null)
   const [userRole, setUserRole] = useState<string | null>(null)
@@ -274,7 +274,10 @@ export default function ModalEditarSessao({ isOpen, onClose, sessao, onSuccess }
                 value={dataSessao}
                 onChange={(e) => {
                   setDataSessao(e.target.value)
-                  setErrors((prev) => ({ ...prev, dataSessao: undefined }))
+                  setErrors((prev) => {
+                    const { dataSessao: _, ...rest } = prev
+                    return rest
+                  })
                 }}
                 className={`pl-10 ${errors.dataSessao ? 'border-danger-500' : ''}`}
                 required
@@ -323,7 +326,10 @@ export default function ModalEditarSessao({ isOpen, onClose, sessao, onSuccess }
                 value={contadorInicial}
                 onChange={(e) => {
                   setContadorInicial(parseInt(e.target.value) || '')
-                  setErrors((prev) => ({ ...prev, contadorInicial: undefined }))
+                  setErrors((prev) => {
+                    const { contadorInicial: _, ...rest } = prev
+                    return rest
+                  })
                 }}
                 placeholder="0"
                 className={errors.contadorInicial ? 'border-danger-500' : ''}
@@ -341,7 +347,10 @@ export default function ModalEditarSessao({ isOpen, onClose, sessao, onSuccess }
                 value={contadorFinal}
                 onChange={(e) => {
                   setContadorFinal(parseInt(e.target.value) || '')
-                  setErrors((prev) => ({ ...prev, contadorFinal: undefined }))
+                  setErrors((prev) => {
+                    const { contadorFinal: _, ...rest } = prev
+                    return rest
+                  })
                 }}
                 placeholder="0"
                 className={errors.contadorFinal ? 'border-danger-500' : ''}
