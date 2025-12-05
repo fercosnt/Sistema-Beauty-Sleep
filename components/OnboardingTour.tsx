@@ -5,6 +5,9 @@ import Shepherd from 'shepherd.js'
 import 'shepherd.js/dist/css/shepherd.css'
 import { createClient } from '@/lib/supabase/client'
 
+// Type declaration for Shepherd.js
+type ShepherdTour = typeof Shepherd.Tour extends new (...args: any[]) => infer T ? T : any
+
 interface OnboardingTourProps {
   role: 'admin' | 'equipe' | 'recepcao'
   tourCompleted: boolean
@@ -12,7 +15,7 @@ interface OnboardingTourProps {
 }
 
 export function OnboardingTour({ role, tourCompleted, userId }: OnboardingTourProps) {
-  const tourRef = useRef<Shepherd.Tour | null>(null)
+  const tourRef = useRef<ShepherdTour | null>(null)
 
   useEffect(() => {
     // Only start tour if not completed
