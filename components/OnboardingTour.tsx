@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 
 // Type declaration for Shepherd.js
 type ShepherdTour = typeof Shepherd.Tour extends new (...args: any[]) => infer T ? T : any
+type ShepherdStepOptions = any // Shepherd.Step.StepOptions type
 
 interface OnboardingTourProps {
   role: 'admin' | 'equipe' | 'recepcao'
@@ -105,7 +106,7 @@ export function startTour(role: 'admin' | 'equipe' | 'recepcao') {
 }
 
 // Get tour steps based on role
-function getTourSteps(role: 'admin' | 'equipe' | 'recepcao'): Shepherd.Step.StepOptions[] {
+function getTourSteps(role: 'admin' | 'equipe' | 'recepcao'): ShepherdStepOptions[] {
   if (role === 'admin') {
     return getAdminTourSteps()
   } else if (role === 'equipe') {
@@ -116,7 +117,7 @@ function getTourSteps(role: 'admin' | 'equipe' | 'recepcao'): Shepherd.Step.Step
 }
 
 // Admin Tour Steps (12 steps)
-function getAdminTourSteps(): Shepherd.Step.StepOptions[] {
+function getAdminTourSteps(): ShepherdStepOptions[] {
   return [
     {
       id: 'welcome',
@@ -278,7 +279,7 @@ function getAdminTourSteps(): Shepherd.Step.StepOptions[] {
 }
 
 // Equipe Tour Steps (8 steps)
-function getEquipeTourSteps(): Shepherd.Step.StepOptions[] {
+function getEquipeTourSteps(): ShepherdStepOptions[] {
   return [
     {
       id: 'welcome',
@@ -366,7 +367,7 @@ function getEquipeTourSteps(): Shepherd.Step.StepOptions[] {
 }
 
 // Recepção Tour Steps (5 steps)
-function getRecepcaoTourSteps(): Shepherd.Step.StepOptions[] {
+function getRecepcaoTourSteps(): ShepherdStepOptions[] {
   return [
     {
       id: 'welcome',
