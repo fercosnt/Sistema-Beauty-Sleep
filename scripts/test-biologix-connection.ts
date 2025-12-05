@@ -216,7 +216,13 @@ async function testBiologixConnection() {
     
     // 4. Estatísticas do banco
     console.log('📊 Estatísticas do banco de dados...');
-    const { data: stats } = await supabase.rpc('get_stats').catch(() => null);
+    let stats = null;
+    try {
+      const { data } = await supabase.rpc('get_stats');
+      stats = data;
+    } catch (error) {
+      // Ignorar erro se RPC não existir
+    }
     
     const { count: totalPacientes } = await supabase
       .from('pacientes')
