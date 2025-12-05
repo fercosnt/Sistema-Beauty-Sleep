@@ -109,8 +109,8 @@ async function validateCPFs() {
   console.log('\n🔍 Validando CPFs...\n');
 
   // Verify all CPFs are valid (only for non-null CPFs)
-  let invalidCPFs = null;
-  let error = null;
+  let invalidCPFs: any = null;
+  let error: any = null;
   
   const result = await supabase.rpc('validar_cpf_check', {});
   if (result.error) {
