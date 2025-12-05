@@ -163,7 +163,7 @@ async function validateCPFs() {
   }
 
   if (error) {
-    addResult('1.11.4 - Validação de CPFs', 'fail', `Erro ao validar CPFs: ${error.message}`);
+    addResult('1.11.4 - Validação de CPFs', 'fail', `Erro ao validar CPFs: ${error?.message || String(error)}`);
   } else {
     const invalidCount = invalidCPFs?.length || 0;
     if (invalidCount === 0) {
