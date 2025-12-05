@@ -16,6 +16,18 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
   },
+  // Ignorar pastas de design/storybook durante o build
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.(ts|tsx)$/,
+      exclude: [
+        /node_modules/,
+        /Design\//, // Ignorar pasta Design (Storybook)
+        /\.stories\.(ts|tsx)$/, // Ignorar arquivos .stories
+      ],
+    })
+    return config
+  },
 }
 
 module.exports = nextConfig
