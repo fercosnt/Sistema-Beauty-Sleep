@@ -126,11 +126,11 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
       buttons: [
         {
           text: 'Pular Tour',
-          action: function() { this.cancel() },
+          action: function(this: any) { return this.cancel() },
         },
         {
           text: 'Começar Tour',
-          action: function() { this.next() },
+          action: function(this: any) { return this.next() },
         },
       ],
     },
@@ -143,8 +143,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'top',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -156,8 +156,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'bottom',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -169,8 +169,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -182,8 +182,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'bottom',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -195,8 +195,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -208,8 +208,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -221,8 +221,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -234,8 +234,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -247,8 +247,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -260,8 +260,8 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -271,7 +271,7 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
       buttons: [
         {
           text: 'Concluir Tour',
-          action: function() { this.complete() },
+          action: function(this: any) { return this.complete() },
         },
       ],
     },
@@ -296,8 +296,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Dashboard - Visão Geral',
       attachTo: { element: 'main', on: 'top' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -306,8 +306,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Widget Ações Pendentes',
       attachTo: { element: 'main', on: 'top' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -316,8 +316,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Navegação',
       attachTo: { element: 'aside', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -326,8 +326,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Criar Paciente',
       attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -336,8 +336,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Perfil de Paciente',
       attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -346,8 +346,8 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Criar Sessão',
       attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -356,10 +356,10 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       title: 'Evolução Temporal',
       attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
         {
           text: 'Concluir Tour',
-          action: function() { this.complete() },
+          action: function(this: any) { return this.complete() },
         },
       ],
     },
@@ -384,8 +384,8 @@ function getRecepcaoTourSteps(): ShepherdStepOptions[] {
       title: 'Widget Ações Pendentes',
       attachTo: { element: '[data-tour="actions-pending"]', on: 'bottom' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -394,8 +394,8 @@ function getRecepcaoTourSteps(): ShepherdStepOptions[] {
       title: 'Busca Global',
       attachTo: { element: 'input[placeholder*="Buscar paciente"]', on: 'bottom' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -404,8 +404,8 @@ function getRecepcaoTourSteps(): ShepherdStepOptions[] {
       title: 'Perfil de Paciente (Read-only)',
       attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function() { this.back() } },
-        { text: 'Próximo', action: function() { this.next() } },
+        { text: 'Voltar', action: function(this: any) { return this.back() } },
+        { text: 'Próximo', action: function(this: any) { return this.next() } },
       ],
     },
     {
@@ -415,7 +415,7 @@ function getRecepcaoTourSteps(): ShepherdStepOptions[] {
       buttons: [
         {
           text: 'Concluir Tour',
-          action: function() { this.complete() },
+          action: function(this: any) { return this.complete() },
         },
       ],
     },
