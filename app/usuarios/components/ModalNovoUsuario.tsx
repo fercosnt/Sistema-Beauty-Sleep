@@ -36,7 +36,7 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
   const [senhaConfirmacao, setSenhaConfirmacao] = useState('')
   const [autoGeneratePassword, setAutoGeneratePassword] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
 
   const generatePassword = () => {
     // Gerar senha aleatória de 12 caracteres
@@ -185,7 +185,10 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
               value={nome}
               onChange={(e) => {
                 setNome(e.target.value)
-                setErrors((prev) => ({ ...prev, nome: undefined }))
+                setErrors((prev) => {
+                  const { nome: _, ...rest } = prev
+                  return rest
+                })
               }}
               placeholder="Nome completo"
               className={errors.nome ? 'border-danger-500' : ''}
@@ -206,7 +209,10 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
-                setErrors((prev) => ({ ...prev, email: undefined }))
+                setErrors((prev) => {
+                  const { email: _, ...rest } = prev
+                  return rest
+                })
               }}
               placeholder="usuario@exemplo.com"
               className={errors.email ? 'border-danger-500' : ''}
@@ -271,7 +277,10 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
                     value={senha}
                     onChange={(e) => {
                       setSenha(e.target.value)
-                      setErrors((prev) => ({ ...prev, senha: undefined }))
+                      setErrors((prev) => {
+                        const { senha: _, ...rest } = prev
+                        return rest
+                      })
                     }}
                     placeholder="Mínimo 8 caracteres"
                     className={errors.senha ? 'border-danger-500' : ''}
@@ -292,7 +301,10 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
                     value={senhaConfirmacao}
                     onChange={(e) => {
                       setSenhaConfirmacao(e.target.value)
-                      setErrors((prev) => ({ ...prev, senhaConfirmacao: undefined }))
+                      setErrors((prev) => {
+                        const { senhaConfirmacao: _, ...rest } = prev
+                        return rest
+                      })
                     }}
                     placeholder="Digite a senha novamente"
                     className={errors.senhaConfirmacao ? 'border-danger-500' : ''}
