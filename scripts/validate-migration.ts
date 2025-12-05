@@ -109,14 +109,20 @@ async function validateCPFs() {
   console.log('\n🔍 Validando CPFs...\n');
 
   // Verify all CPFs are valid (only for non-null CPFs)
-  const { data: invalidCPFs, error } = await supabase.rpc('validar_cpf_check', {}).catch(async () => {
+  let invalidCPFs = null;
+  let error = null;
+  
+  const result = await supabase.rpc('validar_cpf_check', {});
+  if (result.error) {
     // If function doesn't exist, use direct query
     const { data, error: queryError } = await supabase
       .from('pacientes')
       .select('id, nome, cpf')
       .not('cpf', 'is', null);
 
-    if (queryError) return { data: null, error: queryError };
+    if (queryError) {
+      return { data: null, error: queryError };
+    }
 
     // Filter invalid CPFs manually
     const invalid = [];
@@ -149,8 +155,12 @@ async function validateCPFs() {
         }
       }
     }
-    return { data: invalid, error: null };
-  });
+    invalidCPFs = invalid;
+    error = null;
+  } else {
+    invalidCPFs = result.data;
+    error = result.error;
+  }
 
   if (error) {
     addResult('1.11.4 - Validação de CPFs', 'fail', `Erro ao validar CPFs: ${error.message}`);
