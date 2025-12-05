@@ -23,6 +23,6 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "Design/**/*", "**/*.stories.tsx", "**/*.stories.ts"]
+  "exclude": ["node_modules", "Design/**/*", "meu-projeto-admin/**/*", "**/*.stories.tsx", "**/*.stories.ts"]
 }
 
