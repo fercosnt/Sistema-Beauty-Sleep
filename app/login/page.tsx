@@ -4,7 +4,36 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { login, resetPassword } from './actions'
 import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react'
+import { AlertCircle, CheckCircle } from 'lucide-react'
+import { Input, Label, Checkbox, GlassCard, GlassButton } from '@beautysmile/components'
+import Image from 'next/image'
+
+// Função para traduzir erros do Supabase para português
+function translateError(error: string): string {
+  const errorLower = error.toLowerCase()
+  
+  if (errorLower.includes('invalid login credentials') || errorLower.includes('invalid credentials')) {
+    return 'Email ou senha incorretos. Verifique suas credenciais e tente novamente.'
+  }
+  if (errorLower.includes('email not confirmed')) {
+    return 'Por favor, confirme seu email antes de fazer login.'
+  }
+  if (errorLower.includes('too many requests')) {
+    return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.'
+  }
+  if (errorLower.includes('user not found')) {
+    return 'Usuário não encontrado. Verifique seu email.'
+  }
+  if (errorLower.includes('password')) {
+    return 'Senha incorreta. Verifique e tente novamente.'
+  }
+  if (errorLower.includes('email')) {
+    return 'Email inválido. Verifique e tente novamente.'
+  }
+  
+  // Se não encontrar tradução, retorna a mensagem original
+  return error
+}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -13,6 +42,7 @@ export default function LoginPage() {
   const [showResetPassword, setShowResetPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [rememberMe, setRememberMe] = useState(false)
 
   useEffect(() => {
     const checkUser = async () => {
@@ -52,187 +82,268 @@ export default function LoginPage() {
     // Get error/message from URL params
     const errorParam = searchParams.get('error')
     const messageParam = searchParams.get('message')
-    if (errorParam) setError(errorParam)
+    if (errorParam) {
+      // Traduzir mensagens de erro do Supabase para português
+      const translatedError = translateError(errorParam)
+      setError(translatedError)
+    }
     if (messageParam) setMessage(messageParam)
   }, [router, searchParams])
 
-  const handleLogin = async (formData: FormData) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setIsLoading(true)
     setError(null)
+    
+    const formData = new FormData(e.currentTarget)
     await login(formData)
+    
     setIsLoading(false)
   }
 
-  const handleResetPassword = async (formData: FormData) => {
+  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setIsLoading(true)
     setError(null)
+    
+    const formData = new FormData(e.currentTarget)
     await resetPassword(formData)
+    
     setIsLoading(false)
   }
 
+  // Reset Password Form
   if (showResetPassword) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
-          <div>
-            <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-              Recuperar Senha
-            </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              Digite seu email para receber um link de recuperação
-            </p>
+      <div 
+        className="min-h-screen bg-gradient-to-br from-accent via-primary to-accent"
+        style={{
+          background: 'linear-gradient(135deg, #35bfad 0%, #00109e 50%, #35bfad 100%)'
+        }}
+      >
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <div className="w-full max-w-md space-y-8">
+            {/* Logo */}
+            <div className="flex justify-center">
+              <Image
+                src="/beauty-smile-logo.svg"
+                alt="Beauty Smile"
+                width={300}
+                height={60}
+                className="h-16 w-auto"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
+            </div>
+
+            {/* Glass Card */}
+            <GlassCard variant="light" blur="lg" className="p-8">
+              <GlassCard.Header className="space-y-2 text-center">
+                <GlassCard.Title className="text-2xl font-bold text-white">
+                  Recuperar Senha
+                </GlassCard.Title>
+                <GlassCard.Description className="text-white/90">
+                  Digite seu email para receber um link de recuperação
+                </GlassCard.Description>
+              </GlassCard.Header>
+
+              <GlassCard.Content className="mt-6">
+                <form onSubmit={handleResetPassword} className="space-y-6">
+                  {/* Email */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-white">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      required
+                      disabled={isLoading}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                    />
+                  </div>
+
+                  {/* Error Message */}
+                  {error && (
+                    <div className="flex items-center gap-2 rounded-lg bg-error/20 backdrop-blur-sm border border-error/30 p-3 text-sm text-white">
+                      <AlertCircle className="h-5 w-5" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  {/* Success Message */}
+                  {message && (
+                    <div className="flex items-center gap-2 rounded-lg bg-success/20 backdrop-blur-sm border border-success/30 p-3 text-sm text-white">
+                      <CheckCircle className="h-5 w-5" />
+                      <span>{message}</span>
+                    </div>
+                  )}
+
+                  {/* Buttons */}
+                  <div className="flex gap-3">
+                    <GlassButton
+                      type="button"
+                      variant="light"
+                      onClick={() => setShowResetPassword(false)}
+                      disabled={isLoading}
+                      className="flex-1"
+                    >
+                      Voltar
+                    </GlassButton>
+                    <GlassButton
+                      type="submit"
+                      variant="accent"
+                      isLoading={isLoading}
+                      disabled={isLoading}
+                      className="flex-1"
+                    >
+                      {isLoading ? 'Enviando...' : 'Enviar Email'}
+                    </GlassButton>
+                  </div>
+                </form>
+              </GlassCard.Content>
+            </GlassCard>
           </div>
-          <form action={handleResetPassword} className="mt-8 space-y-6">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="relative block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm"
-                  placeholder="Email"
-                />
-              </div>
-            </div>
-
-            {error && (
-              <div className="flex items-center gap-2 rounded-lg bg-danger-50 p-3 text-sm text-danger-700">
-                <AlertCircle className="h-5 w-5" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            {message && (
-              <div className="flex items-center gap-2 rounded-lg bg-success-50 p-3 text-sm text-success-700">
-                <CheckCircle className="h-5 w-5" />
-                <span>{message}</span>
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowResetPassword(false)}
-                className="group relative flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-              >
-                Voltar
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="group relative flex w-full justify-center rounded-lg border border-transparent bg-primary-600 px-4 py-3 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Enviando...' : 'Enviar Email'}
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     )
   }
 
+  // Login Form
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h1 className="text-center text-4xl font-bold text-primary-600">
-            Beauty Sleep
-          </h1>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Faça login em sua conta
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sistema de gestão de tratamento de ronco e apneia
-          </p>
+    <div 
+      className="min-h-screen bg-gradient-to-br from-accent via-primary to-accent relative"
+      style={{
+        background: 'linear-gradient(135deg, #35bfad 0%, #00109e 50%, #35bfad 100%)'
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+      
+      <div className="relative z-10">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
+          {/* Logo */}
+          <div className="flex justify-center">
+            <Image
+              src="/beauty-smile-logo.svg"
+              alt="Beauty Smile"
+              width={300}
+              height={60}
+              className="h-16 w-auto"
+              style={{ filter: 'brightness(0) invert(1)' }}
+            />
+          </div>
+
+          {/* Glass Card */}
+          <GlassCard variant="light" blur="lg" className="p-8">
+            <GlassCard.Header className="space-y-2 text-center">
+              <GlassCard.Title className="text-2xl font-bold text-white">
+                Bem-vindo de volta
+              </GlassCard.Title>
+              <GlassCard.Description className="text-white/90">
+                Entre para acessar sua conta
+              </GlassCard.Description>
+            </GlassCard.Header>
+
+            <GlassCard.Content className="mt-6">
+              <form onSubmit={handleLogin} className="space-y-6">
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    required
+                    disabled={isLoading}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+
+                {/* Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-white">
+                    Senha
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    disabled={isLoading}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="flex items-center gap-2 rounded-lg bg-error/20 backdrop-blur-sm border border-error/30 p-3 text-sm text-white">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {/* Success Message */}
+                {message && (
+                  <div className="flex items-center gap-2 rounded-lg bg-success/20 backdrop-blur-sm border border-success/30 p-3 text-sm text-white">
+                    <CheckCircle className="h-5 w-5" />
+                    <span>{message}</span>
+                  </div>
+                )}
+
+                {/* Remember Me & Forgot Password */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remember"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) =>
+                        setRememberMe(checked as boolean)
+                      }
+                      disabled={isLoading}
+                      className="border-white/30"
+                    />
+                    <Label
+                      htmlFor="remember"
+                      className="text-sm text-white/90 cursor-pointer"
+                    >
+                      Lembrar de mim
+                    </Label>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword(true)}
+                    disabled={isLoading}
+                    className="text-sm text-white hover:text-white/80 transition-colors"
+                  >
+                    Esqueceu sua senha?
+                  </button>
+                </div>
+
+                {/* Submit Button */}
+                <GlassButton
+                  type="submit"
+                  variant="accent"
+                  size="lg"
+                  className="w-full"
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Entrando...' : 'Entrar'}
+                </GlassButton>
+              </form>
+            </GlassCard.Content>
+          </GlassCard>
         </div>
-        <form action={handleLogin} className="mt-8 space-y-6">
-          <div className="space-y-4 rounded-md shadow-sm">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="relative block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm"
-                  placeholder="Email"
-                />
-              </div>
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Senha
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="relative block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm"
-                  placeholder="Senha"
-                />
-              </div>
-            </div>
-          </div>
-
-          {error && (
-            <div className="flex items-center gap-2 rounded-lg bg-danger-50 p-3 text-sm text-danger-700">
-              <AlertCircle className="h-5 w-5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {message && (
-            <div className="flex items-center gap-2 rounded-lg bg-success-50 p-3 text-sm text-success-700">
-              <CheckCircle className="h-5 w-5" />
-              <span>{message}</span>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <button
-                type="button"
-                onClick={() => setShowResetPassword(true)}
-                className="font-medium text-primary-600 hover:text-primary-500"
-              >
-                Esqueceu sua senha?
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative flex w-full justify-center rounded-lg border border-transparent bg-primary-600 px-4 py-3 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Entrando...' : 'Entrar'}
-            </button>
-          </div>
-        </form>
+      </div>
       </div>
     </div>
   )
 }
-

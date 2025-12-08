@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { showSuccess, showError } from '@/components/ui/Toast'
 import { startTour } from '@/components/OnboardingTour'
+import ContentContainer from '@/components/ui/ContentContainer'
 import { Lock, User, Mail, Shield, RefreshCw } from 'lucide-react'
 
 export default function PerfilPage() {
@@ -26,6 +27,27 @@ export default function PerfilPage() {
     confirmPassword: '',
   })
   const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({})
+
+  // Format date to "Month Year" format
+  const formatJoinedDate = (dateString: string | null | undefined) => {
+    if (!dateString) return undefined
+    const date = new Date(dateString)
+    const months = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ]
+    return `${months[date.getMonth()]} ${date.getFullYear()}`
+  }
+
+  // Get role display name
+  const getRoleDisplayName = (role: string | null | undefined) => {
+    const roleMap: Record<string, string> = {
+      admin: 'Administrador',
+      equipe: 'Equipe Médica',
+      recepcao: 'Recepção'
+    }
+    return roleMap[role || ''] || role || 'N/A'
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -187,22 +209,119 @@ export default function PerfilPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
+      <ContentContainer>
         <div className="flex items-center justify-center min-h-[400px]">
           <p className="text-gray-900">Carregando perfil...</p>
         </div>
-      </div>
+      </ContentContainer>
     )
   }
 
-  return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Meu Perfil</h1>
-        <p className="mt-2 text-gray-600">Gerencie suas informações pessoais e configurações</p>
-      </div>
+  const userInitials = userData?.nome
+    ? userData.nome
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : user?.email?.[0].toUpperCase() || 'U'
 
-      <div className="space-y-6">
+  return (
+    <ContentContainer>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Profile Header - PublicProfileTemplate Style */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+              {/* Avatar */}
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0">
+                <div className="w-full h-full bg-primary-100 flex items-center justify-center">
+                  <span className="text-4xl font-bold text-primary-600">
+                    {userInitials}
+                  </span>
+                </div>
+              </div>
+
+              {/* Profile Info */}
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-2 font-heading">
+                  {userData?.nome || user?.email || 'Usuário'}
+                </h1>
+
+                <p className="text-lg text-neutral-600 mb-3">
+                  {getRoleDisplayName(userData?.role)}
+                </p>
+
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start text-sm text-neutral-500 mb-4">
+                  {userData?.email && (
+                    <span className="flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {userData.email}
+                    </span>
+                  )}
+
+                  {userData?.created_at && (
+                    <span className="flex items-center gap-1">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      Membro desde {formatJoinedDate(userData.created_at)}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-3xl font-bold text-neutral-900 mb-1">
+                {userData?.role ? '1' : '0'}
+              </p>
+              <p className="text-sm text-neutral-600">Perfil</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-3xl font-bold text-neutral-900 mb-1">
+                {userData?.tour_completed ? '✓' : '○'}
+              </p>
+              <p className="text-sm text-neutral-600">Tour Completo</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-3xl font-bold text-neutral-900 mb-1">
+                {userData?.ativo ? '✓' : '○'}
+              </p>
+              <p className="text-sm text-neutral-600">Status</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-3xl font-bold text-neutral-900 mb-1">
+                {getRoleDisplayName(userData?.role).charAt(0)}
+              </p>
+              <p className="text-sm text-neutral-600">Acesso</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Configuration Sections */}
+        <div className="space-y-6">
         {/* Informações Pessoais */}
         <Card>
           <CardHeader>
@@ -373,8 +492,9 @@ export default function PerfilPage() {
             </Button>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </ContentContainer>
   )
 }
 

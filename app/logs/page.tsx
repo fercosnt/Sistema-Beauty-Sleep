@@ -1,6 +1,7 @@
 import { getUserRole } from '@/lib/utils/get-user-role'
 import { redirect } from 'next/navigation'
 import LogsTable from './components/LogsTable'
+import ContentContainer from '@/components/ui/ContentContainer'
 
 export const metadata = {
   title: 'Logs de Auditoria - Beauty Sleep',
@@ -16,13 +17,13 @@ export default async function LogsPage() {
   }
 
   return (
-    <div className="p-6">
+    <ContentContainer>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Logs de Auditoria</h1>
+        <h1 className="text-3xl font-bold text-gray-900 font-heading">Logs de Auditoria</h1>
         <p className="mt-2 text-gray-600">Visualize todas as ações realizadas no sistema (apenas Admin)</p>
       </div>
       
       <LogsTable />
-    </div>
+    </ContentContainer>
   )
 }

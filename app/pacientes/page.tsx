@@ -1,14 +1,15 @@
 import PacientesTable from './components/PacientesTable'
+import ContentContainer from '@/components/ui/ContentContainer'
 
 export default function PacientesPage() {
   return (
-    <div className="p-6">
+    <ContentContainer>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-black">Pacientes</h1>
-        <p className="mt-2 text-black">Gerencie todos os pacientes do sistema</p>
+        <h1 className="text-3xl font-bold text-white font-heading">Pacientes</h1>
+        <p className="mt-2 text-white">Gerencie todos os pacientes do sistema</p>
       </div>
       <PacientesTable />
-    </div>
+    </ContentContainer>
   )
 }
 

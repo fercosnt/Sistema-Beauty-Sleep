@@ -4,6 +4,7 @@ import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";
 import { getUserRole } from "@/lib/utils/get-user-role";
 import { MobileMenuProvider } from "@/components/providers/MobileMenuProvider";
+import { SidebarProvider } from "@/components/providers/SidebarProvider";
 import MobileLayoutClient from "@/components/MobileLayoutClient";
 import ToastContainer from "@/components/ui/Toast";
 
@@ -24,11 +25,13 @@ export default async function RootLayout({
       <body>
         <ToastContainer />
         {userRole ? (
-          <MobileMenuProvider>
-            <MobileLayoutClient userRole={userRole}>
-              {children}
-            </MobileLayoutClient>
-          </MobileMenuProvider>
+          <SidebarProvider>
+            <MobileMenuProvider>
+              <MobileLayoutClient userRole={userRole}>
+                {children}
+              </MobileLayoutClient>
+            </MobileMenuProvider>
+          </SidebarProvider>
         ) : (
           <>{children}</>
         )}

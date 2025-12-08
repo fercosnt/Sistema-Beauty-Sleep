@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Importar variáveis CSS e keyframes do Design System */
+@import './design-system-variables.css';
+
 /* Fontes - Usando fontes do sistema para evitar problemas de carregamento
    Helvetica está disponível nativamente no macOS e muitos sistemas
    Arial serve como fallback universal
@@ -24,12 +27,17 @@
 body {
   color: #000000; /* Texto sempre preto em fundos brancos */
   background: #FFFFFF; /* Fundo branco como na LP */
-  font-family: 'Helvetica', Arial, sans-serif; /* Fonte padrão Helvetica */
+  font-family: theme('fontFamily.sans'); /* Inter do Design System */
 }
 
 /* Garantir que todos os elementos em fundos brancos tenham texto preto */
 * {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: theme('fontFamily.sans'); /* Inter do Design System */
+}
+
+/* Aplicar font-heading para elementos de heading */
+h1, h2, h3, h4, h5, h6 {
+  font-family: theme('fontFamily.heading'); /* Montserrat do Design System */
 }
 
 /* Texto preto por padrão em elementos com fundo branco */
@@ -82,7 +90,7 @@ h6 {
 }
 
 .shepherd-theme-custom .shepherd-header {
-  background-color: #12142B; /* lp-dark - Azul muito escuro da LP */
+  background-color: rgb(18, 20, 43); /* #12142B - primary-900 do Design System (lp-dark) */
   color: white;
   padding: 1rem;
   border-radius: 0.5rem 0.5rem 0 0;
@@ -105,18 +113,18 @@ h6 {
 }
 
 .shepherd-theme-custom .shepherd-button {
-  background: linear-gradient(90deg, #242859 0%, #5D64BB 100%); /* Gradiente da LP */
+  background: linear-gradient(90deg, #242859 0%, #5D64BB 100%); /* Gradiente usando cores do Design System (lp-blue-light → primary-500) */
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  padding: 0.5rem 1rem; /* 8px 16px - spacing[2] spacing[4] do Design System */
+  border-radius: 0.5rem; /* 8px - borderRadius.DEFAULT (spacing[2]) do Design System */
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .shepherd-theme-custom .shepherd-button:hover {
-  background: linear-gradient(90deg, #262A5D 0%, #5A60B5 100%); /* Gradiente hover */
+  background: linear-gradient(90deg, #262A5D 0%, #5A60B5 100%); /* Gradiente hover (primary-700 → primary-500) */
 }
 
 .shepherd-theme-custom .shepherd-button.shepherd-button-secondary {
@@ -136,9 +144,10 @@ h6 {
 }
 
 /* Sidebar Background - Imagem de fundo texturizada */
+/* NOTA: A sidebar agora usa bg-primary-900 do Design System, mas mantemos esta classe para compatibilidade */
 .sidebar-background {
   position: relative;
-  background: #12142B; /* Cor de fallback */
+  background: #12142B; /* primary-900 do Design System (lp-dark) - equivalente a bg-primary-900 */
   background-image: url('/68a4d045b130b34b3614881d (1).jpeg'); /* Imagem de fundo */
   background-size: cover;
   background-position: center;
@@ -157,7 +166,7 @@ h6 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(18, 20, 43, 0.2); /* Overlay muito sutil (20% ao invés de 70%) */
+  background: rgba(18, 20, 43, 0.2); /* Overlay muito sutil - primary-900 com 20% opacidade */
   z-index: 0;
 }
 

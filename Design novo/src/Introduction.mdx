@@ -1,0 +1,170 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Introduction" />
+
+# Beauty Smile Design System
+
+Welcome to the **Beauty Smile Design System** — a comprehensive React component library featuring modern UI components, design tokens, and two distinct themes for building beautiful, accessible, and consistent user interfaces.
+
+## ✨ What's Inside
+
+### 🎨 Design Tokens
+
+Centralized design decisions that ensure visual consistency across all projects:
+
+- **Colors** - Brand colors (Deep Blue, Turquoise, Gold), neutral scale, semantic colors
+- **Typography** - Font families (Inter, Montserrat), sizes, weights, line heights
+- **Spacing** - Consistent 4px-based scale (0-32)
+- **Shadows** - 5-level elevation system + glass morphism effects
+- **Animations** - Keyframes, durations, and timing functions
+
+[View Design Tokens →](/?path=/docs/design-tokens-overview--docs)
+
+### 🧩 Components
+
+60+ production-ready React components built with:
+
+- **Radix UI** - Accessible component primitives
+- **TypeScript** - Full type safety
+- **Tailwind CSS** - Utility-first styling
+- **Responsive** - Mobile-first design
+
+**Component Categories:**
+- **Atoms** - Basic building blocks (Button, Input, Badge, etc.)
+- **Molecules** - Composite components (Card, Modal, Dropdown, etc.)
+- **Organisms** - Complex components (Navigation, Header, Sidebar, etc.)
+
+[Browse Components →](/?path=/docs/components-atoms-button--docs)
+
+### 📐 Templates
+
+Pre-built page templates for common use cases:
+
+- **Admin Dashboard** - Deep Blue theme for internal tools
+- **Public Platform** - Turquoise theme for public-facing pages
+- **Hybrid** - Flexible templates supporting both themes
+
+[View Templates →](/?path=/docs/templates-admin-dashboard--docs)
+
+## 🎯 Dual Themes
+
+### Admin Theme
+<div style={{
+  background: '#00109E',
+  color: 'white',
+  padding: '2rem',
+  borderRadius: '8px',
+  marginBottom: '1rem'
+}}>
+  <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>Deep Blue (#00109E)</h4>
+  <p style={{ margin: 0, opacity: 0.9 }}>Professional aesthetic for HR/Admin dashboards and internal tools</p>
+</div>
+
+### Public Theme
+<div style={{
+  background: 'linear-gradient(135deg, #35BFAD 0%, #00109E 100%)',
+  color: 'white',
+  padding: '2rem',
+  borderRadius: '8px',
+  marginBottom: '1rem'
+}}>
+  <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>Turquoise (#35BFAD)</h4>
+  <p style={{ margin: 0, opacity: 0.9 }}>Modern gradient backgrounds with glass morphism for public platforms</p>
+</div>
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+npm install @beautysmile/design-system
+```
+
+### Basic Usage
+
+```tsx
+import { Button, Card } from '@beautysmile/design-system/components'
+import { colors } from '@beautysmile/design-system/tokens'
+import '@beautysmile/design-system/styles'
+
+function App() {
+  return (
+    <Card className="p-6">
+      <h1 style={{ color: colors.primary.DEFAULT }}>
+        Hello Beauty Smile!
+      </h1>
+      <Button variant="primary">
+        Get Started
+      </Button>
+    </Card>
+  )
+}
+```
+
+## 📖 Documentation Structure
+
+This Storybook is organized into the following sections:
+
+1. **Introduction** (you are here) - Overview and quick start
+2. **Design Tokens** - Colors, typography, spacing, shadows, animations
+3. **Components** - Interactive component documentation
+   - **Atoms** - Basic components
+   - **Molecules** - Composite components
+   - **Organisms** - Complex components
+4. **Templates** - Page templates and layouts
+5. **Examples** - Real-world usage examples
+
+## 🎨 Design Philosophy
+
+### Accessibility First
+All components are built with accessibility in mind:
+- WCAG 2.1 AA compliance
+- Keyboard navigation support
+- Screen reader friendly
+- ARIA attributes
+- Focus management
+
+### Modern & Clean
+- Minimal, uncluttered interfaces
+- Consistent spacing and alignment
+- Thoughtful color usage
+- Smooth animations and transitions
+
+### Developer Experience
+- TypeScript for type safety
+- Tree-shakeable imports
+- Comprehensive documentation
+- Copy-paste code examples
+- IntelliSense support
+
+## 🔧 Tech Stack
+
+- **React 18.3** - UI framework
+- **TypeScript 5.6** - Type safety
+- **Tailwind CSS 4.x** - Utility-first CSS
+- **Radix UI** - Accessible primitives
+- **Vite 6.x** - Build tool
+- **Storybook 8.x** - Component documentation
+
+## 📚 Resources
+
+- [GitHub Repository](https://github.com/beautysmile/design-system)
+- [NPM Package](https://www.npmjs.com/package/@beautysmile/design-system)
+- [Getting Started Guide](https://github.com/beautysmile/design-system/blob/main/docs/getting-started.md)
+- [Contributing Guidelines](https://github.com/beautysmile/design-system/blob/main/CONTRIBUTING.md)
+
+## 🤝 Contributing
+
+We welcome contributions! See our [Contributing Guide](https://github.com/beautysmile/design-system/blob/main/CONTRIBUTING.md) to get started.
+
+## 📄 License
+
+MIT License - see [LICENSE](https://github.com/beautysmile/design-system/blob/main/LICENSE) for details.
+
+---
+
+**Questions or feedback?**
+- Open an issue on [GitHub](https://github.com/beautysmile/design-system/issues)
+- Email us at design-system@beautysmile.com
+
+Made with ❤️ by the Beauty Smile team

@@ -77,7 +77,7 @@ export default function ToastContainer() {
             toast.type === 'success'
               ? 'bg-success-50 text-success-800 border border-success-200'
               : toast.type === 'error'
-              ? 'bg-danger-50 text-danger-800 border border-danger-200'
+              ? 'bg-error-50 text-error-800 border border-error-200' // Usando error do Design System
               : 'bg-primary-50 text-primary-800 border border-primary-200'
           }`}
         >

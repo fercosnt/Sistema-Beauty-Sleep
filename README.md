@@ -40,8 +40,8 @@ O **Beauty Sleep Treatment System** é uma plataforma web moderna desenvolvida p
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/Lu1zHenr1qu3/Biologix.git
-cd Biologix
+git clone https://github.com/fercosnt/Sistema-Beauty-Sleep.git
+cd Sistema-Beauty-Sleep
 ```
 
 2. **Instale as dependências**
@@ -94,6 +94,28 @@ npm run dev
 
 Acesse [http://localhost:3000](http://localhost:3000)
 
+## 🚀 Deploy
+
+### Vercel (Recomendado)
+
+1. **Conecte o repositório no Vercel**
+   - Acesse [vercel.com](https://vercel.com)
+   - Importe o repositório `fercosnt/Sistema-Beauty-Sleep`
+
+2. **Configure as variáveis de ambiente**
+   - Vá em **Settings** → **Environment Variables**
+   - Adicione as seguintes variáveis:
+     - `NEXT_PUBLIC_SUPABASE_URL` = `https://qigbblypwkgflwnrrhzg.supabase.co`
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = (sua anon key do Supabase)
+     - `SUPABASE_SERVICE_ROLE_KEY` = (sua service role key do Supabase)
+     - `NEXT_PUBLIC_SITE_URL` = `https://beauty-sleep.vercel.app` (opcional)
+
+3. **Deploy automático**
+   - Cada push para `main` gera um deploy automático
+   - Acesse o site em: `https://beauty-sleep.vercel.app`
+
+**⚠️ Importante**: Configure as variáveis com valores diretos (não como Secrets).
+
 ## 📚 Documentação
 
 ### Configuração
@@ -125,6 +147,26 @@ npm run dev          # Inicia servidor de desenvolvimento
 npm run build        # Cria build de produção
 npm run start        # Inicia servidor de produção
 npm run lint         # Executa linter
+npm test             # Executa testes (se configurado)
+```
+
+### Testes E2E (Playwright)
+
+```bash
+# Instalar Playwright (primeira vez)
+npx playwright install
+
+# Executar todos os testes
+npx playwright test
+
+# Executar testes E2E
+npx playwright test e2e
+
+# Executar testes de integração
+npx playwright test integration
+
+# Executar em modo UI (interativo)
+npx playwright test --ui
 ```
 
 ### Testes da API Biologix
@@ -153,15 +195,25 @@ node scripts/test-env-loading.js
 ├── app/                    # Next.js App Router
 │   ├── dashboard/         # Dashboard principal
 │   ├── pacientes/         # Gestão de pacientes
+│   ├── logs/              # Página de logs de auditoria (admin)
+│   ├── usuarios/          # Gestão de usuários (admin)
 │   └── login/            # Autenticação
+├── components/            # Componentes React reutilizáveis
+│   ├── ui/               # Componentes de UI (Sidebar, etc)
+│   └── ...
+├── lib/                   # Bibliotecas e utilitários
+│   └── supabase/         # Clientes Supabase (server, client, admin)
 ├── supabase/
 │   ├── migrations/        # Migrations do banco de dados
 │   └── functions/        # Edge Functions
-│       └── sync-biologix/ # Função de sincronização
+│       └── sync-biologix/ # Função de sincronização com Biologix
 ├── scripts/              # Scripts utilitários
 │   ├── migrate-from-airtable.ts
-│   └── test-biologix-api.*
+│   ├── test-biologix-connection.ts
+│   └── ...
+├── __tests__/            # Testes (E2E e integração)
 ├── PRD/                  # Documentação de requisitos
+├── docs/                 # Documentação do projeto
 └── tasks/                # Tasks de desenvolvimento
 ```
 
@@ -171,6 +223,9 @@ node scripts/test-env-loading.js
 - ✅ Credenciais armazenadas como Secrets no Supabase
 - ✅ Row Level Security (RLS) configurado no banco de dados
 - ✅ Autenticação via Supabase Auth
+- ✅ Controle de acesso baseado em roles (admin, equipe, recepção)
+- ✅ Middleware de autenticação para rotas protegidas
+- ✅ Logs de auditoria para rastreabilidade
 
 ## 📊 Funcionalidades Principais
 
@@ -186,6 +241,17 @@ node scripts/test-env-loading.js
 - Histórico de exames e sessões
 - Controle de sessões (compradas/utilizadas/disponíveis)
 - Sistema de tags para organização
+- Visualização de evolução do tratamento
+
+### Gestão de Usuários (Admin)
+- Criação e edição de usuários
+- Controle de permissões (admin, equipe, recepção)
+- Ativação/desativação de usuários
+
+### Logs de Auditoria (Admin)
+- Histórico completo de ações realizadas no sistema
+- Filtros por usuário, ação e data
+- Exportação de logs
 
 ### Sincronização Automática
 - Sincronização diária às 10h BRT com API Biologix
@@ -205,6 +271,11 @@ O sistema sincroniza automaticamente os dados da API Biologix através de uma Ed
 5. Criação/atualização de exames pelo ID Exame (biologix_exam_id)
 6. Link automático de exames aos pacientes pelo ID do Paciente
 
+**Tratamento de Rate Limiting:**
+- Delay de 60 segundos para erros 429 (too many requests)
+- Delay de 1 segundo entre requisições de paginação
+- Retry com backoff exponencial para outros erros
+
 ## 📝 Licença
 
 Este projeto é privado e de propriedade da Beauty Smile.
@@ -221,8 +292,31 @@ Para questões sobre:
 - **Supabase**: Consulte a [documentação oficial](https://supabase.com/docs)
 - **Projeto**: Consulte a documentação em `/docs` ou `/PRD`
 
+## 🐛 Troubleshooting
+
+### Erro de Build no Vercel
+
+Se encontrar erro relacionado a variáveis de ambiente:
+1. Verifique se todas as variáveis estão configuradas no Vercel
+2. Certifique-se de que as variáveis usam valores diretos (não Secrets)
+3. Faça um redeploy após configurar variáveis
+
+### Erro 404 na página `/logs`
+
+Certifique-se de que:
+- O arquivo `app/logs/page.tsx` existe
+- A pasta não está sendo ignorada pelo `.gitignore`
+- Um deploy foi feito após adicionar a página
+
+### Problemas de autenticação
+
+- Verifique se as URLs de redirecionamento estão configuradas no Supabase
+- Confirme que `NEXT_PUBLIC_SUPABASE_URL` está correto
+- Verifique os logs do navegador (F12) para erros específicos
+
 ---
 
-**Versão**: 0.1.0  
-**Última atualização**: 2025
+**Versão**: 1.0.0  
+**Última atualização**: Dezembro 2025  
+**Repositório**: [https://github.com/fercosnt/Sistema-Beauty-Sleep](https://github.com/fercosnt/Sistema-Beauty-Sleep)
 

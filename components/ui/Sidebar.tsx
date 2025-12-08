@@ -2,10 +2,12 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Users, UserCog, FileText, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, UserCog, FileText, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { cn } from '@/utils/cn'
+import { useSidebar } from '@/components/providers/SidebarProvider'
 
 interface SidebarProps {
   userRole?: string | null
@@ -17,6 +19,9 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
   const pathname = usePathname()
   const router = useRouter()
   const [currentRole, setCurrentRole] = useState<string | null>(userRole || null)
+  const [userData, setUserData] = useState<any>(null)
+  const [user, setUser] = useState<any>(null)
+  const { isCollapsed, toggleCollapsed } = useSidebar()
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -27,24 +32,27 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
   }, [pathname])
 
   useEffect(() => {
-    // Fetch user role if not provided
-    if (!currentRole) {
-      const fetchRole = async () => {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user?.email) {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('role')
-            .eq('email', user.email)
-            .single()
-          if (userData) {
-            setCurrentRole(userData.role)
+    const fetchUserData = async () => {
+      const supabase = createClient()
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      
+      if (authUser?.email) {
+        setUser(authUser)
+        const { data: userDataFromDb } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', authUser.email)
+          .single()
+        
+        if (userDataFromDb) {
+          setUserData(userDataFromDb)
+          if (!currentRole) {
+            setCurrentRole(userDataFromDb.role)
           }
         }
       }
-      fetchRole()
     }
+    fetchUserData()
   }, [currentRole])
 
   const handleSignOut = async () => {
@@ -67,6 +75,15 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
   }
 
   const isAdmin = currentRole === 'admin'
+  const userName = userData?.nome || user?.email || 'Usuário'
+  const userInitials = userData?.nome
+    ? userData.nome
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : user?.email?.[0].toUpperCase() || 'U'
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -86,52 +103,137 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
           onClick={onMobileClose}
         />
       )}
-      {/* Sidebar */}
-      <div
-        className={`
-          fixed md:static inset-y-0 left-0 z-50
-          flex h-screen w-64 flex-col text-white
-          transform transition-transform duration-300 ease-in-out
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-          sidebar-background
-        `}
+      {/* Sidebar - Dark Design from DashboardAdminTemplate with Collapsed Support */}
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-[60]',
+          'bg-primary-900 text-white flex flex-col',
+          'transform transition-all duration-300 ease-in-out',
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+          isCollapsed ? 'w-16' : 'w-64'
+        )}
       >
-        <div className="flex h-20 items-center justify-center border-b border-primary-800 px-4">
-          <img 
-            src="/Logo.png" 
-            alt="Beauty Sleep Logo" 
-            className="h-16 w-auto object-contain"
-          />
+        {/* Logo Section */}
+        <div className={cn(
+          'border-b border-white/10 flex items-center justify-center relative',
+          isCollapsed ? 'p-4' : 'p-6'
+        )}>
+          {!isCollapsed ? (
+            <img
+              src="/beauty-smile-logo.svg"
+              alt="Beauty Smile"
+              className="h-12 w-auto filter brightness-0 invert transition-opacity duration-300"
+            />
+          ) : (
+            <div className="w-10 h-10 flex items-center justify-center">
+              <img
+                src="/beauty-smile-icon.svg"
+                alt="Beauty Smile"
+                className="w-10 h-10 transition-all duration-300"
+                style={{
+                  filter: 'brightness(0) saturate(100%) invert(85%) sepia(5%) saturate(10%) hue-rotate(0deg) brightness(110%) contrast(95%)',
+                  opacity: 0.95
+                }}
+              />
+            </div>
+          )}
+          
+          {/* Toggle Button - Only on desktop */}
+          <button
+            onClick={toggleCollapsed}
+            className={cn(
+              'absolute -right-3 top-1/2 -translate-y-1/2',
+              'w-6 h-6 rounded-full bg-primary-800 border-2 border-white/20',
+              'flex items-center justify-center',
+              'text-white hover:bg-primary-700 transition-colors',
+              'shadow-lg',
+              'hidden md:flex z-[70]'
+            )}
+            title={isCollapsed ? 'Expandir menu' : 'Colapsar menu'}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
         </div>
-      <nav className="flex-1 space-y-1 px-2 py-4">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-primary-800 text-white'
-                  : 'text-gray-300 hover:bg-primary-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.name}
-            </Link>
-          )
-        })}
-      </nav>
-      <div className="border-t border-primary-800 p-4">
-        <button
-          onClick={handleSignOut}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-primary-800 hover:text-white"
-        >
-          <LogOut className="h-5 w-5" />
-          Sair
-        </button>
-      </div>
-    </div>
+
+        {/* Navigation */}
+        <nav className={cn(
+          'flex-1 space-y-2',
+          isCollapsed ? 'p-2' : 'p-4'
+        )}>
+          {navigation.map((item) => {
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                title={isCollapsed ? item.name : undefined}
+                className={cn(
+                  'flex items-center rounded-lg transition-colors',
+                  isCollapsed 
+                    ? 'justify-center px-2 py-3' 
+                    : 'gap-3 px-4 py-3 w-full',
+                  isActive
+                    ? 'bg-primary-700 text-white'
+                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+                )}
+              >
+                <item.icon className={cn(
+                  'flex-shrink-0',
+                  isCollapsed ? 'h-5 w-5' : 'h-5 w-5'
+                )} />
+                {!isCollapsed && (
+                  <span className="font-medium whitespace-nowrap">{item.name}</span>
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* User Section */}
+        <div className={cn(
+          'border-t border-white/10',
+          isCollapsed ? 'p-2' : 'p-4'
+        )}>
+          {!isCollapsed ? (
+            <>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg font-semibold">{userInitials}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{userName}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleSignOut}
+                className="w-full px-4 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col items-center gap-2 mb-2">
+                <div className="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center">
+                  <span className="text-lg font-semibold">{userInitials}</span>
+                </div>
+              </div>
+              <button
+                onClick={handleSignOut}
+                title="Sair"
+                className="w-full px-2 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center justify-center"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
+          )}
+        </div>
+      </aside>
     </>
   )
 }

@@ -200,7 +200,7 @@ export default function BuscaGlobal() {
               setIsOpen(true)
             }
           }}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white" // Usando ring-primary do Design System
         />
         {searchQuery && (
           <button
@@ -241,7 +241,7 @@ export default function BuscaGlobal() {
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 mt-1">
                       <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                        <User className="h-5 w-5 text-primary-600" />
+                        <User className="h-5 w-5 text-primary" />
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">

@@ -27,11 +27,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
 
     const variants = {
-      primary: 'bg-primary-600 text-white shadow hover:bg-primary-700 active:bg-primary-800 focus-visible:ring-primary-500',
-      secondary: 'bg-secondary-600 text-white shadow hover:bg-secondary-700 active:bg-secondary-800',
+      primary: 'bg-primary text-white shadow hover:bg-primary-hover active:bg-primary-active focus-visible:ring-primary', // Usando tokens do Design System
+      secondary: 'bg-secondary text-white shadow hover:bg-secondary-hover active:bg-secondary-active focus-visible:ring-secondary', // Usando tokens do Design System
       outline: 'border border-neutral-300 bg-white shadow-sm hover:bg-neutral-50 hover:border-neutral-400 focus-visible:ring-accent text-neutral-900',
       ghost: 'hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-accent text-neutral-700',
-      destructive: 'bg-error-600 text-white shadow-sm hover:bg-error-700 focus-visible:ring-error',
+      destructive: 'bg-error text-white shadow-sm hover:bg-error-700 focus-visible:ring-error', // Usando token error do Design System
     }
 
     const sizes = {

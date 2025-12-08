@@ -273,13 +273,14 @@ export default function PacientesTable() {
   }
 
   const getStatusColor = (status: string) => {
+    // Usando tokens do Design System
     const colors: Record<string, string> = {
-      lead: 'bg-blue-100 text-blue-800',
-      ativo: 'bg-success-100 text-success-800',
-      finalizado: 'bg-gray-100 text-gray-800',
-      inativo: 'bg-danger-100 text-danger-800',
+      lead: 'bg-info-50 text-info-800 border border-info-200', // Lead: info (azul)
+      ativo: 'bg-success-50 text-success-800 border border-success-200', // Ativo: success (verde)
+      finalizado: 'bg-secondary-50 text-secondary-800 border border-secondary-200', // Finalizado: secondary (roxo/dourado)
+      inativo: 'bg-neutral-200 text-neutral-700 border border-neutral-300', // Inativo: neutral (cinza)
     }
-    return colors[status] || 'bg-gray-100 text-gray-800'
+    return colors[status] || 'bg-neutral-100 text-neutral-700 border border-neutral-200'
   }
 
   const getAdesaoColor = (adesao: number) => {

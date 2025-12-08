@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft } from 'lucide-react'
 import { showError } from '@/components/ui/Toast'
+import { useSidebar } from '@/components/providers/SidebarProvider'
+import { cn } from '@/utils/cn'
 import HeaderPerfil from './components/HeaderPerfil'
 import ResumoTratamento from './components/ResumoTratamento'
 import PacienteTabs from './components/PacienteTabs'
@@ -48,6 +50,7 @@ export default function PacienteDetailPage() {
   const params = useParams()
   const router = useRouter()
   const pacienteId = params.id as string
+  const { isCollapsed } = useSidebar()
 
   const [paciente, setPaciente] = useState<Paciente | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -113,7 +116,10 @@ export default function PacienteDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
+      <div className={cn(
+        "p-4 md:py-6",
+        isCollapsed ? "md:pl-3 md:pr-6" : "md:pl-5 md:pr-6"
+      )}>
         <div className="flex items-center justify-center min-h-[400px]">
           <p className="text-black">Carregando dados do paciente...</p>
         </div>
@@ -123,7 +129,10 @@ export default function PacienteDetailPage() {
 
   if (!paciente) {
     return (
-      <div className="p-6">
+      <div className={cn(
+        "p-4 md:py-6",
+        isCollapsed ? "md:pl-3 md:pr-6" : "md:pl-5 md:pr-6"
+      )}>
         <div className="flex items-center justify-center min-h-[400px]">
           <p className="text-black">Paciente não encontrado</p>
         </div>
@@ -133,7 +142,10 @@ export default function PacienteDetailPage() {
 
 
   return (
-    <div className="p-6">
+    <div className={cn(
+      "p-4 md:py-6",
+      isCollapsed ? "md:pl-3 md:pr-6" : "md:pl-5 md:pr-6"
+    )}>
       {/* Botão Voltar */}
       <button
         onClick={() => router.push('/pacientes')}

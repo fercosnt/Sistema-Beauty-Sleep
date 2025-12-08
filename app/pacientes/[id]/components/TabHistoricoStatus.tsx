@@ -177,37 +177,37 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
   const temFiltrosAtivos =
     filtroStatus !== null || filtroDataInicio || filtroDataFim || buscaUsuario.trim()
 
-  // Função para obter cor do status
+  // Função para obter cor do status (retorna nome da cor para compatibilidade)
   const getStatusColor = (status: string | null): string => {
-    if (!status) return 'gray'
+    if (!status) return 'neutral'
     switch (status) {
       case 'lead':
-        return 'blue'
+        return 'info' // Azul do Design System
       case 'ativo':
-        return 'green'
+        return 'success' // Verde do Design System
       case 'finalizado':
-        return 'gray'
+        return 'secondary' // Roxo/Dourado do Design System
       case 'inativo':
-        return 'red'
+        return 'neutral' // Cinza do Design System
       default:
-        return 'gray'
+        return 'neutral'
     }
   }
 
-  // Função para obter classe CSS do status
+  // Função para obter classe CSS do status usando tokens do Design System
   const getStatusBadgeClass = (status: string | null): string => {
-    if (!status) return 'bg-gray-100 text-gray-800'
+    if (!status) return 'bg-neutral-100 text-neutral-700 border border-neutral-200'
     switch (status) {
       case 'lead':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-info-50 text-info-800 border border-info-200' // Lead: info (azul)
       case 'ativo':
-        return 'bg-success-100 text-success-800'
+        return 'bg-success-50 text-success-800 border border-success-200' // Ativo: success (verde)
       case 'finalizado':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-secondary-50 text-secondary-800 border border-secondary-200' // Finalizado: secondary (roxo/dourado)
       case 'inativo':
-        return 'bg-danger-100 text-danger-800'
+        return 'bg-neutral-200 text-neutral-700 border border-neutral-300' // Inativo: neutral (cinza)
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-neutral-100 text-neutral-700 border border-neutral-200'
     }
   }
 
@@ -304,17 +304,17 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
                 <p className="text-xs text-gray-500 mb-1">Total de Mudanças</p>
                 <p className="text-2xl font-bold text-gray-900">{metricas.totalMudancas}</p>
               </div>
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-xs text-blue-600 mb-1">Mudanças para Lead</p>
-                <p className="text-2xl font-bold text-blue-900">{metricas.mudancasPorStatus.lead}</p>
+              <div className="bg-info-50 rounded-lg p-4">
+                <p className="text-xs text-info-600 mb-1">Mudanças para Lead</p>
+                <p className="text-2xl font-bold text-info-900">{metricas.mudancasPorStatus.lead}</p>
               </div>
               <div className="bg-success-50 rounded-lg p-4">
                 <p className="text-xs text-success-600 mb-1">Mudanças para Ativo</p>
                 <p className="text-2xl font-bold text-success-900">{metricas.mudancasPorStatus.ativo}</p>
               </div>
-              <div className="bg-danger-50 rounded-lg p-4">
-                <p className="text-xs text-danger-600 mb-1">Mudanças para Inativo</p>
-                <p className="text-2xl font-bold text-danger-900">{metricas.mudancasPorStatus.inativo}</p>
+              <div className="bg-neutral-100 rounded-lg p-4">
+                <p className="text-xs text-neutral-600 mb-1">Mudanças para Inativo</p>
+                <p className="text-2xl font-bold text-neutral-900">{metricas.mudancasPorStatus.inativo}</p>
               </div>
             </div>
           </CardContent>
@@ -468,24 +468,24 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
             <div className="absolute left-0 top-2 z-10">
               <div
                 className={`h-10 w-10 rounded-full flex items-center justify-center border-2 border-white shadow ${
-                  getStatusColor(item.status_novo) === 'blue'
-                    ? 'bg-blue-100'
-                    : getStatusColor(item.status_novo) === 'green'
+                  getStatusColor(item.status_novo) === 'info'
+                    ? 'bg-info-100'
+                    : getStatusColor(item.status_novo) === 'success'
                       ? 'bg-success-100'
-                      : getStatusColor(item.status_novo) === 'red'
-                        ? 'bg-danger-100'
-                        : 'bg-gray-100'
+                      : getStatusColor(item.status_novo) === 'neutral'
+                        ? 'bg-neutral-200'
+                        : 'bg-secondary-100'
                 }`}
               >
                 <StatusIconNovo
                   className={`h-5 w-5 ${
-                    getStatusColor(item.status_novo) === 'blue'
-                      ? 'text-blue-600'
-                      : getStatusColor(item.status_novo) === 'green'
+                    getStatusColor(item.status_novo) === 'info'
+                      ? 'text-info-600'
+                      : getStatusColor(item.status_novo) === 'success'
                         ? 'text-success-600'
-                        : getStatusColor(item.status_novo) === 'red'
-                          ? 'text-danger-600'
-                          : 'text-gray-600'
+                        : getStatusColor(item.status_novo) === 'neutral'
+                          ? 'text-neutral-600'
+                          : 'text-secondary-600'
                   }`}
                 />
               </div>
@@ -516,13 +516,13 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
                       <div className="flex items-center gap-1.5">
                         <StatusIconAnterior
                           className={`h-4 w-4 ${
-                            getStatusColor(item.status_anterior) === 'blue'
-                              ? 'text-blue-600'
-                              : getStatusColor(item.status_anterior) === 'green'
+                            getStatusColor(item.status_anterior) === 'info'
+                              ? 'text-info-600'
+                              : getStatusColor(item.status_anterior) === 'success'
                                 ? 'text-success-600'
-                                : getStatusColor(item.status_anterior) === 'red'
-                                  ? 'text-danger-600'
-                                  : 'text-gray-600'
+                                : getStatusColor(item.status_anterior) === 'neutral'
+                                  ? 'text-neutral-600'
+                                  : 'text-secondary-600'
                           }`}
                         />
                         <span
@@ -543,13 +543,13 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
                   <div className="flex items-center gap-1.5">
                     <StatusIconNovo
                       className={`h-4 w-4 flex-shrink-0 ${
-                        getStatusColor(item.status_novo) === 'blue'
-                          ? 'text-blue-600'
-                          : getStatusColor(item.status_novo) === 'green'
+                        getStatusColor(item.status_novo) === 'info'
+                          ? 'text-info-600'
+                          : getStatusColor(item.status_novo) === 'success'
                             ? 'text-success-600'
-                            : getStatusColor(item.status_novo) === 'red'
-                              ? 'text-danger-600'
-                              : 'text-gray-600'
+                            : getStatusColor(item.status_novo) === 'neutral'
+                              ? 'text-neutral-600'
+                              : 'text-secondary-600'
                       }`}
                     />
                     <span
@@ -565,7 +565,7 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
                 {/* Motivo (se inativo) */}
                 {isInativo && item.motivo && (
                   <div className="mt-3 pt-3 border-t border-gray-200">
-                    <div className="p-3 bg-danger-50 border border-danger-200 rounded-lg">
+                    <div className="p-3 bg-error-50 border border-error-200 rounded-lg">
                       <div className="flex items-start gap-2">
                         <AlertCircle className="h-4 w-4 text-danger-600 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">

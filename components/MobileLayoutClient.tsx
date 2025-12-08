@@ -1,8 +1,11 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";
 import { useMobileMenu } from "@/components/providers/MobileMenuProvider";
+import { useSidebar } from "@/components/providers/SidebarProvider";
+import { cn } from "@/utils/cn";
 
 interface MobileLayoutClientProps {
   children: React.ReactNode;
@@ -10,18 +13,37 @@ interface MobileLayoutClientProps {
 }
 
 export default function MobileLayoutClient({ children, userRole }: MobileLayoutClientProps) {
+  const pathname = usePathname()
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
+  const { isCollapsed } = useSidebar();
+
+  // Não renderizar layout padrão no dashboard (usa seu próprio template)
+  if (pathname === '/dashboard') {
+    return <>{children}</>
+  }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div 
+      className="flex h-screen relative"
+      style={{
+        backgroundImage: `url(/dashboard-background.jpeg)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      }}
+    >
       {/* Sidebar - visible on desktop, overlay on mobile */}
       <Sidebar
         userRole={userRole}
         isMobileOpen={isMobileMenuOpen}
         onMobileClose={closeMobileMenu}
       />
-      {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden md:ml-0">
+      {/* Main content - margin matches sidebar width exactly, no extra spacing */}
+      <div className={cn(
+        "flex flex-1 flex-col overflow-hidden transition-all duration-300",
+        isCollapsed ? "md:ml-16" : "md:ml-64"
+      )}>
         {/* Header - only show if user is authenticated */}
         <Header
           userRole={userRole}

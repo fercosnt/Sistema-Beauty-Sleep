@@ -19,10 +19,20 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": ["./*"],
+      "@beautysmile/components": ["./Design novo/src/components/index.ts"],
+      "@beautysmile/components/*": ["./Design novo/src/components/*"],
+      "@beautysmile/tokens": ["./Design novo/src/tokens/index.ts"],
+      "@beautysmile/tokens/*": ["./Design novo/src/tokens/*"],
+      "@beautysmile/utils": ["./Design novo/src/utils"],
+      "@beautysmile/assets": ["./Design novo/src/assets/index.ts"],
+      "@beautysmile/assets/*": ["./Design novo/src/assets/*"],
+      "@beautysmile/templates": ["./Design novo/src/templates"],
+      "@beautysmile/templates/*": ["./Design novo/src/templates/*"]
+    },
+    "baseUrl": "."
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "Design/**/*", "meu-projeto-admin/**/*", "supabase/functions/**/*", "**/*.stories.tsx", "**/*.stories.ts"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "Design novo/src/components/**/*.ts", "Design novo/src/components/**/*.tsx", "Design novo/src/tokens/**/*.ts", "Design novo/src/utils/**/*.ts", "Design novo/src/templates/**/*.ts", "Design novo/src/templates/**/*.tsx"],
+  "exclude": ["node_modules", "Design/**/*", "meu-projeto-admin/**/*", "supabase/functions/**/*", "**/*.stories.tsx", "**/*.stories.ts", "Design novo/**/*.stories.tsx", "Design novo/**/*.stories.ts", "Design novo/src/index.ts", "Design novo/tailwind.config.ts", "Design novo/vite.config.ts"]
 }
 

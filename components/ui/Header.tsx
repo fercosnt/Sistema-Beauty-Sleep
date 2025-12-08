@@ -5,6 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import { User, Settings, ChevronDown, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import BuscaGlobal from './BuscaGlobal'
+import { useSidebar } from '@/components/providers/SidebarProvider'
+import { cn } from '@/utils/cn'
+import { Glass } from '@beautysmile/components'
 
 interface HeaderProps {
   userRole?: string | null
@@ -13,6 +16,7 @@ interface HeaderProps {
 }
 
 export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: HeaderProps) {
+  const { isCollapsed } = useSidebar()
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [showMenu, setShowMenu] = useState(false)
@@ -69,12 +73,17 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
     : user?.email?.[0].toUpperCase() || 'U'
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:px-6">
-      <div className="flex items-center gap-4 flex-1">
+    <header className={cn(
+      "h-16 sticky top-0 z-50 w-full px-4 md:px-6"
+    )}>
+      <Glass variant="light" blur="lg" className="h-full w-full rounded-b-xl border-b border-white/20">
+        <div className="flex items-center justify-between px-4 md:px-6 h-full relative">
+      {/* Lado esquerdo - botão hamburger (mobile) e logo mobile */}
+      <div className="flex items-center gap-4 flex-shrink-0">
         {/* Hamburger menu button - only visible on mobile */}
         <button
           onClick={onMenuToggle}
-          className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          className="md:hidden p-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors"
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? (
@@ -83,35 +92,40 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
             <Menu className="h-6 w-6" />
           )}
         </button>
-               {/* Logo mobile */}
-               <img 
-                 src="/Logo.png" 
-                 alt="Beauty Sleep Logo" 
-                 className="h-12 w-auto object-contain md:hidden"
-               />
-        {/* Busca Global - hidden on mobile, visible on desktop */}
-        <div className="hidden md:block flex-1 max-w-md">
+        {/* Logo mobile */}
+        <img 
+          src="/Logo.png" 
+          alt="Beauty Sleep Logo" 
+          className="h-12 w-auto object-contain md:hidden"
+        />
+      </div>
+      
+      {/* Busca Global - hidden on mobile, visible on desktop - centralizada no header */}
+      <div className="hidden md:flex flex-1 items-center justify-center absolute left-0 right-0">
+        <div className="max-w-md w-full">
           <BuscaGlobal />
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      
+      {/* Lado direito - menu do usuário */}
+      <div className="flex items-center gap-4 flex-shrink-0 relative z-[60] ml-auto">
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors relative z-[60]"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-white text-xs font-semibold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-xs font-semibold">
               {userInitials}
             </div>
-            <span className="hidden md:block">{userData?.nome || user?.email}</span>
-            <ChevronDown className="h-4 w-4" />
+            <span className="hidden md:block text-white">{userData?.nome || user?.email}</span>
+            <ChevronDown className="h-4 w-4 text-white" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70]">
               <div className="py-1">
                 <Link
                   href="/perfil"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
                   onClick={() => setShowMenu(false)}
                 >
                   <User className="h-4 w-4" />
@@ -119,7 +133,7 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
                 </Link>
                 <Link
                   href="/configuracoes"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
                   onClick={() => setShowMenu(false)}
                 >
                   <Settings className="h-4 w-4" />
@@ -130,6 +144,8 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
           )}
         </div>
       </div>
+        </div>
+      </Glass>
     </header>
   )
 }

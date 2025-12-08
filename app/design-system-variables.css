@@ -1,0 +1,539 @@
+/**
+ * Design System CSS Variables and Keyframes
+ * Extracted from Design System globals.css (without @import 'tailwindcss')
+ * 
+ * This file contains only CSS Custom Properties and Keyframes
+ * Tailwind directives are handled in globals.css
+ */
+
+/* ============================================================================
+   ROOT VARIABLES - Design Tokens as CSS Custom Properties
+   ============================================================================ */
+
+:root {
+  /* ==========================================================================
+     COLORS - Brand, Neutral, Semantic
+     ========================================================================== */
+
+  /* Brand Colors - Primary (Deep Blue) */
+  --color-primary: #00109e;
+  --color-primary-hover: #000c7a;
+  --color-primary-active: #000958;
+
+  /* Brand Colors - Secondary (Gold) */
+  --color-secondary: #bb965b;
+  --color-secondary-hover: #a68350;
+  --color-secondary-active: #917045;
+
+  /* Brand Colors - Accent (Turquoise) */
+  --color-accent: #35bfad;
+  --color-accent-hover: #2da89a;
+  --color-accent-active: #259187;
+
+  /* Neutral Scale */
+  --color-white: #ffffff;
+  --color-neutral-50: #f8f9f9;
+  --color-neutral-100: #f1f2f2;
+  --color-neutral-200: #e8e9e8;
+  --color-neutral-300: #d6d7d5;
+  --color-neutral-400: #bfc0be;
+  --color-neutral-500: #a5a7a9;
+  --color-neutral-600: #86898c;
+  --color-neutral-700: #6b6d70;
+  --color-neutral-800: #4a4c4e;
+  --color-neutral-900: #2d2e30;
+  --color-black: #000000;
+
+  /* Semantic Colors */
+  --color-success: #10b981;
+  --color-success-700: #047857;
+  --color-warning: #f59e0b;
+  --color-warning-700: #d97706;
+  --color-error: #ef4444;
+  --color-error-700: #dc2626;
+  --color-info: #35bfad;
+
+  /* Chart Colors */
+  --color-chart-1: #00109e;
+  --color-chart-2: #35bfad;
+  --color-chart-3: #bb965b;
+  --color-chart-4: #10b981;
+  --color-chart-5: #f59e0b;
+
+  /* Admin Theme Colors */
+  --color-admin-primary: #00109e;
+  --color-admin-background: #00109e;
+  --color-admin-sidebar: #2d2e30;
+  --color-admin-sidebar-foreground: #ffffff;
+  --color-admin-sidebar-accent: #4a4c4e;
+  --color-admin-sidebar-border: #6b6d70;
+  --color-admin-sidebar-ring: #35bfad;
+
+  /* Public Theme Colors */
+  --color-public-primary: #35bfad;
+
+  /* Glass Morphism Colors */
+  --color-glass-white: rgba(255, 255, 255, 0.15);
+  --color-glass-white-hover: rgba(255, 255, 255, 0.25);
+  --color-glass-dark: rgba(0, 0, 0, 0.3);
+
+  /* ==========================================================================
+     TYPOGRAPHY - Fonts, Sizes, Weights
+     ========================================================================== */
+
+  /* Font Families */
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-heading: Montserrat, Inter, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
+  --font-size-7xl: 4.5rem;
+
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Line Heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* Letter Spacing */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* ==========================================================================
+     SPACING - Margins, Padding, Gaps
+     ========================================================================== */
+
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-9: 36px;
+  --spacing-10: 40px;
+  --spacing-11: 44px;
+  --spacing-12: 48px;
+  --spacing-13: 52px;
+  --spacing-14: 56px;
+  --spacing-15: 60px;
+  --spacing-16: 64px;
+  --spacing-17: 68px;
+  --spacing-18: 72px;
+  --spacing-19: 76px;
+  --spacing-20: 80px;
+  --spacing-21: 84px;
+  --spacing-22: 88px;
+  --spacing-23: 92px;
+  --spacing-24: 96px;
+  --spacing-25: 100px;
+  --spacing-26: 104px;
+  --spacing-27: 108px;
+  --spacing-28: 112px;
+  --spacing-29: 116px;
+  --spacing-30: 120px;
+  --spacing-31: 124px;
+  --spacing-32: 128px;
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-3xl: 48px;
+  --radius-full: 9999px;
+
+  /* Z-Index */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+  --z-notification: 1700;
+  --z-top: 9999;
+
+  /* ==========================================================================
+     SHADOWS - Elevation System
+     ========================================================================== */
+
+  --shadow-sm: 0 1px 2px 0 rgba(45, 46, 48, 0.05);
+  --shadow: 0 1px 3px 0 rgba(45, 46, 48, 0.1),
+    0 1px 2px -1px rgba(45, 46, 48, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(45, 46, 48, 0.1),
+    0 2px 4px -2px rgba(45, 46, 48, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(45, 46, 48, 0.1),
+    0 4px 6px -4px rgba(45, 46, 48, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(45, 46, 48, 0.1),
+    0 8px 10px -6px rgba(45, 46, 48, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(45, 46, 48, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(45, 46, 48, 0.05);
+  --shadow-none: 0 0 #0000;
+
+  /* Glass Shadow */
+  --shadow-glass: 0 4px 6px 0 rgba(0, 0, 0, 0.1),
+    0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-glass-lg: 0 12px 20px 0 rgba(0, 0, 0, 0.15),
+    0 6px 10px 0 rgba(0, 0, 0, 0.1);
+
+  /* Focus Ring */
+  --shadow-focus-primary: 0 0 0 3px rgba(0, 16, 158, 0.3);
+  --shadow-focus-accent: 0 0 0 3px rgba(53, 191, 173, 0.3);
+  --shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  --shadow-focus-success: 0 0 0 3px rgba(16, 185, 129, 0.3);
+
+  /* ==========================================================================
+     ANIMATIONS - Durations, Timing Functions
+     ========================================================================== */
+
+  /* Durations */
+  --duration-fastest: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 400ms;
+  --duration-slowest: 500ms;
+
+  /* Timing Functions */
+  --ease-linear: linear;
+  --ease: ease;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-swift: cubic-bezier(0.4, 0, 0.6, 1);
+  --ease-snappy: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Common Transitions */
+  --transition-all: all var(--duration-normal) var(--ease-smooth);
+  --transition-opacity: opacity var(--duration-normal) var(--ease-smooth);
+  --transition-transform: transform var(--duration-normal) var(--ease-smooth);
+  --transition-colors: background-color var(--duration-normal) var(--ease-smooth),
+    color var(--duration-normal) var(--ease-smooth),
+    border-color var(--duration-normal) var(--ease-smooth);
+}
+
+/* ============================================================================
+   ANIMATION KEYFRAMES
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes accordionDown {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes accordionUp {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes dialogOverlayShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialogContentShow {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Glass Morphism Effect */
+.glass {
+  background: var(--color-glass-white);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: var(--color-glass-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Focus Visible - Accessible focus states */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+/* Smooth Scroll */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Hide Scrollbar */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================================================
+   ACCESSIBILITY - Reduced Motion
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
