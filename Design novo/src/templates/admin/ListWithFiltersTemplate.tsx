@@ -6,10 +6,10 @@
  */
 
 import * as React from 'react'
-import { Card, CardContent, CardHeader } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Checkbox } from '@/components/ui/Checkbox'
+import { Card, CardContent, CardHeader } from '../../components/ui/Card'
+import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
+import { Checkbox } from '../../components/ui/Checkbox'
 import {
   Table,
   TableBody,
@@ -17,8 +17,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/Table'
-import { cn } from '@/utils/cn'
+} from '../../components/ui/Table'
+import { cn } from '../../utils/cn'
 
 export interface TableColumn<T = any> {
   /**

@@ -6,10 +6,10 @@
  */
 
 import * as React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-import { cn } from '@/utils/cn'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Button } from '../../components/ui/Button'
+import { Badge } from '../../components/ui/Badge'
+import { cn } from '../../utils/cn'
 
 export interface DetailSection {
   /**

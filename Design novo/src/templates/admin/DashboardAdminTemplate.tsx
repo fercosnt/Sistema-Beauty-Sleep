@@ -46,9 +46,9 @@ export interface SidebarNavItem {
    */
   label: string
   /**
-   * Navigation item icon (component or ReactNode)
+   * Navigation item icon (ReactNode only)
    */
-  icon?: React.ComponentType<{ className?: string }> | React.ReactNode
+  icon?: React.ReactNode
   /**
    * Whether this item is active
    */
@@ -266,8 +266,8 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
                 {item.icon && (
                   <span className="flex-shrink-0">
                     {React.isValidElement(item.icon) ? (
-                      React.cloneElement(item.icon as React.ReactElement, {
-                        className: cn('h-5 w-5')
+                      React.cloneElement(item.icon as React.ReactElement<any>, {
+                        className: cn('h-5 w-5', (item.icon as React.ReactElement<any>)?.props?.className)
                       })
                     ) : (
                       item.icon

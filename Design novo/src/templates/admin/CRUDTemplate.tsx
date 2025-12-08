@@ -6,13 +6,13 @@
  */
 
 import * as React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Textarea } from '@/components/ui/Textarea'
-import { Label } from '@/components/ui/Label'
-import { Alert } from '@/components/ui/Alert'
-import { cn } from '@/utils/cn'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
+import { Textarea } from '../../components/ui/Textarea'
+import { Label } from '../../components/ui/Label'
+import { Alert } from '../../components/ui/Alert'
+import { cn } from '../../utils/cn'
 
 export type FieldType = 'text' | 'email' | 'password' | 'number' | 'textarea' | 'date'
 

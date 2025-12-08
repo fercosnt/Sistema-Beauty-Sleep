@@ -6,8 +6,8 @@
  */
 
 import * as React from 'react'
-import { Card, CardContent } from '@/components/ui/Card'
-import { cn } from '@/utils/cn'
+import { Card, CardContent } from '../../components/ui/Card'
+import { cn } from '../../utils/cn'
 
 export interface PublicProfileData {
   name: string

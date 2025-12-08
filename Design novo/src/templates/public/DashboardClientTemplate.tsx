@@ -6,10 +6,10 @@
  */
 
 import * as React from 'react'
-import { BeautySmileLogo } from '@/assets/components/BeautySmileLogo'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { cn } from '@/utils/cn'
+import { BeautySmileLogo } from '../../assets/components/BeautySmileLogo'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Button } from '../../components/ui/Button'
+import { cn } from '../../utils/cn'
 
 export interface ClientMetric {
   title: string

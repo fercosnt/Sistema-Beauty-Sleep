@@ -6,14 +6,14 @@
  */
 
 import * as React from 'react'
-import { BackgroundImage } from '@/assets/components/BackgroundImage'
-import { BeautySmileLogo } from '@/assets/components/BeautySmileLogo'
-import { GlassCard } from '@/components/glass/GlassCard'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
-import { Checkbox } from '@/components/ui/Checkbox'
-import { cn } from '@/utils/cn'
+import { BackgroundImage } from '../../assets/components/BackgroundImage'
+import { BeautySmileLogo } from '../../assets/components/BeautySmileLogo'
+import { GlassCard } from '../../components/glass/GlassCard'
+import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
+import { Label } from '../../components/ui/Label'
+import { Checkbox } from '../../components/ui/Checkbox'
+import { cn } from '../../utils/cn'
 
 export interface LoginAdminTemplateProps {
   /**
