@@ -97,7 +97,6 @@ export default function DashboardContent({ userRole }: DashboardContentProps) {
           {
             title: 'Taxa de Conversão',
             value: `${taxaConversao.toFixed(1)}%`,
-            trend: { value: Math.abs(taxaConversao - 70), isPositive: taxaConversao >= 70 },
           },
         ])
       } catch (error) {
@@ -162,6 +161,7 @@ export default function DashboardContent({ userRole }: DashboardContentProps) {
       onUserMenuClick={handleUserMenuClick}
       onLogout={handleLogout}
       searchComponent={<BuscaGlobal />}
+      userRole={userRole}
     >
       <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
 

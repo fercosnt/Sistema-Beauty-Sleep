@@ -102,6 +102,11 @@ export interface DashboardAdminTemplateProps {
    */
   searchComponent?: React.ReactNode
   /**
+   * User role (admin, equipe, recepcao) - determines styling
+   * @default 'admin'
+   */
+  userRole?: 'admin' | 'equipe' | 'recepcao' | string
+  /**
    * Additional class name
    */
   className?: string
@@ -142,6 +147,7 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
   onUserMenuClick,
   onLogout,
   searchComponent,
+  userRole = 'admin',
   className,
 }) => {
   const [showMenu, setShowMenu] = useState(false)
