@@ -18,7 +18,7 @@ const nextConfig = {
   },
   // Ignorar pastas de design/storybook e outros projetos durante o build
   webpack: (config, { isServer }) => {
-      // Configurar path aliases para Design System
+    // Configurar path aliases para Design System
     const path = require('path')
     const designNovoPath = path.resolve(__dirname, './Design novo/src')
     

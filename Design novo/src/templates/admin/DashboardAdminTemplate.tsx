@@ -220,12 +220,12 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
   
   const containerStyle: React.CSSProperties = {
     backgroundImage,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
     minHeight: '100vh',
-  }
+      }
 
   return (
     <div 
@@ -438,24 +438,24 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
         <header className="h-16 sticky top-0 z-50 w-full px-4 md:px-6">
           <div className="h-full w-full rounded-b-xl border-b border-white/20 bg-white/10 backdrop-blur-lg relative" style={{ pointerEvents: 'none' }}>
             <div className="flex items-center justify-between px-2 sm:px-4 md:px-6 h-full gap-2 relative" style={{ pointerEvents: 'auto' }}>
-              {/* Lado esquerdo - título (mobile) */}
+                {/* Lado esquerdo - título (mobile) */}
               <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 min-w-0 md:hidden">
                 <h1 className="text-xl font-bold text-white">{title}</h1>
-              </div>
-              
-              {/* Busca Global - hidden on mobile, visible on desktop - centralizada no header */}
-              {searchComponent && (
+                </div>
+                
+                {/* Busca Global - hidden on mobile, visible on desktop - centralizada no header */}
+                {searchComponent && (
                 <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-2xl mx-4">
                   <div className="w-full max-w-md">
-                    {searchComponent}
+                      {searchComponent}
+                    </div>
                   </div>
-                </div>
-              )}
-              
-              {/* Lado direito - menu do usuário */}
+                )}
+                
+                {/* Lado direito - menu do usuário */}
               <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[100] min-w-0" data-user-menu>
-                <div className="relative">
-                  <button
+                  <div className="relative">
+                    <button
                     onClick={(e) => {
                       e.stopPropagation()
                       setShowMenu((prev) => !prev)
@@ -464,24 +464,24 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
                     type="button"
                     aria-expanded={showMenu}
                     aria-haspopup="true"
-                  >
+                    >
                     <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-primary text-white text-xs font-semibold flex-shrink-0">
-                      {userInitials}
+                        {userInitials}
                     </div>
                     <span className="hidden lg:block text-white truncate max-w-[120px]">{userName || 'Usuário'}</span>
                     <ChevronDown className={cn("h-3 w-3 sm:h-4 sm:w-4 text-white flex-shrink-0 transition-transform", showMenu && "rotate-180")} />
-                  </button>
+                    </button>
                   {showMenu && (
                     <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70]">
                       <div className="py-1">
-                        <Link
-                          href="/perfil"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                          <Link
+                            href="/perfil"
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
                           onClick={() => setShowMenu(false)}
-                        >
-                          <User className="h-4 w-4" />
-                          Perfil
-                        </Link>
+                          >
+                            <User className="h-4 w-4" />
+                            Perfil
+                          </Link>
                         <Link
                           href="/configuracoes"
                           className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
@@ -493,10 +493,10 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
                       </div>
                     </div>
                   )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
         </header>
 
         {/* Content Area */}
@@ -512,7 +512,7 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
               {metrics.map((metric, index) => (
                 <Glass
-                  key={index}
+                  key={index} 
                   variant="light"
                   blur="lg"
                   className={cn(

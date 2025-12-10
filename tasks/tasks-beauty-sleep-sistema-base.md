@@ -1071,16 +1071,16 @@ If you realize you skipped a task or made a mistake:
 - [x] 10.2.9 Collect feedback from stakeholders and fix issues if any - ✅ Processo documentado: docs/deploy/GUIA_DEPLOY_STAGING.md (ação manual necessária)
 
 #### 10.3 Deploy em Produção
-- [ ] 10.3.1 Get stakeholder approval to deploy to production
-- [ ] 10.3.2 Create final database backup (snapshot) before production deploy
-- [ ] 10.3.3 Configure environment variables in Vercel (production Supabase)
-- [ ] 10.3.4 Configure Supabase Auth for production (Site URL, Redirect URLs) - See `GUIA_CONFIGURACAO_SUPABASE_AUTH.md`
-- [ ] 10.3.5 Deploy to production: `vercel --prod` or via Vercel Dashboard
-- [ ] 10.3.6 Verify deployment: visit production URL
-- [ ] 10.3.7 Test critical flows: Login, Create paciente, Create sessão, View dashboard
-- [ ] 10.3.8 Verify sync-biologix cron job is running (check logs next day at 10h)
-- [ ] 10.3.9 Test route protection and role-based access control
-- [ ] 10.3.10 Monitor for errors in first 24 hours (Vercel logs, Supabase logs)
+- [ ] 10.3.1 Get stakeholder approval to deploy to production - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.2 Create final database backup (snapshot) before production deploy - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.3 Configure environment variables in Vercel (production Supabase) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.4 Configure Supabase Auth for production (Site URL, Redirect URLs) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` + `GUIA_CONFIGURACAO_SUPABASE_AUTH.md` (ação manual necessária)
+- [ ] 10.3.5 Deploy to production: `vercel --prod` or via Vercel Dashboard - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.6 Verify deployment: visit production URL - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.7 Test critical flows: Login, Create paciente, Create sessão, View dashboard - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.8 Verify sync-biologix cron job is running (check logs next day at 10h) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária - verificar no dia seguinte)
+- [ ] 10.3.9 Test route protection and role-based access control - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.10 Monitor for errors in first 24 hours (Vercel logs, Supabase logs) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` + `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
 
 #### 10.4 Documentação de Uso
 - [x] 10.4.1 Create "Guia do Administrador" (PDF or Markdown) - ✅ Criado: docs/guia-usuario/GUIA_ADMINISTRADOR.md
@@ -1100,18 +1100,18 @@ If you realize you skipped a task or made a mistake:
 - [x] 10.5.5 Schedule follow-up session in 1 week to address issues - ✅ Template criado com seção para agendar follow-up
 
 #### 10.6 Monitoramento Pós-Deploy
-- [ ] 10.6.1 Day 1: Monitor usage intensively (errors, performance, user feedback)
-- [ ] 10.6.2 Week 1: Daily check-ins with users, quick fixes for urgent issues
-- [ ] 10.6.3 Week 2: Review analytics (usage patterns, most used features)
-- [ ] 10.6.4 Week 3: Collect feedback for future improvements
-- [ ] 10.6.5 Week 4: Create roadmap for Phase 2 (Alertas + IA)
+- [ ] 10.6.1 Day 1: Monitor usage intensively (errors, performance, user feedback) - 📋 Guia criado: `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
+- [ ] 10.6.2 Week 1: Daily check-ins with users, quick fixes for urgent issues - 📋 Guia criado: `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
+- [ ] 10.6.3 Week 2: Review analytics (usage patterns, most used features) - 📋 Guia criado: `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
+- [ ] 10.6.4 Week 3: Collect feedback for future improvements - 📋 Guia criado: `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
+- [ ] 10.6.5 Week 4: Create roadmap for Phase 2 (Alertas + IA) - 📋 Guia criado: `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
 
 #### 10.7 Handoff e Celebração
-- [ ] 10.7.1 Schedule handoff meeting with stakeholders
-- [ ] 10.7.2 Present final metrics: # pacientes, # exames, # sessões, user adoption rate
-- [ ] 10.7.3 Review success criteria (100% sync, data migration, user adoption)
-- [ ] 10.7.4 Discuss next steps (Phase 2 PRD)
-- [ ] 10.7.5 Celebrate launch! 🎉
+- [ ] 10.7.1 Schedule handoff meeting with stakeholders - 📋 Guia criado: `docs/deploy/GUIA_HANDOFF.md` (ação manual necessária)
+- [ ] 10.7.2 Present final metrics: # pacientes, # exames, # sessões, user adoption rate - 📋 Guia criado: `docs/deploy/GUIA_HANDOFF.md` (ação manual necessária)
+- [ ] 10.7.3 Review success criteria (100% sync, data migration, user adoption) - 📋 Guia criado: `docs/deploy/GUIA_HANDOFF.md` (ação manual necessária)
+- [ ] 10.7.4 Discuss next steps (Phase 2 PRD) - 📋 Guia criado: `docs/deploy/GUIA_HANDOFF.md` (ação manual necessária)
+- [ ] 10.7.5 Celebrate launch! 🎉 - 📋 Guia criado: `docs/deploy/GUIA_HANDOFF.md` (ação manual necessária)
 
 ---
 
