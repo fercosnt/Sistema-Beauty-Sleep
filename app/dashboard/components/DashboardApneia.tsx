@@ -196,19 +196,19 @@ export default function DashboardApneia({ userRole }: DashboardApneiaProps) {
   return (
     <div className="space-y-6">
       {/* Filtro de Período */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <label className="text-sm font-medium text-black mr-4">Período:</label>
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg shadow-lg p-4">
+        <label className="text-sm font-medium text-white drop-shadow mr-4">Período:</label>
         <select
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value as any)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="bg-white/10 border border-white/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/50"
         >
-          <option value="30">Últimos 30 dias</option>
-          <option value="60">Últimos 60 dias</option>
-          <option value="90">Últimos 90 dias</option>
-          <option value="180">Últimos 180 dias</option>
-          <option value="365">Últimos 365 dias</option>
-          <option value="all">Todo o período</option>
+          <option value="30" className="bg-primary-900 text-white">Últimos 30 dias</option>
+          <option value="60" className="bg-primary-900 text-white">Últimos 60 dias</option>
+          <option value="90" className="bg-primary-900 text-white">Últimos 90 dias</option>
+          <option value="180" className="bg-primary-900 text-white">Últimos 180 dias</option>
+          <option value="365" className="bg-primary-900 text-white">Últimos 365 dias</option>
+          <option value="all" className="bg-primary-900 text-white">Todo o período</option>
         </select>
       </div>
 

@@ -31,7 +31,7 @@ export function OnboardingTour({ role, tourCompleted, userId }: OnboardingTourPr
         defaultStepOptions: {
           scrollTo: true,
           cancelIcon: { enabled: true },
-          classes: 'shepherd-theme-custom',
+          classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
           buttons: [
             {
               text: 'Pular Tour',
@@ -95,7 +95,7 @@ export function startTour(role: 'admin' | 'equipe' | 'recepcao') {
     defaultStepOptions: {
       scrollTo: true,
       cancelIcon: { enabled: true },
-      classes: 'shepherd-theme-custom',
+      classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
     },
   })
 

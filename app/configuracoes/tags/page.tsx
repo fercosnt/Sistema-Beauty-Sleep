@@ -7,6 +7,7 @@ import ModalNovaTag from '@/components/ModalNovaTag'
 import { showSuccess, showError } from '@/components/ui/Toast'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import ContentContainer from '@/components/ui/ContentContainer'
 import {
   Table,
   TableBody,
@@ -177,21 +178,22 @@ export default function TagsPage() {
   const canDelete = userRole === 'admin'
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestão de Tags</h1>
-          <p className="mt-2 text-lg text-gray-600">
-            Gerencie as tags usadas para categorizar pacientes
-          </p>
+    <ContentContainer>
+      <div className="space-y-6 max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Gestão de Tags</h1>
+            <p className="mt-2 text-lg text-white/90">
+              Gerencie as tags usadas para categorizar pacientes
+            </p>
+          </div>
+          {canCreateEdit && (
+            <Button variant="primary" size="lg" onClick={handleCreateTag} leftIcon={<Plus className="h-5 w-5" />}>
+              Nova Tag
+            </Button>
+          )}
         </div>
-        {canCreateEdit && (
-          <Button variant="primary" size="lg" onClick={handleCreateTag} leftIcon={<Plus className="h-5 w-5" />}>
-            Nova Tag
-          </Button>
-        )}
-      </div>
 
       {/* Content */}
       {isLoading ? (
@@ -295,12 +297,13 @@ export default function TagsPage() {
         </Card>
       )}
 
-      <ModalNovaTag
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSuccess={handleModalSuccess}
-        editingTag={editingTag}
-      />
-    </div>
+        <ModalNovaTag
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSuccess={handleModalSuccess}
+          editingTag={editingTag}
+        />
+      </div>
+    </ContentContainer>
   )
 }

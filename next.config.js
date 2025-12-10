@@ -18,14 +18,22 @@ const nextConfig = {
   },
   // Ignorar pastas de design/storybook e outros projetos durante o build
   webpack: (config, { isServer }) => {
-    // Configurar path aliases para Design System
+      // Configurar path aliases para Design System
+    const path = require('path')
+    const designNovoPath = path.resolve(__dirname, './Design novo/src')
+    
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@beautysmile/design-system': require('path').resolve(__dirname, './Design novo/src/index.ts'),
-      '@beautysmile/components': require('path').resolve(__dirname, './Design novo/src/components/index.ts'),
-      '@beautysmile/tokens': require('path').resolve(__dirname, './Design novo/src/tokens/index.ts'),
-      '@beautysmile/utils': require('path').resolve(__dirname, './Design novo/src/utils'),
-      '@beautysmile/templates': require('path').resolve(__dirname, './Design novo/src/templates'),
+      '@beautysmile/design-system': path.resolve(__dirname, './Design novo/src/index.ts'),
+      '@beautysmile/components': path.resolve(__dirname, './Design novo/src/components/index.ts'),
+      '@beautysmile/tokens': path.resolve(__dirname, './Design novo/src/tokens/index.ts'),
+      '@beautysmile/utils': path.resolve(__dirname, './Design novo/src/utils'),
+      '@beautysmile/templates': path.resolve(__dirname, './Design novo/src/templates'),
+      // Resolver @/ dentro de Design novo para apontar para Design novo/src
+      '@/utils': path.resolve(__dirname, './Design novo/src/utils'),
+      '@/components': path.resolve(__dirname, './Design novo/src/components'),
+      '@/templates': path.resolve(__dirname, './Design novo/src/templates'),
+      '@/assets': path.resolve(__dirname, './Design novo/src/assets'),
     }
 
     // Ignore background images that cause build errors

@@ -197,7 +197,7 @@ export default function UsuariosTable() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Carregando usuários...</p>
+        <p className="text-white">Carregando usuários...</p>
       </div>
     )
   }
@@ -206,8 +206,8 @@ export default function UsuariosTable() {
     <>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Lista de Usuários</h2>
-          <p className="mt-1 text-sm text-gray-600">
+          <h2 className="text-2xl font-bold text-white">Lista de Usuários</h2>
+          <p className="mt-1 text-sm text-white">
             Total: {users.length} usuário{users.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -215,6 +215,7 @@ export default function UsuariosTable() {
           variant="primary"
           onClick={() => setShowNovoUsuarioModal(true)}
           leftIcon={<Plus className="h-5 w-5" />}
+          className="bg-white/10 hover:bg-white/20 border border-white/30 text-white backdrop-blur-md"
         >
           Novo Usuário
         </Button>

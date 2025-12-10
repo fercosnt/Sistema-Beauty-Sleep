@@ -22,11 +22,18 @@ export default function MobileLayoutClient({ children, userRole }: MobileLayoutC
     return <>{children}</>
   }
 
+  // Determinar background baseado no role do usuário
+  // Verificação estrita: apenas 'admin' (case-sensitive) é considerado admin
+  const isAdmin = userRole?.toLowerCase() === 'admin'
+  const backgroundImage = isAdmin 
+    ? '/68a4d045b130b34b3614881d.jpeg'
+    : '/68a4d05373c7b3161e742edd.png'
+
   return (
     <div 
       className="flex h-screen relative"
       style={{
-        backgroundImage: `url(/dashboard-background.jpeg)`,
+        backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

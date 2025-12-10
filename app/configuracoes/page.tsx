@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { startTour } from '@/components/OnboardingTour'
 import { useRouter } from 'next/navigation'
+import { SettingsTemplate } from '@beautysmile/templates'
+import { User, PlayCircle, Tag } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { Label } from '@/components/ui/Label'
+import ContentContainer from '@/components/ui/ContentContainer'
 
 export default function ConfiguracoesPage() {
   const [user, setUser] = useState<any>(null)
@@ -35,62 +40,90 @@ export default function ConfiguracoesPage() {
     }
   }
 
-  return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Configurações</h1>
-        <p className="mt-2 text-gray-600">Gerencie suas configurações pessoais</p>
-      </div>
-
-      <div className="space-y-6">
-        {/* Perfil */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Perfil</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Nome</label>
-              <p className="mt-1 text-gray-900">{userData?.nome || 'N/A'}</p>
+  const sections = [
+    {
+      id: 'perfil',
+      title: 'Perfil',
+      description: 'Informações da sua conta',
+      icon: <User className="h-5 w-5" />,
+      content: (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-white drop-shadow" htmlFor="userName">Nome</Label>
+            <div className="bg-white border border-gray-300 rounded-lg px-4 py-3">
+              <p className="text-gray-900">{userData?.nome || 'N/A'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <p className="mt-1 text-gray-900">{userData?.email || user?.email || 'N/A'}</p>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-white drop-shadow" htmlFor="userEmail">Email</Label>
+            <div className="bg-white border border-gray-300 rounded-lg px-4 py-3">
+              <p className="text-gray-900">{userData?.email || user?.email || 'N/A'}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Role</label>
-              <p className="mt-1 text-gray-900 capitalize">{userData?.role || 'N/A'}</p>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-white drop-shadow" htmlFor="userRole">Função</Label>
+            <div className="bg-white border border-gray-300 rounded-lg px-4 py-3">
+              <p className="text-gray-900 capitalize">{userData?.role || 'N/A'}</p>
             </div>
           </div>
         </div>
-
-        {/* Tour Guiado */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Tour Guiado</h2>
-          <p className="text-gray-600 mb-4">
-            Revise o tour guiado para relembrar as funcionalidades do sistema.
+      ),
+    },
+    {
+      id: 'tour',
+      title: 'Tour Guiado',
+      description: 'Revise o tour guiado para relembrar as funcionalidades do sistema',
+      icon: <PlayCircle className="h-5 w-5" />,
+      content: (
+        <div className="space-y-4">
+          <p className="text-white/70">
+            O tour guiado ajuda você a entender melhor as funcionalidades do sistema Beauty Sleep.
+            Clique no botão abaixo para iniciar o tour novamente.
           </p>
-          <button
+          <Button
+            variant="primary"
             onClick={handleRefazerTour}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            disabled={!userData?.role}
+            className="bg-white/10 hover:bg-white/20 border border-white/30 text-white backdrop-blur-md"
           >
             Refazer Tour Guiado
-          </button>
+          </Button>
         </div>
-
-        {/* Gestão de Tags */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Gestão de Tags</h2>
-          <p className="text-gray-600 mb-4">
-            Gerencie as tags usadas para categorizar e organizar pacientes.
+      ),
+    },
+    {
+      id: 'tags',
+      title: 'Gestão de Tags',
+      description: 'Gerencie as tags usadas para categorizar e organizar pacientes',
+      icon: <Tag className="h-5 w-5" />,
+      content: (
+        <div className="space-y-4">
+          <p className="text-white/70">
+            As tags ajudam a organizar e categorizar pacientes de forma eficiente.
+            Gerencie todas as tags disponíveis no sistema.
           </p>
-          <button
+          <Button
+            variant="primary"
             onClick={() => router.push('/configuracoes/tags')}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            className="bg-white/10 hover:bg-white/20 border border-white/30 text-white backdrop-blur-md"
           >
             Gerenciar Tags
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      ),
+    },
+  ]
+
+  return (
+    <ContentContainer>
+      <SettingsTemplate
+        title="Configurações"
+        description="Gerencie suas configurações pessoais e preferências do sistema"
+        sections={sections}
+        layout="stacked"
+        showSaveButton={false}
+      />
+    </ContentContainer>
   )
 }
 

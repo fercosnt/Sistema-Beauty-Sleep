@@ -6,7 +6,6 @@
  */
 
 import * as React from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import { cn } from '../../utils/cn'
 
@@ -124,9 +123,9 @@ export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
     <div className={cn('p-6 space-y-6 max-w-6xl mx-auto', className)}>
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-neutral-900">{title}</h1>
+        <h1 className="text-3xl font-bold text-white">{title}</h1>
         {description && (
-          <p className="text-lg text-neutral-600 mt-2">{description}</p>
+          <p className="text-lg text-white/90 mt-2">{description}</p>
         )}
       </div>
 
@@ -142,15 +141,15 @@ export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
                 className={cn(
                   'w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center gap-3',
                   activeSection === section.id
-                    ? 'bg-primary text-white'
-                    : 'text-neutral-700 hover:bg-neutral-100'
+                    ? 'bg-primary-100 text-primary-900 border border-primary-300'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
                 )}
               >
                 {section.icon && <span className="text-lg">{section.icon}</span>}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{section.title}</p>
                   {section.description && (
-                    <p className="text-sm opacity-80 truncate">
+                    <p className="text-sm text-gray-600 truncate">
                       {section.description}
                     </p>
                   )}
@@ -162,24 +161,26 @@ export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
           {/* Active Section Content */}
           <div className="lg:col-span-3">
             {activeSectionData && (
-              <Card>
-                <CardHeader>
+              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-6">
+                <div className="flex flex-col space-y-2 mb-6">
                   <div className="flex items-center gap-3">
                     {activeSectionData.icon && (
-                      <span className="text-2xl">{activeSectionData.icon}</span>
+                      <span className="text-2xl text-gray-900">{activeSectionData.icon}</span>
                     )}
                     <div>
-                      <CardTitle>{activeSectionData.title}</CardTitle>
+                      <h3 className="text-2xl font-semibold leading-none tracking-tight text-gray-900 font-heading">
+                        {activeSectionData.title}
+                      </h3>
                       {activeSectionData.description && (
-                        <CardDescription className="mt-1">
+                        <p className="text-sm text-gray-600 mt-1">
                           {activeSectionData.description}
-                        </CardDescription>
+                        </p>
                       )}
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>{activeSectionData.content}</CardContent>
-              </Card>
+                </div>
+                <div className="text-gray-900 [&_*]:text-gray-900 [&_label]:text-gray-900 [&_p]:text-gray-900 [&_span]:text-gray-900 [&_input]:border-gray-300 [&_input]:border [&_input]:rounded-lg [&_input]:px-3 [&_input]:py-2 [&_select]:border-gray-300 [&_select]:border [&_select]:rounded-lg [&_select]:px-3 [&_select]:py-2 [&_textarea]:border-gray-300 [&_textarea]:border [&_textarea]:rounded-lg [&_textarea]:px-3 [&_textarea]:py-2">{activeSectionData.content}</div>
+              </div>
             )}
           </div>
         </div>
@@ -187,31 +188,36 @@ export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
         /* Stacked Layout */
         <div className="space-y-6">
           {sections.map((section) => (
-            <Card key={section.id}>
-              <CardHeader>
+            <div
+              key={section.id}
+              className="rounded-lg border-2 border-gray-300 bg-white shadow-sm p-6"
+            >
+              <div className="flex flex-col space-y-2 mb-6">
                 <div className="flex items-center gap-3">
                   {section.icon && (
-                    <span className="text-2xl">{section.icon}</span>
+                    <span className="text-2xl text-gray-900">{section.icon}</span>
                   )}
                   <div>
-                    <CardTitle>{section.title}</CardTitle>
+                    <h3 className="text-2xl font-semibold leading-none tracking-tight text-gray-900 font-heading">
+                      {section.title}
+                    </h3>
                     {section.description && (
-                      <CardDescription className="mt-1">
+                      <p className="text-sm text-gray-600 mt-1">
                         {section.description}
-                      </CardDescription>
+                      </p>
                     )}
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>{section.content}</CardContent>
-            </Card>
+              </div>
+              <div className="text-gray-900 [&_*]:text-gray-900 [&_label]:text-gray-900 [&_p]:text-gray-900 [&_span]:text-gray-900 [&_input]:border-gray-300 [&_input]:border [&_input]:rounded-lg [&_input]:px-3 [&_input]:py-2 [&_select]:border-gray-300 [&_select]:border [&_select]:rounded-lg [&_select]:px-3 [&_select]:py-2 [&_textarea]:border-gray-300 [&_textarea]:border [&_textarea]:rounded-lg [&_textarea]:px-3 [&_textarea]:py-2">{section.content}</div>
+            </div>
           ))}
         </div>
       )}
 
       {/* Save Button */}
       {showSaveButton && onSave && (
-        <div className="flex justify-end pt-6 border-t">
+        <div className="flex justify-end pt-6 border-t border-gray-200">
           <Button
             variant="primary"
             size="lg"

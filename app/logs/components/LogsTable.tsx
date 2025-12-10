@@ -83,6 +83,7 @@ export default function LogsTable() {
 
   useEffect(() => {
     applyFilters()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [logs, filters])
 
   const fetchUsers = async () => {
@@ -123,6 +124,7 @@ export default function LogsTable() {
 
       if (!data || data.length === 0) {
         setLogs([])
+        setIsLoading(false)
         return
       }
 
@@ -300,10 +302,10 @@ export default function LogsTable() {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="py-12">
-          <div className="flex items-center justify-center">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center py-12">
             <RefreshCw className="h-6 w-6 animate-spin text-primary-600 mr-2" />
-            <p className="text-gray-600">Carregando logs...</p>
+            <p className="text-gray-900">Carregando logs...</p>
           </div>
         </CardContent>
       </Card>

@@ -477,18 +477,18 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Novo Paciente</CardTitle>
-              <button
-                onClick={onClose}
+          <button
+            onClick={onClose}
                 className="text-gray-500 hover:text-gray-900 transition-colors"
-                disabled={isSubmitting}
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
+            disabled={isSubmitting}
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
           </CardHeader>
 
           <CardContent>
-            {/* Form */}
+        {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
           {/* ID do Paciente - OBRIGATÓRIO (chave única) */}
           <div className="space-y-2">
@@ -760,22 +760,22 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
             <div></div>
             <div className="flex gap-3">
               <Button
-                type="button"
+              type="button"
                 variant="outline"
-                onClick={onClose}
-                disabled={isSubmitting}
-              >
-                Cancelar
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancelar
               </Button>
               <Button
-                type="submit"
+              type="submit"
                 variant="primary"
                 isLoading={isSubmitting}
-                disabled={(() => {
-                  const hasCpfError = errors.cpf ? (errors.cpf.includes('inválido') || errors.cpf.includes('já cadastrado')) : false
-                  return Boolean(isSubmitting || cpfExists || idPacienteExists || hasCpfError)
-                })()}
-              >
+              disabled={(() => {
+                const hasCpfError = errors.cpf ? (errors.cpf.includes('inválido') || errors.cpf.includes('já cadastrado')) : false
+                return Boolean(isSubmitting || cpfExists || idPacienteExists || hasCpfError)
+              })()}
+            >
                 Salvar Paciente
               </Button>
             </div>

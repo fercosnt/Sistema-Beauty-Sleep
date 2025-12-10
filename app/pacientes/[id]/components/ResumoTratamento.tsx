@@ -74,13 +74,17 @@ export default function ResumoTratamento({
     fetchUserRole()
   }, [])
 
-  const sessoesDisponiveis =
+  const sessoesDisponiveis = Math.max(
+    0,
     (paciente.sessoes_compradas || 0) +
     (paciente.sessoes_adicionadas || 0) -
     (paciente.sessoes_utilizadas || 0)
+  )
 
   const totalSessoes = (paciente.sessoes_compradas || 0) + (paciente.sessoes_adicionadas || 0)
-  const adesao = totalSessoes > 0 ? ((paciente.sessoes_utilizadas || 0) / totalSessoes) * 100 : 0
+  // Se não há sessões compradas/adicionadas mas há sessões utilizadas, usar o número de utilizadas como base
+  const baseParaAdesao = totalSessoes > 0 ? totalSessoes : Math.max(1, paciente.sessoes_utilizadas || 0)
+  const adesao = baseParaAdesao > 0 ? ((paciente.sessoes_utilizadas || 0) / baseParaAdesao) * 100 : 0
 
   const getAdesaoBadgeColor = () => {
     if (adesao >= 80) return 'bg-success-100 text-success-800'
@@ -319,7 +323,7 @@ export default function ResumoTratamento({
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {paciente.sessoes_utilizadas || 0} de {totalSessoes} sessões utilizadas
+              {paciente.sessoes_utilizadas || 0} de {totalSessoes > 0 ? totalSessoes : (paciente.sessoes_utilizadas || 0)} sessões utilizadas
             </p>
           </div>
 

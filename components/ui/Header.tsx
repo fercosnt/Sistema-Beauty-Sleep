@@ -7,7 +7,6 @@ import Link from 'next/link'
 import BuscaGlobal from './BuscaGlobal'
 import { useSidebar } from '@/components/providers/SidebarProvider'
 import { cn } from '@/utils/cn'
-import { Glass } from '@beautysmile/components'
 
 interface HeaderProps {
   userRole?: string | null
@@ -63,6 +62,30 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
     }
   }, [])
 
+  // Fechar menu ao clicar fora
+  useEffect(() => {
+    if (!showMenu) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      const menuElement = document.querySelector('[data-user-menu]')
+      if (menuElement && !menuElement.contains(target)) {
+        console.log('Click outside, closing menu')
+        setShowMenu(false)
+      }
+    }
+
+    // Usar setTimeout para não capturar o próprio clique que abriu o menu
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMenu])
+
   const userInitials = userData?.nome
     ? userData.nome
         .split(' ')
@@ -76,77 +99,86 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
     <header className={cn(
       "h-16 sticky top-0 z-50 w-full px-4 md:px-6"
     )}>
-      <Glass variant="light" blur="lg" className="h-full w-full rounded-b-xl border-b border-white/20">
-        <div className="flex items-center justify-between px-4 md:px-6 h-full relative">
-      {/* Lado esquerdo - botão hamburger (mobile) e logo mobile */}
-      <div className="flex items-center gap-4 flex-shrink-0">
-        {/* Hamburger menu button - only visible on mobile */}
-        <button
-          onClick={onMenuToggle}
-          className="md:hidden p-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </button>
-        {/* Logo mobile */}
-        <img 
-          src="/Logo.png" 
-          alt="Beauty Sleep Logo" 
-          className="h-12 w-auto object-contain md:hidden"
-        />
-      </div>
-      
-      {/* Busca Global - hidden on mobile, visible on desktop - centralizada no header */}
-      <div className="hidden md:flex flex-1 items-center justify-center absolute left-0 right-0">
-        <div className="max-w-md w-full">
-          <BuscaGlobal />
-        </div>
-      </div>
-      
-      {/* Lado direito - menu do usuário */}
-      <div className="flex items-center gap-4 flex-shrink-0 relative z-[60] ml-auto">
-        <div className="relative">
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors relative z-[60]"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-xs font-semibold">
-              {userInitials}
+      <div className="h-full w-full rounded-b-xl border-b border-white/20 bg-white/10 backdrop-blur-lg relative" style={{ pointerEvents: 'none' }}>
+        <div className="flex items-center justify-between px-2 sm:px-4 md:px-6 h-full gap-2 relative z-10" style={{ pointerEvents: 'auto' }}>
+          {/* Lado esquerdo - botão hamburger (mobile) e logo mobile */}
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 min-w-0">
+            {/* Hamburger menu button - only visible on mobile */}
+            <button
+              onClick={onMenuToggle}
+              className="md:hidden p-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors flex-shrink-0"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5 sm:h-6 sm:w-6" />
+              ) : (
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+              )}
+            </button>
+            {/* Logo mobile - esconder em telas muito pequenas */}
+            <img 
+              src="/Logo.png" 
+              alt="Beauty Sleep Logo" 
+              className="h-8 sm:h-10 md:h-12 w-auto object-contain hidden sm:block md:hidden flex-shrink-0"
+            />
+          </div>
+          
+          {/* Busca Global - hidden on mobile, visible on desktop - centralizada no header */}
+          <div className="hidden md:flex flex-1 items-center justify-center min-w-0 max-w-2xl mx-4">
+            <div className="w-full max-w-md">
+              <BuscaGlobal />
             </div>
-            <span className="hidden md:block text-white">{userData?.nome || user?.email}</span>
-            <ChevronDown className="h-4 w-4 text-white" />
-          </button>
-          {showMenu && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70]">
-              <div className="py-1">
-                <Link
-                  href="/perfil"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
-                  onClick={() => setShowMenu(false)}
-                >
-                  <User className="h-4 w-4" />
-                  Perfil
-                </Link>
-                <Link
-                  href="/configuracoes"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
-                  onClick={() => setShowMenu(false)}
-                >
-                  <Settings className="h-4 w-4" />
-                  Configurações
-                </Link>
-              </div>
+          </div>
+          
+          {/* Lado direito - menu do usuário */}
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[100] min-w-0" data-user-menu>
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  console.log('Button clicked, current showMenu:', showMenu)
+                  setShowMenu((prev) => {
+                    console.log('Setting showMenu to:', !prev)
+                    return !prev
+                  })
+                }}
+                className="flex items-center gap-1 sm:gap-2 rounded-lg px-2 sm:px-3 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors relative z-[100] cursor-pointer"
+                type="button"
+                aria-expanded={showMenu}
+                aria-haspopup="true"
+              >
+                <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-primary text-white text-xs font-semibold flex-shrink-0">
+                  {userInitials}
+                </div>
+                <span className="hidden lg:block text-white truncate max-w-[120px]">{userData?.nome || user?.email}</span>
+                <ChevronDown className={cn("h-3 w-3 sm:h-4 sm:w-4 text-white flex-shrink-0 transition-transform", showMenu && "rotate-180")} />
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70]">
+                  <div className="py-1">
+                    <Link
+                      href="/perfil"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      <User className="h-4 w-4" />
+                      Perfil
+                    </Link>
+                    <Link
+                      href="/configuracoes"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Configurações
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
-        </div>
-      </Glass>
     </header>
   )
 }
-

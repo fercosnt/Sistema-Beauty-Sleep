@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Users, UserCog, FileText, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Users, UserCog, FileText, LogOut, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -74,7 +74,10 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
     }
   }
 
-  const isAdmin = currentRole === 'admin'
+  const normalizedRole = typeof currentRole === 'string' 
+    ? currentRole.toLowerCase().trim() 
+    : ''
+  const isAdmin = normalizedRole === 'admin'
   const userName = userData?.nome || user?.email || 'Usuário'
   const userInitials = userData?.nome
     ? userData.nome
@@ -103,39 +106,65 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
           onClick={onMobileClose}
         />
       )}
-      {/* Sidebar - Dark Design from DashboardAdminTemplate with Collapsed Support */}
+      {/* Sidebar - Dark para admin, Light para equipe/público */}
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-[60]',
-          'bg-primary-900 text-white flex flex-col',
-          'transform transition-all duration-300 ease-in-out',
-          isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-          isCollapsed ? 'w-16' : 'w-64'
+          'flex flex-col transform transition-all duration-300 ease-in-out',
+          isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0',
+          // No mobile sempre w-64 quando aberta, no desktop usa collapsed state
+          !isMobileOpen && (isCollapsed ? 'md:w-16' : 'md:w-64'),
+          isAdmin
+            ? 'bg-primary-900 text-white'
+            : 'bg-white text-neutral-900 border-r border-neutral-200'
         )}
       >
         {/* Logo Section */}
         <div className={cn(
-          'border-b border-white/10 flex items-center justify-center relative',
-          isCollapsed ? 'p-4' : 'p-6'
+          'flex items-center justify-center relative',
+          isCollapsed && !isMobileOpen ? 'p-4' : 'p-6',
+          isAdmin ? 'border-b border-white/10' : 'border-b border-neutral-200'
         )}>
-          {!isCollapsed ? (
+          {/* No mobile, sempre mostrar logo completo quando aberto */}
+          {(!isCollapsed || isMobileOpen) ? (
             <img
               src="/beauty-smile-logo.svg"
               alt="Beauty Smile"
-              className="h-12 w-auto filter brightness-0 invert transition-opacity duration-300"
+              className={cn(
+                "h-12 w-auto transition-opacity duration-300",
+                isAdmin ? "filter brightness-0 invert" : ""
+              )}
             />
           ) : (
             <div className="w-10 h-10 flex items-center justify-center">
               <img
                 src="/beauty-smile-icon.svg"
                 alt="Beauty Smile"
-                className="w-10 h-10 transition-all duration-300"
-                style={{
-                  filter: 'brightness(0) saturate(100%) invert(85%) sepia(5%) saturate(10%) hue-rotate(0deg) brightness(110%) contrast(95%)',
-                  opacity: 0.95
-                }}
+                className={cn(
+                  "w-10 h-10 transition-all duration-300",
+                  isAdmin ? "filter brightness-0 invert" : ""
+                )}
               />
             </div>
+          )}
+          
+          {/* Botão de fechar no mobile */}
+          {isMobileOpen && (
+            <button
+              onClick={onMobileClose}
+              className={cn(
+                'absolute right-4 top-1/2 -translate-y-1/2',
+                'w-8 h-8 rounded-full border-2',
+                'flex items-center justify-center',
+                'md:hidden z-[70]',
+                isAdmin
+                  ? 'bg-primary-800 border-white/20 text-white hover:bg-primary-700'
+                  : 'bg-neutral-100 border-neutral-300 text-neutral-700 hover:bg-neutral-200'
+              )}
+              title="Fechar menu"
+            >
+              <X className="h-4 w-4" />
+            </button>
           )}
           
           {/* Toggle Button - Only on desktop */}
@@ -143,11 +172,12 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
             onClick={toggleCollapsed}
             className={cn(
               'absolute -right-3 top-1/2 -translate-y-1/2',
-              'w-6 h-6 rounded-full bg-primary-800 border-2 border-white/20',
+              'w-6 h-6 rounded-full border-2',
               'flex items-center justify-center',
-              'text-white hover:bg-primary-700 transition-colors',
-              'shadow-lg',
-              'hidden md:flex z-[70]'
+              'shadow-lg hidden md:flex z-[70]',
+              isAdmin
+                ? 'bg-primary-800 border-white/20 text-white hover:bg-primary-700'
+                : 'bg-neutral-100 border-neutral-300 text-neutral-700 hover:bg-neutral-200'
             )}
             title={isCollapsed ? 'Expandir menu' : 'Colapsar menu'}
           >
@@ -162,7 +192,7 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
         {/* Navigation */}
         <nav className={cn(
           'flex-1 space-y-2',
-          isCollapsed ? 'p-2' : 'p-4'
+          (isCollapsed && !isMobileOpen) ? 'p-2' : 'p-4'
         )}>
           {navigation.map((item) => {
             const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
@@ -173,19 +203,23 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
                 title={isCollapsed ? item.name : undefined}
                 className={cn(
                   'flex items-center rounded-lg transition-colors',
-                  isCollapsed 
+                  (isCollapsed && !isMobileOpen)
                     ? 'justify-center px-2 py-3' 
                     : 'gap-3 px-4 py-3 w-full',
                   isActive
-                    ? 'bg-primary-700 text-white'
-                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+                    ? isAdmin
+                      ? 'bg-primary-700 text-white'
+                      : 'bg-primary-100 text-primary-800'
+                    : isAdmin
+                      ? 'text-white/70 hover:bg-white/5 hover:text-white'
+                      : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900'
                 )}
               >
                 <item.icon className={cn(
                   'flex-shrink-0',
                   isCollapsed ? 'h-5 w-5' : 'h-5 w-5'
                 )} />
-                {!isCollapsed && (
+                {(!isCollapsed || isMobileOpen) && (
                   <span className="font-medium whitespace-nowrap">{item.name}</span>
                 )}
               </Link>
@@ -195,22 +229,40 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
 
         {/* User Section */}
         <div className={cn(
-          'border-t border-white/10',
-          isCollapsed ? 'p-2' : 'p-4'
+          isAdmin ? 'border-t border-white/10' : 'border-t border-neutral-200',
+          (isCollapsed && !isMobileOpen) ? 'p-2' : 'p-4'
         )}>
-          {!isCollapsed ? (
+          {(!isCollapsed || isMobileOpen) ? (
             <>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg font-semibold">{userInitials}</span>
+                <div className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
+                  isAdmin ? "bg-primary-700" : "bg-neutral-200"
+                )}>
+                  <span className={cn(
+                    "text-lg font-semibold",
+                    isAdmin ? "text-white" : "text-neutral-700"
+                  )}>
+                    {userInitials}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{userName}</p>
+                  <p className={cn(
+                    "text-sm font-medium truncate",
+                    isAdmin ? "text-white" : "text-neutral-900"
+                  )}>
+                    {userName}
+                  </p>
                 </div>
               </div>
               <button
                 onClick={handleSignOut}
-                className="w-full px-4 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className={cn(
+                  "w-full px-4 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2",
+                  isAdmin
+                    ? "bg-white/10 hover:bg-white/20 text-white"
+                    : "bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
+                )}
               >
                 <LogOut className="h-4 w-4" />
                 Sair
@@ -219,14 +271,27 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
           ) : (
             <>
               <div className="flex flex-col items-center gap-2 mb-2">
-                <div className="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center">
-                  <span className="text-lg font-semibold">{userInitials}</span>
+                <div className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center",
+                  isAdmin ? "bg-primary-700" : "bg-neutral-200"
+                )}>
+                  <span className={cn(
+                    "text-lg font-semibold",
+                    isAdmin ? "text-white" : "text-neutral-700"
+                  )}>
+                    {userInitials}
+                  </span>
                 </div>
               </div>
               <button
                 onClick={handleSignOut}
                 title="Sair"
-                className="w-full px-2 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center justify-center"
+                className={cn(
+                  "w-full px-2 py-2 text-sm rounded-lg transition-colors flex items-center justify-center",
+                  isAdmin
+                    ? "bg-white/10 hover:bg-white/20 text-white"
+                    : "bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
+                )}
               >
                 <LogOut className="h-4 w-4" />
               </button>

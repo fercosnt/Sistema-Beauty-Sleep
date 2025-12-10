@@ -19,8 +19,8 @@ export default async function LogsPage() {
   return (
     <ContentContainer>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 font-heading">Logs de Auditoria</h1>
-        <p className="mt-2 text-gray-600">Visualize todas as ações realizadas no sistema (apenas Admin)</p>
+        <h1 className="text-3xl font-bold text-white font-heading">Logs de Auditoria</h1>
+        <p className="mt-2 text-white">Visualize todas as ações realizadas no sistema (apenas Admin)</p>
       </div>
       
       <LogsTable />

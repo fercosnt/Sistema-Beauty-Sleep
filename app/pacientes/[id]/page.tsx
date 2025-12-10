@@ -116,12 +116,9 @@ export default function PacienteDetailPage() {
 
   if (isLoading) {
     return (
-      <div className={cn(
-        "p-4 md:py-6",
-        isCollapsed ? "md:pl-3 md:pr-6" : "md:pl-5 md:pr-6"
-      )}>
+      <div className="pl-8 pr-4 md:pl-12 md:pr-8 pt-8">
         <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-black">Carregando dados do paciente...</p>
+          <p className="text-white">Carregando dados do paciente...</p>
         </div>
       </div>
     )
@@ -129,12 +126,9 @@ export default function PacienteDetailPage() {
 
   if (!paciente) {
     return (
-      <div className={cn(
-        "p-4 md:py-6",
-        isCollapsed ? "md:pl-3 md:pr-6" : "md:pl-5 md:pr-6"
-      )}>
+      <div className="pl-8 pr-4 md:pl-12 md:pr-8 pt-8">
         <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-black">Paciente não encontrado</p>
+          <p className="text-white">Paciente não encontrado</p>
         </div>
       </div>
     )
@@ -143,13 +137,12 @@ export default function PacienteDetailPage() {
 
   return (
     <div className={cn(
-      "p-4 md:py-6",
-      isCollapsed ? "md:pl-3 md:pr-6" : "md:pl-5 md:pr-6"
+      "pl-8 pr-4 md:pl-12 md:pr-8 pt-8"
     )}>
       {/* Botão Voltar */}
       <button
         onClick={() => router.push('/pacientes')}
-        className="flex items-center gap-2 mb-6 text-black hover:text-primary-600 transition-colors"
+        className="flex items-center gap-2 mb-6 text-white hover:text-white/80 transition-colors"
       >
         <ArrowLeft className="h-5 w-5" />
         Voltar para Lista

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Plus, Search } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import FiltrosAvancados, { FiltrosAvancadosState } from './FiltrosAvancados'
 import FilterChips from './FilterChips'
 import ModalNovoPaciente from './ModalNovoPaciente'
@@ -325,13 +326,14 @@ export default function PacientesTable() {
           />
         </div>
         {userRole !== 'recepcao' && (
-          <button
+          <Button
+            variant="primary"
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            leftIcon={<Plus className="h-5 w-5" />}
+            className="bg-white/10 hover:bg-white/20 border border-white/30 text-white backdrop-blur-md"
           >
-            <Plus className="h-5 w-5" />
             Novo Paciente
-          </button>
+          </Button>
         )}
       </div>
 

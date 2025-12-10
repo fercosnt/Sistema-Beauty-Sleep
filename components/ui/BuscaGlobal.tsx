@@ -200,7 +200,7 @@ export default function BuscaGlobal() {
               setIsOpen(true)
             }
           }}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white" // Usando ring-primary do Design System
+                  className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white text-sm sm:text-base" // Usando ring-primary do Design System
         />
         {searchQuery && (
           <button

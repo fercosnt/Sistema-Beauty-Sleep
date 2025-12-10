@@ -113,10 +113,10 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
       <div className="flex items-center justify-between">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors backdrop-blur-md ${
             hasActiveFilters
-              ? 'bg-primary-600 text-white hover:bg-primary-700'
-              : 'bg-gray-100 text-black hover:bg-gray-200'
+              ? 'bg-white/20 text-white border border-white/30 hover:bg-white/25'
+              : 'bg-white/10 text-white/70 hover:bg-white/15 border border-white/20'
           }`}
         >
           <Filter className="h-5 w-5" />
@@ -138,7 +138,7 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
         {hasActiveFilters && (
           <button
             onClick={limparFiltros}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-black hover:text-black transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 hover:text-white transition-colors"
           >
             <X className="h-4 w-4" />
             Limpar Filtros
@@ -148,10 +148,10 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
 
       {/* Painel de filtros */}
       {isOpen && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-6">
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg p-6 space-y-6 shadow-lg">
           {/* Filtro por Status */}
           <div>
-            <label className="block text-sm font-medium text-black mb-3">Status</label>
+            <label className="block text-sm font-medium text-white drop-shadow mb-3">Status</label>
             <div className="flex flex-wrap gap-2">
               {STATUS_OPTIONS.map((option) => (
                 <button
@@ -159,8 +159,8 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
                   onClick={() => handleStatusToggle(option.value)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     filtros.status.includes(option.value)
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-black hover:bg-gray-200'
+                      ? 'bg-white/20 text-white border border-white/30'
+                      : 'bg-white/10 text-white/70 hover:bg-white/15 border border-white/20'
                   }`}
                 >
                   {option.label}
@@ -171,14 +171,14 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
 
           {/* Filtro por Tags */}
           <div>
-            <label className="block text-sm font-medium text-black mb-3 flex items-center gap-2">
+            <label className="block text-sm font-medium text-white drop-shadow mb-3 flex items-center gap-2">
               <Tag className="h-4 w-4" />
               Tags
             </label>
             {isLoadingTags ? (
-              <p className="text-sm text-black">Carregando tags...</p>
+              <p className="text-sm text-white/70">Carregando tags...</p>
             ) : tags.length === 0 ? (
-              <p className="text-sm text-black">Nenhuma tag cadastrada</p>
+              <p className="text-sm text-white/70">Nenhuma tag cadastrada</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
@@ -187,8 +187,8 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
                     onClick={() => handleTagToggle(tag.id)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                       filtros.tags.includes(tag.id)
-                        ? 'text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'text-white border border-white/30'
+                        : 'bg-white/10 text-white/70 hover:bg-white/15 border border-white/20'
                     }`}
                     style={
                       filtros.tags.includes(tag.id)
@@ -205,14 +205,14 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
 
           {/* Filtro por Adesão */}
           <div>
-            <label className="block text-sm font-medium text-black mb-3 flex items-center gap-2">
+            <label className="block text-sm font-medium text-white drop-shadow mb-3 flex items-center gap-2">
               <Sliders className="h-4 w-4" />
               Adesão (%)
             </label>
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-500 mb-1">Mínimo</label>
+                  <label className="block text-xs text-white/70 mb-1">Mínimo</label>
                   <input
                     type="range"
                     min="0"
@@ -221,10 +221,10 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
                     onChange={(e) => handleAdesaoChange('min', parseInt(e.target.value))}
                     className="w-full"
                   />
-                  <div className="text-xs text-black mt-1">{filtros.adesaoMin}%</div>
+                  <div className="text-xs text-white mt-1">{filtros.adesaoMin}%</div>
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-black mb-1">Máximo</label>
+                  <label className="block text-xs text-white/70 mb-1">Máximo</label>
                   <input
                     type="range"
                     min="0"
@@ -233,10 +233,10 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
                     onChange={(e) => handleAdesaoChange('max', parseInt(e.target.value))}
                     className="w-full"
                   />
-                  <div className="text-xs text-black mt-1">{filtros.adesaoMax}%</div>
+                  <div className="text-xs text-white mt-1">{filtros.adesaoMax}%</div>
                 </div>
               </div>
-              <div className="text-sm text-black">
+              <div className="text-sm text-white">
                 Faixa: {filtros.adesaoMin}% - {filtros.adesaoMax}%
               </div>
             </div>
@@ -244,27 +244,27 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
 
           {/* Filtro por Data de Cadastro */}
           <div>
-            <label className="block text-sm font-medium text-black mb-3 flex items-center gap-2">
+            <label className="block text-sm font-medium text-white drop-shadow mb-3 flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               Data de Cadastro
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-black mb-1">Data Inicial</label>
+                <label className="block text-xs text-white/70 mb-1">Data Inicial</label>
                 <input
                   type="date"
                   value={filtros.dataInicio}
                   onChange={(e) => handleDataChange('inicio', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/50"
                 />
               </div>
               <div>
-                <label className="block text-xs text-black mb-1">Data Final</label>
+                <label className="block text-xs text-white/70 mb-1">Data Final</label>
                 <input
                   type="date"
                   value={filtros.dataFim}
                   onChange={(e) => handleDataChange('fim', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/50"
                 />
               </div>
             </div>

@@ -19,7 +19,7 @@ export default function PacienteTabs({ activeTab, onTabChange }: PacienteTabsPro
   ]
 
   return (
-    <div className="border-b border-gray-200 mb-6">
+    <div className="border-b border-white/20 mb-6">
       <nav className="-mb-px flex space-x-8 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon
@@ -29,15 +29,15 @@ export default function PacienteTabs({ activeTab, onTabChange }: PacienteTabsPro
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`
-                flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap
+                flex items-center gap-2 py-4 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap
                 ${
                   isActive
-                    ? 'border-primary-600 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-white text-white drop-shadow'
+                    : 'border-transparent text-white/60 hover:text-white hover:border-white/40'
                 }
               `}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-white/60'}`} />
               {tab.label}
             </button>
           )

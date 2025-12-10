@@ -5,6 +5,59 @@
 /* Importar variáveis CSS e keyframes do Design System */
 @import './design-system-variables.css';
 
+/* Override Shepherd.js default styles - Must come before theme styles */
+.shepherd-header,
+.shepherd-element .shepherd-header,
+.shepherd-element .shepherd-header.shepherd-header,
+[class*="shepherd"] .shepherd-header,
+.shepherd-theme-admin .shepherd-header,
+header.shepherd-header.shepherd-theme-admin,
+.shepherd-element header.shepherd-header.shepherd-theme-admin {
+  background: linear-gradient(135deg, #00109E 0%, #000A5C 100%) !important;
+  background-color: #00109E !important;
+  background-image: linear-gradient(135deg, #00109E 0%, #000A5C 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Tema Light - cores do perfil não-admin (roxo/teal) */
+.shepherd-theme-light .shepherd-header,
+.shepherd-element .shepherd-theme-light .shepherd-header,
+header.shepherd-header.shepherd-theme-light,
+.shepherd-element header.shepherd-header.shepherd-theme-light {
+  background: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important; /* Teal → Purple */
+  background-color: #35BFAD !important;
+  background-image: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Remove any white borders or outlines from shepherd elements */
+.shepherd-element,
+.shepherd-element *,
+.shepherd-theme-light,
+.shepherd-theme-light * {
+  border-color: transparent !important;
+  outline: none !important;
+}
+
+.shepherd-theme-light .shepherd-element {
+  border: none !important;
+  outline: none !important;
+}
+
 /* Fontes - Usando fontes do sistema para evitar problemas de carregamento
    Helvetica está disponível nativamente no macOS e muitos sistemas
    Arial serve como fallback universal
@@ -84,63 +137,291 @@ h6 {
   font-family: 'Helvetica', Arial, sans-serif;
 }
 
-/* Shepherd.js Custom Theme - Beauty Smile LP Colors */
-.shepherd-theme-custom {
+/* Shepherd.js Theme - Admin (Dark) */
+.shepherd-theme-admin {
   max-width: 400px;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
-.shepherd-theme-custom .shepherd-header {
-  background-color: rgb(18, 20, 43); /* #12142B - primary-900 do Design System (lp-dark) */
+.shepherd-theme-admin .shepherd-header {
+  background: linear-gradient(135deg, #000A5C 0%, #0A0F2E 100%); /* Azul mais escuro */
   color: white;
-  padding: 1rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
 }
 
-.shepherd-theme-custom .shepherd-title {
-  font-weight: 600;
-  font-size: 1.125rem;
-}
-
-.shepherd-theme-custom .shepherd-text {
-  color: #000000; /* Texto preto */
-  padding: 1rem;
-  font-family: 'Helvetica', Arial, sans-serif;
-}
-
-.shepherd-theme-custom .shepherd-footer {
-  padding: 0.75rem;
-  border-top: 1px solid #e5e7eb; /* gray-200 */
-}
-
-.shepherd-theme-custom .shepherd-button {
-  background: linear-gradient(90deg, #242859 0%, #5D64BB 100%); /* Gradiente usando cores do Design System (lp-blue-light → primary-500) */
+.shepherd-theme-admin .shepherd-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  font-family: 'Montserrat', 'Helvetica', Arial, sans-serif;
   color: white;
-  border: none;
-  padding: 0.5rem 1rem; /* 8px 16px - spacing[2] spacing[4] do Design System */
-  border-radius: 0.5rem; /* 8px - borderRadius.DEFAULT (spacing[2]) do Design System */
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  margin: 0;
+  flex: 1;
 }
 
-.shepherd-theme-custom .shepherd-button:hover {
-  background: linear-gradient(90deg, #262A5D 0%, #5A60B5 100%); /* Gradiente hover (primary-700 → primary-500) */
-}
-
-.shepherd-theme-custom .shepherd-button.shepherd-button-secondary {
-  background-color: #6b7280; /* gray-500 */
-}
-
-.shepherd-theme-custom .shepherd-button.shepherd-button-secondary:hover {
-  background-color: #4b5563; /* gray-600 */
-}
-
-.shepherd-theme-custom .shepherd-cancel-icon {
+.shepherd-theme-admin .shepherd-cancel-icon {
   color: white;
+  opacity: 0.8;
+  font-size: 1.5rem;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  margin-left: 1rem;
 }
 
-.shepherd-theme-custom .shepherd-cancel-icon:hover {
+.shepherd-theme-admin .shepherd-cancel-icon:hover {
   color: #fca5a5; /* danger-300 */
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.shepherd-theme-admin .shepherd-text {
+  color: #1f2937; /* gray-800 */
+  padding: 1.25rem;
+  font-family: 'Inter', 'Helvetica', Arial, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  background: white;
+}
+
+.shepherd-theme-admin .shepherd-footer,
+.shepherd-element .shepherd-theme-admin .shepherd-footer,
+footer.shepherd-footer.shepherd-theme-admin {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb; /* gray-200 */
+  background: white;
+  border-radius: 0 0 0.75rem 0.75rem !important;
+  -webkit-border-radius: 0 0 0.75rem 0.75rem !important;
+  border-bottom-left-radius: 0.75rem !important;
+  border-bottom-right-radius: 0.75rem !important;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.shepherd-theme-admin .shepherd-button {
+  background: linear-gradient(135deg, #00109E 0%, #5D64BB 100%); /* primary-600 → primary-500 */
+  color: white !important;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 16, 158, 0.2);
+  font-family: 'Inter', 'Helvetica', Arial, sans-serif;
+  min-width: 80px;
+}
+
+.shepherd-theme-admin .shepherd-button:hover {
+  background: linear-gradient(135deg, #0015C7 0%, #6B72C5 100%) !important;
+  box-shadow: 0 4px 8px rgba(0, 16, 158, 0.3);
+  transform: translateY(-1px);
+  color: white !important;
+}
+
+.shepherd-theme-admin .shepherd-button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.shepherd-theme-admin .shepherd-button.shepherd-button-secondary {
+  background: #6b7280 !important; /* gray-500 */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+}
+
+.shepherd-theme-admin .shepherd-button.shepherd-button-secondary:hover {
+  background: #4b5563 !important; /* gray-600 */
+  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+}
+
+/* Shepherd.js Theme - Light (Non-Admin) - Glass Effect */
+.shepherd-theme-light {
+  max-width: 400px;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative;
+}
+
+.shepherd-theme-light .shepherd-header,
+.shepherd-element .shepherd-theme-light .shepherd-header,
+.shepherd-element[data-shepherd-step] .shepherd-header.shepherd-header,
+.shepherd-theme-light header.shepherd-header,
+header.shepherd-header.shepherd-theme-light,
+.shepherd-element[class*="shepherd-theme-light"] .shepherd-header {
+  background: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important; /* Teal → Purple */
+  background-color: #35BFAD !important; /* Fallback teal */
+  background-image: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important;
+  color: white !important;
+  padding: 1.25rem 1.25rem 1rem 1.25rem !important;
+  border-radius: 0 !important; /* Sem arredondamento */
+  -webkit-border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden !important;
+  margin: 0 !important;
+  z-index: 2;
+}
+
+.shepherd-theme-light .shepherd-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  font-family: 'Montserrat', 'Helvetica', Arial, sans-serif;
+  color: white;
+  margin: 0;
+  flex: 1;
+}
+
+.shepherd-theme-light .shepherd-cancel-icon,
+.shepherd-theme-light .shepherd-cancel-icon span,
+.shepherd-theme-light .shepherd-cancel-icon::before,
+.shepherd-theme-light .shepherd-cancel-icon::after,
+.shepherd-cancel-icon,
+[class*="shepherd"] .shepherd-cancel-icon {
+  color: white !important;
+  opacity: 0.9 !important;
+  font-size: 1.5rem !important;
+  line-height: 1 !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  margin-left: 1rem;
+  text-shadow: none !important;
+  -webkit-text-fill-color: white !important;
+}
+
+.shepherd-theme-light .shepherd-cancel-icon:hover,
+.shepherd-theme-light .shepherd-cancel-icon:hover span,
+.shepherd-cancel-icon:hover {
+  color: #fca5a5 !important; /* danger-300 */
+  opacity: 1 !important;
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-text-fill-color: #fca5a5 !important;
+}
+
+.shepherd-theme-light .shepherd-text {
+  color: #374151; /* gray-700 */
+  padding: 1.25rem;
+  font-family: 'Inter', 'Helvetica', Arial, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 0;
+}
+
+.shepherd-theme-light .shepherd-footer,
+.shepherd-element .shepherd-theme-light .shepherd-footer,
+footer.shepherd-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 0 0 1rem 1rem !important;
+  -webkit-border-radius: 0 0 1rem 1rem !important;
+  border-bottom-left-radius: 1rem !important;
+  border-bottom-right-radius: 1rem !important;
+  border: none !important;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.shepherd-theme-light .shepherd-button {
+  background: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%); /* accent → purple */
+  color: white !important;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(53, 191, 173, 0.3);
+  font-family: 'Inter', 'Helvetica', Arial, sans-serif;
+  min-width: 80px;
+}
+
+.shepherd-theme-light .shepherd-button:hover {
+  background: linear-gradient(135deg, #2FA896 0%, #7C4ED6 100%) !important;
+  box-shadow: 0 4px 8px rgba(53, 191, 173, 0.4);
+  transform: translateY(-1px);
+  color: white !important;
+}
+
+.shepherd-theme-light .shepherd-button:focus {
+  outline: 2px solid rgba(53, 191, 173, 0.5);
+  outline-offset: 2px;
+}
+
+.shepherd-theme-light .shepherd-button.shepherd-button-secondary {
+  background: rgba(107, 114, 128, 0.8) !important; /* gray-500 com opacidade */
+  color: white !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+}
+
+.shepherd-theme-light .shepherd-button.shepherd-button-secondary:hover {
+  background: rgba(75, 85, 99, 0.9) !important; /* gray-600 com opacidade */
+  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+}
+
+/* Overlay customization for both themes */
+.shepherd-theme-admin .shepherd-element-attached-bottom .shepherd-arrow,
+.shepherd-theme-admin .shepherd-element-attached-top .shepherd-arrow,
+.shepherd-theme-admin .shepherd-element-attached-left .shepherd-arrow,
+.shepherd-theme-admin .shepherd-element-attached-right .shepherd-arrow {
+  border-color: #00109E; /* primary-600 */
+}
+
+.shepherd-theme-light .shepherd-element-attached-bottom .shepherd-arrow,
+.shepherd-theme-light .shepherd-element-attached-top .shepherd-arrow,
+.shepherd-theme-light .shepherd-element-attached-left .shepherd-arrow,
+.shepherd-theme-light .shepherd-element-attached-right .shepherd-arrow {
+  border-color: rgba(255, 255, 255, 0.9);
 }
 
 /* Sidebar Background - Imagem de fundo texturizada */
@@ -174,5 +455,16 @@ h6 {
 .sidebar-background > * {
   position: relative;
   z-index: 1;
+}
+
+/* Forçar cor do cabeçalho do tour light - deve vir no final para sobrescrever tudo */
+.shepherd-element.shepherd-theme-light .shepherd-header,
+.shepherd-element[class*="shepherd-theme-light"] .shepherd-header,
+.shepherd-theme-light.shepherd-element .shepherd-header,
+header.shepherd-header[class*="shepherd-theme-light"],
+.shepherd-theme-light header.shepherd-header {
+  background: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important;
+  background-color: #35BFAD !important;
+  background-image: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important;
 }
 
