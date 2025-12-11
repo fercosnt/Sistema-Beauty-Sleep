@@ -156,11 +156,13 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
         .from('pacientes')
         .select('id, nome')
         .eq('cpf', cpfLimpo)
-        .single()
+        .maybeSingle()
 
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows returned
-        console.error('Erro ao verificar CPF:', error)
+      if (error) {
+        // Ignora erros de "no rows" mas loga outros erros
+        if (error.code !== 'PGRST116') {
+          console.error('Erro ao verificar CPF:', error)
+        }
         return null
       }
 
@@ -182,11 +184,13 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
         .from('pacientes')
         .select('id, nome')
         .eq('biologix_id', idPaciente.trim())
-        .single()
+        .maybeSingle()
 
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows returned
-        console.error('Erro ao verificar ID do Paciente:', error)
+      if (error) {
+        // Ignora erros de "no rows" mas loga outros erros
+        if (error.code !== 'PGRST116') {
+          console.error('Erro ao verificar ID do Paciente:', error)
+        }
         return null
       }
 
