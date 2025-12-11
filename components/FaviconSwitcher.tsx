@@ -12,7 +12,7 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    // Função para atualizar o favicon de forma segura
+    // Função para atualizar o favicon SEM remover elementos
     const updateFavicon = () => {
       if (typeof window === 'undefined' || !document?.head) return
 
@@ -26,65 +26,43 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
         const timestamp = Date.now()
         const faviconUrl = `${faviconPath}?v=${timestamp}&p=${pathname}`
 
-        // Função auxiliar para remover elemento de forma segura
-        const safeRemove = (element: Element | null) => {
-          if (!element) return
-          
+        // Define os tipos de favicon que precisamos
+        const iconConfigs = [
+          { rel: 'icon', sizes: '32x32' },
+          { rel: 'icon', sizes: '16x16' },
+          { rel: 'icon', sizes: 'any' },
+          { rel: 'shortcut icon' },
+          { rel: 'apple-touch-icon', sizes: '180x180' },
+        ]
+
+        // Atualiza ou cria cada tipo de favicon
+        iconConfigs.forEach(({ rel, sizes }) => {
           try {
-            // Verifica se o elemento ainda está no DOM antes de remover
-            if (element.isConnected && element.parentNode) {
-              // Usa remove() que é mais seguro e moderno
-              if (typeof element.remove === 'function') {
-                element.remove()
-              } else {
-                // Fallback apenas se remove() não estiver disponível
-                const parent = element.parentNode
-                if (parent && parent.contains(element)) {
-                  parent.removeChild(element)
-                }
+            if (!document?.head) return
+
+            // Procura por um link existente com o mesmo rel e sizes
+            const selector = sizes 
+              ? `link[rel="${rel}"][sizes="${sizes}"]`
+              : `link[rel="${rel}"]`
+            
+            let existingLink = document.querySelector(selector) as HTMLLinkElement
+
+            if (existingLink) {
+              // Se existe, apenas atualiza o href (evita removeChild completamente)
+              existingLink.href = faviconUrl
+            } else {
+              // Se não existe, cria um novo
+              const link = document.createElement('link')
+              link.rel = rel
+              link.type = 'image/svg+xml'
+              link.href = faviconUrl
+              if (sizes) {
+                link.setAttribute('sizes', sizes)
               }
+              document.head.appendChild(link)
             }
           } catch (error) {
-            // Ignora erros silenciosamente - elemento pode já ter sido removido
-          }
-        }
-
-        // Remove todos os links de favicon existentes de forma segura
-        const existingIcons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
-        existingIcons.forEach((link) => {
-          safeRemove(link)
-        })
-
-        // Aguarda um frame para garantir que a remoção foi processada
-        requestAnimationFrame(() => {
-          try {
-            // Cria novos links com tamanhos específicos para melhor visibilidade
-            const iconSizes = [
-              { rel: 'icon', sizes: '32x32' },
-              { rel: 'icon', sizes: '16x16' },
-              { rel: 'icon', sizes: 'any' },
-              { rel: 'shortcut icon' },
-              { rel: 'apple-touch-icon', sizes: '180x180' },
-            ]
-
-            iconSizes.forEach(({ rel, sizes }) => {
-              try {
-                if (!document?.head) return
-                
-                const link = document.createElement('link')
-                link.rel = rel
-                link.type = 'image/svg+xml'
-                link.href = faviconUrl
-                if (sizes) {
-                  link.setAttribute('sizes', sizes)
-                }
-                document.head.appendChild(link)
-              } catch (error) {
-                // Ignora erros ao criar links individuais
-              }
-            })
-          } catch (error) {
-            // Ignora erros ao criar novos links
+            // Ignora erros silenciosamente
           }
         })
       } catch (error) {
