@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface FaviconSwitcherProps {
   role: string | null
 }
 
 export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
+  const pathname = usePathname()
+
   useEffect(() => {
     // Função para atualizar o favicon sem remover elementos
     const updateFavicon = () => {
@@ -18,9 +21,9 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
           ? '/favicon-admin.svg' 
           : '/favicon-equipe.svg'
 
-        // Adiciona timestamp para forçar recarregamento e evitar cache
+        // Adiciona timestamp e pathname para forçar recarregamento e evitar cache
         const timestamp = Date.now()
-        const faviconUrl = `${faviconPath}?v=${timestamp}`
+        const faviconUrl = `${faviconPath}?v=${timestamp}&p=${pathname}`
 
         // Atualiza ou cria link para icon
         let linkIcon = document.querySelector('link[rel="icon"]') as HTMLLinkElement
@@ -30,6 +33,8 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
           linkIcon.type = 'image/svg+xml'
           document.head.appendChild(linkIcon)
         }
+        // Força atualização mesmo se o href for o mesmo
+        linkIcon.href = ''
         linkIcon.href = faviconUrl
 
         // Atualiza ou cria link para shortcut icon
@@ -40,6 +45,7 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
           linkShortcut.type = 'image/svg+xml'
           document.head.appendChild(linkShortcut)
         }
+        linkShortcut.href = ''
         linkShortcut.href = faviconUrl
 
         // Atualiza ou cria link para apple-touch-icon
@@ -49,20 +55,40 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
           linkApple.rel = 'apple-touch-icon'
           document.head.appendChild(linkApple)
         }
+        linkApple.href = ''
         linkApple.href = faviconUrl
+
+        // Força o navegador a recarregar o favicon
+        // Alguns navegadores precisam disso para atualizar
+        const faviconLinks = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]')
+        faviconLinks.forEach((link) => {
+          const linkEl = link as HTMLLinkElement
+          const originalHref = linkEl.href
+          linkEl.href = ''
+          setTimeout(() => {
+            linkEl.href = originalHref
+          }, 10)
+        })
       } catch (error) {
         // Silenciosamente ignora erros
         console.warn('Erro ao atualizar favicon:', error)
       }
     }
 
-    // Executa após um pequeno delay para garantir que o DOM está pronto
-    const timeoutId = setTimeout(updateFavicon, 100)
+    // Executa imediatamente
+    updateFavicon()
+
+    // Executa após delays para garantir que funcione em todos os navegadores
+    const timeoutId1 = setTimeout(updateFavicon, 50)
+    const timeoutId2 = setTimeout(updateFavicon, 200)
+    const timeoutId3 = setTimeout(updateFavicon, 500)
 
     return () => {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId1)
+      clearTimeout(timeoutId2)
+      clearTimeout(timeoutId3)
     }
-  }, [role])
+  }, [role, pathname]) // Adiciona pathname como dependência para atualizar ao navegar
 
   return null
 }
