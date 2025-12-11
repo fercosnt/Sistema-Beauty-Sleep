@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 
 interface FaviconSwitcherProps {
@@ -9,11 +9,12 @@ interface FaviconSwitcherProps {
 
 export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
   const pathname = usePathname()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    // Função para atualizar o favicon sem remover elementos
+    // Função para atualizar o favicon de forma segura
     const updateFavicon = () => {
-      if (typeof window === 'undefined' || !document.head) return
+      if (typeof window === 'undefined' || !document?.head) return
 
       try {
         // Determina qual favicon usar
@@ -25,68 +26,86 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
         const timestamp = Date.now()
         const faviconUrl = `${faviconPath}?v=${timestamp}&p=${pathname}`
 
-        // Remove todos os links de favicon existentes de forma segura
-        const existingIcons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
-        existingIcons.forEach((link) => {
+        // Função auxiliar para remover elemento de forma segura
+        const safeRemove = (element: Element | null) => {
+          if (!element) return
+          
           try {
-            if (link) {
-              // Usa remove() se disponível (mais seguro), senão usa removeChild
-              if (typeof link.remove === 'function') {
-                link.remove()
-              } else if (link.parentNode) {
-                link.parentNode.removeChild(link)
+            // Verifica se o elemento ainda está no DOM antes de remover
+            if (element.isConnected && element.parentNode) {
+              // Usa remove() que é mais seguro e moderno
+              if (typeof element.remove === 'function') {
+                element.remove()
+              } else {
+                // Fallback apenas se remove() não estiver disponível
+                const parent = element.parentNode
+                if (parent && parent.contains(element)) {
+                  parent.removeChild(element)
+                }
               }
             }
           } catch (error) {
-            // Ignora erros se o elemento já foi removido ou não tem parent
+            // Ignora erros silenciosamente - elemento pode já ter sido removido
           }
+        }
+
+        // Remove todos os links de favicon existentes de forma segura
+        const existingIcons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
+        existingIcons.forEach((link) => {
+          safeRemove(link)
         })
 
-        // Cria novos links com tamanhos específicos para melhor visibilidade
-        const iconSizes = [
-          { rel: 'icon', sizes: '32x32' },
-          { rel: 'icon', sizes: '16x16' },
-          { rel: 'icon', sizes: 'any' },
-          { rel: 'shortcut icon' },
-          { rel: 'apple-touch-icon', sizes: '180x180' },
-        ]
-
-        iconSizes.forEach(({ rel, sizes }) => {
+        // Aguarda um frame para garantir que a remoção foi processada
+        requestAnimationFrame(() => {
           try {
-            const link = document.createElement('link')
-            link.rel = rel
-            link.type = 'image/svg+xml'
-            link.href = faviconUrl
-            if (sizes) {
-              link.setAttribute('sizes', sizes)
-            }
-            if (document.head) {
-              document.head.appendChild(link)
-            }
+            // Cria novos links com tamanhos específicos para melhor visibilidade
+            const iconSizes = [
+              { rel: 'icon', sizes: '32x32' },
+              { rel: 'icon', sizes: '16x16' },
+              { rel: 'icon', sizes: 'any' },
+              { rel: 'shortcut icon' },
+              { rel: 'apple-touch-icon', sizes: '180x180' },
+            ]
+
+            iconSizes.forEach(({ rel, sizes }) => {
+              try {
+                if (!document?.head) return
+                
+                const link = document.createElement('link')
+                link.rel = rel
+                link.type = 'image/svg+xml'
+                link.href = faviconUrl
+                if (sizes) {
+                  link.setAttribute('sizes', sizes)
+                }
+                document.head.appendChild(link)
+              } catch (error) {
+                // Ignora erros ao criar links individuais
+              }
+            })
           } catch (error) {
-            console.warn('Erro ao criar link de favicon:', error)
+            // Ignora erros ao criar novos links
           }
         })
       } catch (error) {
-        // Silenciosamente ignora erros
-        console.warn('Erro ao atualizar favicon:', error)
+        // Silenciosamente ignora erros gerais
       }
     }
 
-    // Executa imediatamente
-    updateFavicon()
+    // Limpa timeout anterior se existir
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
 
-    // Executa após delays para garantir que funcione em todos os navegadores
-    const timeoutId1 = setTimeout(updateFavicon, 50)
-    const timeoutId2 = setTimeout(updateFavicon, 200)
-    const timeoutId3 = setTimeout(updateFavicon, 500)
+    // Executa após um pequeno delay para garantir que o DOM está pronto
+    timeoutRef.current = setTimeout(updateFavicon, 100)
 
     return () => {
-      clearTimeout(timeoutId1)
-      clearTimeout(timeoutId2)
-      clearTimeout(timeoutId3)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
     }
-  }, [role, pathname]) // Adiciona pathname como dependência para atualizar ao navegar
+  }, [role, pathname])
 
   return null
 }
