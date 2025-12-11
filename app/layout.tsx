@@ -7,14 +7,15 @@ import { MobileMenuProvider } from "@/components/providers/MobileMenuProvider";
 import { SidebarProvider } from "@/components/providers/SidebarProvider";
 import MobileLayoutClient from "@/components/MobileLayoutClient";
 import ToastContainer from "@/components/ui/Toast";
+import FaviconSwitcher from "@/components/FaviconSwitcher";
 
 export const metadata: Metadata = {
   title: "Beauty Sleep - Sistema de Tratamento",
   description: "Sistema de gestão de tratamento de ronco e apneia",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/favicon-equipe.svg", // Favicon padrão (será substituído dinamicamente pelo FaviconSwitcher)
+    shortcut: "/favicon-equipe.svg",
+    apple: "/favicon-equipe.svg",
   },
 };
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
+        <FaviconSwitcher role={userRole} />
         <ToastContainer />
         {userRole ? (
           <SidebarProvider>
