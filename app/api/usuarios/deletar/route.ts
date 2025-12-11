@@ -55,8 +55,9 @@ export async function DELETE(request: NextRequest) {
 
     const authUser = authUsers.users.find((u) => u.email === userEmail)
     
-    // Deletar da tabela users primeiro (isso pode falhar se houver foreign keys)
-    const { error: deleteError } = await supabase
+    // Usar cliente admin para deletar (bypassa RLS)
+    // Deletar da tabela users primeiro
+    const { error: deleteError } = await supabaseAdmin
       .from('users')
       .delete()
       .eq('id', userId)
@@ -69,7 +70,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Se encontrou o usuário no Auth, deletar também
+    // Deletar do Auth também (se encontrou o usuário)
     if (authUser) {
       const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(authUser.id)
       
@@ -77,6 +78,8 @@ export async function DELETE(request: NextRequest) {
         console.warn('Erro ao deletar usuário do Auth (não crítico):', authDeleteError)
         // Não falhar o processo, pois já deletamos da tabela
       }
+    } else {
+      console.warn('Usuário não encontrado no Auth, mas foi deletado da tabela users')
     }
 
     return NextResponse.json({ 
