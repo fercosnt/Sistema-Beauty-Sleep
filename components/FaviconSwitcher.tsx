@@ -25,38 +25,29 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
         const timestamp = Date.now()
         const faviconUrl = `${faviconPath}?v=${timestamp}&p=${pathname}`
 
-        // Atualiza ou cria link para icon
-        let linkIcon = document.querySelector('link[rel="icon"]') as HTMLLinkElement
-        if (!linkIcon) {
-          linkIcon = document.createElement('link')
-          linkIcon.rel = 'icon'
-          linkIcon.type = 'image/svg+xml'
-          document.head.appendChild(linkIcon)
-        }
-        // Força atualização mesmo se o href for o mesmo
-        linkIcon.href = ''
-        linkIcon.href = faviconUrl
+        // Remove todos os links de favicon existentes para evitar duplicatas
+        const existingIcons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
+        existingIcons.forEach(link => link.remove())
 
-        // Atualiza ou cria link para shortcut icon
-        let linkShortcut = document.querySelector('link[rel="shortcut icon"]') as HTMLLinkElement
-        if (!linkShortcut) {
-          linkShortcut = document.createElement('link')
-          linkShortcut.rel = 'shortcut icon'
-          linkShortcut.type = 'image/svg+xml'
-          document.head.appendChild(linkShortcut)
-        }
-        linkShortcut.href = ''
-        linkShortcut.href = faviconUrl
+        // Cria novos links com tamanhos específicos para melhor visibilidade
+        const iconSizes = [
+          { rel: 'icon', sizes: '32x32' },
+          { rel: 'icon', sizes: '16x16' },
+          { rel: 'icon', sizes: 'any' },
+          { rel: 'shortcut icon' },
+          { rel: 'apple-touch-icon', sizes: '180x180' },
+        ]
 
-        // Atualiza ou cria link para apple-touch-icon
-        let linkApple = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement
-        if (!linkApple) {
-          linkApple = document.createElement('link')
-          linkApple.rel = 'apple-touch-icon'
-          document.head.appendChild(linkApple)
-        }
-        linkApple.href = ''
-        linkApple.href = faviconUrl
+        iconSizes.forEach(({ rel, sizes }) => {
+          const link = document.createElement('link')
+          link.rel = rel
+          link.type = 'image/svg+xml'
+          link.href = faviconUrl
+          if (sizes) {
+            link.setAttribute('sizes', sizes)
+          }
+          document.head.appendChild(link)
+        })
 
         // Força o navegador a recarregar o favicon
         // Alguns navegadores precisam disso para atualizar

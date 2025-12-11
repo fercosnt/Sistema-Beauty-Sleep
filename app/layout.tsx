@@ -13,9 +13,15 @@ export const metadata: Metadata = {
   title: "Beauty Sleep - Sistema de Tratamento",
   description: "Sistema de gestão de tratamento de ronco e apneia",
   icons: {
-    icon: "/favicon-equipe.svg", // Favicon padrão (será substituído dinamicamente pelo FaviconSwitcher)
+    icon: [
+      { url: "/favicon-equipe.svg", sizes: "any", type: "image/svg+xml" },
+      { url: "/favicon-equipe.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/favicon-equipe.svg", sizes: "16x16", type: "image/svg+xml" },
+    ],
     shortcut: "/favicon-equipe.svg",
-    apple: "/favicon-equipe.svg",
+    apple: [
+      { url: "/favicon-equipe.svg", sizes: "180x180", type: "image/svg+xml" },
+    ],
   },
 };
 
