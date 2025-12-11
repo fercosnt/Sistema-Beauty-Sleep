@@ -4,7 +4,9 @@
 -- ============================================
 -- 1. Verificar por ID do paciente
 -- ============================================
--- Substitua 'SEU_PACIENTE_ID_AQUI' pelo ID do paciente
+-- IMPORTANTE: Substitua '00000000-0000-0000-0000-000000000000' por um UUID válido
+-- Exemplo de UUID válido: '5896b077-7e53-4507-8828-aafdcbdab22c'
+-- Você pode encontrar o ID na URL do perfil do paciente ou na primeira query abaixo
 SELECT 
   id,
   nome,
@@ -16,7 +18,7 @@ SELECT
   created_at,
   updated_at
 FROM pacientes
-WHERE id = 'SEU_PACIENTE_ID_AQUI';
+WHERE id = '00000000-0000-0000-0000-000000000000'::uuid;
 
 -- ============================================
 -- 2. Verificar por CPF
@@ -107,16 +109,27 @@ JOIN tags t ON t.id = pt.tag_id
 WHERE pt.paciente_id = 'SEU_PACIENTE_ID_AQUI';
 
 -- ============================================
--- 6. Verificar se paciente foi deletado
+-- 6. Verificar se paciente foi deletado (por ID)
 -- ============================================
--- Este query retorna vazio se o paciente não existe mais
--- Substitua 'SEU_PACIENTE_ID_AQUI' pelo ID do paciente
+-- IMPORTANTE: Substitua '00000000-0000-0000-0000-000000000000' por um UUID válido
 SELECT 
   CASE 
-    WHEN EXISTS (SELECT 1 FROM pacientes WHERE id = 'SEU_PACIENTE_ID_AQUI') 
-    THEN 'Paciente AINDA EXISTE na base de dados'
-    ELSE 'Paciente NÃO EXISTE mais na base de dados'
+    WHEN EXISTS (SELECT 1 FROM pacientes WHERE id = '00000000-0000-0000-0000-000000000000'::uuid) 
+    THEN '✅ Paciente AINDA EXISTE na base de dados'
+    ELSE '❌ Paciente NÃO EXISTE mais na base de dados'
   END as status_paciente;
+
+-- ============================================
+-- 6b. Verificar se paciente foi deletado (por NOME - mais fácil)
+-- ============================================
+-- Substitua 'Nome do Paciente' pelo nome (ou parte do nome)
+SELECT 
+  CASE 
+    WHEN EXISTS (SELECT 1 FROM pacientes WHERE nome ILIKE '%Nome do Paciente%') 
+    THEN '✅ Paciente AINDA EXISTE na base de dados'
+    ELSE '❌ Paciente NÃO EXISTE mais na base de dados'
+  END as status_paciente,
+  (SELECT COUNT(*) FROM pacientes WHERE nome ILIKE '%Nome do Paciente%') as total_encontrados;
 
 -- ============================================
 -- 7. Listar todos os pacientes (útil para encontrar IDs)

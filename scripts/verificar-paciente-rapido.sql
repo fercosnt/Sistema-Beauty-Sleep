@@ -4,7 +4,8 @@
 -- ============================================
 -- VERIFICAÇÃO RÁPIDA POR NOME OU CPF
 -- ============================================
--- Substitua 'Nome ou CPF' pelo que você quer buscar
+-- IMPORTANTE: Substitua 'Nome ou CPF' pelo que você quer buscar
+-- Exemplo: '%João Silva%' ou '12345678900'
 
 SELECT 
   id,
@@ -26,14 +27,29 @@ WHERE
 ORDER BY nome;
 
 -- ============================================
--- VERIFICAR SE EXISTE (retorna SIM ou NÃO)
+-- VERIFICAR SE EXISTE POR ID (retorna SIM ou NÃO)
 -- ============================================
--- Substitua 'ID_DO_PACIENTE' pelo ID do paciente
+-- IMPORTANTE: Substitua o UUID abaixo pelo ID real do paciente
+-- Exemplo de UUID válido: '5896b077-7e53-4507-8828-aafdcbdab22c'
+-- Você pode encontrar o ID na primeira query acima ou na URL do perfil do paciente
 
 SELECT 
   CASE 
-    WHEN EXISTS (SELECT 1 FROM pacientes WHERE id = 'ID_DO_PACIENTE') 
+    WHEN EXISTS (SELECT 1 FROM pacientes WHERE id = '00000000-0000-0000-0000-000000000000'::uuid) 
     THEN '✅ SIM - Paciente AINDA EXISTE'
     ELSE '❌ NÃO - Paciente NÃO EXISTE mais'
   END as paciente_existe;
+
+-- ============================================
+-- VERIFICAR SE EXISTE POR NOME (mais fácil de usar)
+-- ============================================
+-- Substitua 'Nome do Paciente' pelo nome exato ou parcial
+
+SELECT 
+  CASE 
+    WHEN EXISTS (SELECT 1 FROM pacientes WHERE nome ILIKE '%Nome do Paciente%') 
+    THEN '✅ SIM - Paciente AINDA EXISTE'
+    ELSE '❌ NÃO - Paciente NÃO EXISTE mais'
+  END as paciente_existe,
+  (SELECT COUNT(*) FROM pacientes WHERE nome ILIKE '%Nome do Paciente%') as total_encontrados;
 
