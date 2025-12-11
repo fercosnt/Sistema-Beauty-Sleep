@@ -25,9 +25,22 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
         const timestamp = Date.now()
         const faviconUrl = `${faviconPath}?v=${timestamp}&p=${pathname}`
 
-        // Remove todos os links de favicon existentes para evitar duplicatas
+        // Remove todos os links de favicon existentes de forma segura
         const existingIcons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
-        existingIcons.forEach(link => link.remove())
+        existingIcons.forEach((link) => {
+          try {
+            if (link) {
+              // Usa remove() se disponível (mais seguro), senão usa removeChild
+              if (typeof link.remove === 'function') {
+                link.remove()
+              } else if (link.parentNode) {
+                link.parentNode.removeChild(link)
+              }
+            }
+          } catch (error) {
+            // Ignora erros se o elemento já foi removido ou não tem parent
+          }
+        })
 
         // Cria novos links com tamanhos específicos para melhor visibilidade
         const iconSizes = [
@@ -39,26 +52,20 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
         ]
 
         iconSizes.forEach(({ rel, sizes }) => {
-          const link = document.createElement('link')
-          link.rel = rel
-          link.type = 'image/svg+xml'
-          link.href = faviconUrl
-          if (sizes) {
-            link.setAttribute('sizes', sizes)
+          try {
+            const link = document.createElement('link')
+            link.rel = rel
+            link.type = 'image/svg+xml'
+            link.href = faviconUrl
+            if (sizes) {
+              link.setAttribute('sizes', sizes)
+            }
+            if (document.head) {
+              document.head.appendChild(link)
+            }
+          } catch (error) {
+            console.warn('Erro ao criar link de favicon:', error)
           }
-          document.head.appendChild(link)
-        })
-
-        // Força o navegador a recarregar o favicon
-        // Alguns navegadores precisam disso para atualizar
-        const faviconLinks = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]')
-        faviconLinks.forEach((link) => {
-          const linkEl = link as HTMLLinkElement
-          const originalHref = linkEl.href
-          linkEl.href = ''
-          setTimeout(() => {
-            linkEl.href = originalHref
-          }, 10)
         })
       } catch (error) {
         // Silenciosamente ignora erros
