@@ -8,25 +8,11 @@ interface FaviconSwitcherProps {
 
 export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
   useEffect(() => {
-    // Função para atualizar o favicon
+    // Função para atualizar o favicon sem remover elementos
     const updateFavicon = () => {
       if (typeof window === 'undefined' || !document.head) return
 
       try {
-        // Remove todos os favicons existentes (incluindo os do metadata)
-        const existingLinks = document.querySelectorAll(
-          'link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]'
-        )
-        existingLinks.forEach(link => {
-          try {
-            if (link.parentNode) {
-              link.parentNode.removeChild(link)
-            }
-          } catch (e) {
-            // Ignora erros ao remover links
-          }
-        })
-
         // Determina qual favicon usar
         const faviconPath = role === 'admin' 
           ? '/favicon-admin.svg' 
@@ -36,23 +22,34 @@ export default function FaviconSwitcher({ role }: FaviconSwitcherProps) {
         const timestamp = Date.now()
         const faviconUrl = `${faviconPath}?v=${timestamp}`
 
-        // Cria novos links para o favicon
-        const linkIcon = document.createElement('link')
-        linkIcon.rel = 'icon'
-        linkIcon.type = 'image/svg+xml'
+        // Atualiza ou cria link para icon
+        let linkIcon = document.querySelector('link[rel="icon"]') as HTMLLinkElement
+        if (!linkIcon) {
+          linkIcon = document.createElement('link')
+          linkIcon.rel = 'icon'
+          linkIcon.type = 'image/svg+xml'
+          document.head.appendChild(linkIcon)
+        }
         linkIcon.href = faviconUrl
-        document.head.appendChild(linkIcon)
 
-        const linkShortcut = document.createElement('link')
-        linkShortcut.rel = 'shortcut icon'
-        linkShortcut.type = 'image/svg+xml'
+        // Atualiza ou cria link para shortcut icon
+        let linkShortcut = document.querySelector('link[rel="shortcut icon"]') as HTMLLinkElement
+        if (!linkShortcut) {
+          linkShortcut = document.createElement('link')
+          linkShortcut.rel = 'shortcut icon'
+          linkShortcut.type = 'image/svg+xml'
+          document.head.appendChild(linkShortcut)
+        }
         linkShortcut.href = faviconUrl
-        document.head.appendChild(linkShortcut)
 
-        const linkApple = document.createElement('link')
-        linkApple.rel = 'apple-touch-icon'
+        // Atualiza ou cria link para apple-touch-icon
+        let linkApple = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement
+        if (!linkApple) {
+          linkApple = document.createElement('link')
+          linkApple.rel = 'apple-touch-icon'
+          document.head.appendChild(linkApple)
+        }
         linkApple.href = faviconUrl
-        document.head.appendChild(linkApple)
       } catch (error) {
         // Silenciosamente ignora erros
         console.warn('Erro ao atualizar favicon:', error)
