@@ -11,6 +11,11 @@ import ToastContainer from "@/components/ui/Toast";
 export const metadata: Metadata = {
   title: "Beauty Sleep - Sistema de Tratamento",
   description: "Sistema de gestão de tratamento de ronco e apneia",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default async function RootLayout({

@@ -1071,16 +1071,16 @@ If you realize you skipped a task or made a mistake:
 - [x] 10.2.9 Collect feedback from stakeholders and fix issues if any - ✅ Processo documentado: docs/deploy/GUIA_DEPLOY_STAGING.md (ação manual necessária)
 
 #### 10.3 Deploy em Produção
-- [ ] 10.3.1 Get stakeholder approval to deploy to production - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.2 Create final database backup (snapshot) before production deploy - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.3 Configure environment variables in Vercel (production Supabase) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.4 Configure Supabase Auth for production (Site URL, Redirect URLs) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` + `GUIA_CONFIGURACAO_SUPABASE_AUTH.md` (ação manual necessária)
-- [ ] 10.3.5 Deploy to production: `vercel --prod` or via Vercel Dashboard - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.6 Verify deployment: visit production URL - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.7 Test critical flows: Login, Create paciente, Create sessão, View dashboard - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.8 Verify sync-biologix cron job is running (check logs next day at 10h) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária - verificar no dia seguinte)
-- [ ] 10.3.9 Test route protection and role-based access control - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
-- [ ] 10.3.10 Monitor for errors in first 24 hours (Vercel logs, Supabase logs) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` + `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
+- [ ] 10.3.1 Obter aprovação dos stakeholders para deploy em produção - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.2 Criar backup final do banco de dados (snapshot) antes do deploy em produção - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.3 Configurar variáveis de ambiente no Vercel (Supabase de produção) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.4 Configurar Supabase Auth para produção (Site URL, Redirect URLs) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` + `GUIA_CONFIGURACAO_SUPABASE_AUTH.md` (ação manual necessária)
+- [ ] 10.3.5 Fazer deploy em produção: `vercel --prod` ou via Vercel Dashboard - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.6 Verificar deployment: visitar URL de produção - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.7 Testar fluxos críticos: Login, Criar paciente, Criar sessão, Visualizar dashboard - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.8 Verificar se o cron job sync-biologix está rodando (verificar logs no dia seguinte às 10h) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária - verificar no dia seguinte)
+- [ ] 10.3.9 Testar proteção de rotas e controle de acesso baseado em roles - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` (ação manual necessária)
+- [ ] 10.3.10 Monitorar erros nas primeiras 24 horas (logs do Vercel, logs do Supabase) - 📋 Guia criado: `docs/deploy/GUIA_DEPLOY_PRODUCAO.md` + `docs/deploy/GUIA_MONITORAMENTO.md` (ação manual necessária)
 
 #### 10.4 Documentação de Uso
 - [x] 10.4.1 Create "Guia do Administrador" (PDF or Markdown) - ✅ Criado: docs/guia-usuario/GUIA_ADMINISTRADOR.md
