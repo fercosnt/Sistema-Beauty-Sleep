@@ -3,8 +3,18 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/Dialog'
+import { Label } from '@/components/ui/Label'
+import { showSuccess, showError } from '@/components/ui/Toast'
 import FiltrosAvancados, { FiltrosAvancadosState } from './FiltrosAvancados'
 import FilterChips from './FilterChips'
 import ModalNovoPaciente from './ModalNovoPaciente'
@@ -45,6 +55,9 @@ export default function PacientesTable() {
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [userRole, setUserRole] = useState<string | null>(null)
+  const [deletingPaciente, setDeletingPaciente] = useState<Paciente | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [confirmDeleteChecked, setConfirmDeleteChecked] = useState(false)
   const itemsPerPage = 20
 
   // Buscar role do usuário
@@ -294,6 +307,39 @@ export default function PacientesTable() {
     router.push(`/pacientes/${pacienteId}`)
   }
 
+  const handleExcluir = async () => {
+    if (!deletingPaciente || !confirmDeleteChecked) {
+      showError('Por favor, confirme que você entende que esta ação é permanente')
+      return
+    }
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/pacientes/deletar?pacienteId=${deletingPaciente.id}`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        showError(data.error || 'Erro ao excluir paciente')
+        return
+      }
+
+      showSuccess('Paciente excluído com sucesso!')
+      setDeletingPaciente(null)
+      setConfirmDeleteChecked(false)
+      // Recarregar lista
+      setCurrentPage(1)
+      setFiltros({ ...filtros })
+    } catch (error) {
+      console.error('Erro inesperado ao excluir paciente:', error)
+      showError('Erro inesperado ao excluir paciente')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   const handleRemoveFilter = (type: keyof FiltrosAvancadosState, value?: string) => {
     if (type === 'status' && value) {
       setFiltros({ ...filtros, status: filtros.status.filter((s) => s !== value) })
@@ -421,15 +467,29 @@ export default function PacientesTable() {
                           <div className="text-sm text-black">{formatDate(paciente.ultimo_exame)}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleRowClick(paciente.id)
-                            }}
-                            className="text-primary-600 hover:text-primary-900"
-                          >
-                            Ver Detalhes
-                          </button>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleRowClick(paciente.id)
+                              }}
+                              className="text-primary-600 hover:text-primary-900"
+                            >
+                              Ver Detalhes
+                            </button>
+                            {userRole === 'admin' && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setDeletingPaciente(paciente)
+                                }}
+                                className="text-danger-600 hover:text-danger-900 flex items-center gap-1"
+                                title="Excluir paciente permanentemente"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )
@@ -478,6 +538,103 @@ export default function PacientesTable() {
           setFiltros({ ...filtros })
         }}
       />
+
+      {/* Modal Confirmar Exclusão */}
+      <Dialog open={!!deletingPaciente} onOpenChange={() => {
+        if (!isDeleting) {
+          setDeletingPaciente(null)
+          setConfirmDeleteChecked(false)
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar Exclusão</DialogTitle>
+            <DialogDescription>
+              Esta ação não pode ser desfeita. O paciente será excluído permanentemente do sistema, incluindo todos os exames, sessões e notas relacionados.
+            </DialogDescription>
+          </DialogHeader>
+          {deletingPaciente && (
+            <div className="space-y-4">
+              <div className="bg-danger-50 border border-danger-200 rounded-lg p-4">
+                <p className="text-sm text-danger-800">
+                  <strong>Atenção:</strong> Você está prestes a excluir permanentemente o paciente:
+                </p>
+                <p className="mt-2 font-semibold text-danger-900">{deletingPaciente.nome}</p>
+                {deletingPaciente.cpf && (
+                  <p className="text-sm text-danger-700">CPF: {formatCPF(deletingPaciente.cpf)}</p>
+                )}
+              </div>
+              <p className="text-sm text-gray-600">
+                Todos os dados relacionados a este paciente serão removidos permanentemente:
+              </p>
+              <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                <li>Exames vinculados</li>
+                <li>Sessões registradas</li>
+                <li>Notas clínicas</li>
+                <li>Histórico de status</li>
+                <li>Tags atribuídas</li>
+              </ul>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="confirmDeletePaciente"
+                  checked={confirmDeleteChecked}
+                  onChange={(e) => setConfirmDeleteChecked(e.target.checked)}
+                  className="h-4 w-4 text-danger-600 focus:ring-danger-500 border-gray-300 rounded cursor-pointer"
+                />
+                <Label htmlFor="confirmDeletePaciente" className="cursor-pointer text-sm text-gray-900">
+                  Eu entendo que esta ação é permanente e não pode ser desfeita
+                </Label>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex flex-row justify-end gap-2 pt-4 border-t border-gray-200">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeletingPaciente(null)
+                setConfirmDeleteChecked(false)
+              }}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <button
+              onClick={handleExcluir}
+              disabled={isDeleting || !confirmDeleteChecked}
+              className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-all ${
+                isDeleting || !confirmDeleteChecked
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60'
+                  : 'bg-danger-600 hover:bg-danger-700 text-white cursor-pointer'
+              }`}
+            >
+              {isDeleting && (
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              )}
+              Excluir Permanentemente
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
