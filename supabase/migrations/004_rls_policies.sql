@@ -14,7 +14,10 @@ ALTER TABLE sessao_historico ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Helper function to get user role from auth.users
-CREATE OR REPLACE FUNCTION get_user_role() RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION get_user_role() RETURNS TEXT
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   user_email TEXT;
   user_role TEXT;
@@ -30,10 +33,13 @@ BEGIN
   
   RETURN user_role;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Helper function to get user id from auth.users
-CREATE OR REPLACE FUNCTION get_user_id() RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_user_id() RETURNS UUID
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   user_email TEXT;
   user_uuid UUID;
@@ -49,7 +55,7 @@ BEGIN
   
   RETURN user_uuid;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- ============================================
 -- USERS TABLE POLICIES

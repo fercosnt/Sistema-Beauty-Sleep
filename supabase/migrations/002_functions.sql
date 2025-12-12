@@ -3,7 +3,10 @@
 
 -- Function: validar_cpf
 -- Validates CPF using the official Brazilian algorithm
-CREATE OR REPLACE FUNCTION validar_cpf(cpf TEXT) RETURNS BOOLEAN AS $$
+CREATE OR REPLACE FUNCTION validar_cpf(cpf TEXT) RETURNS BOOLEAN
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 DECLARE
   cpf_limpo TEXT;
   i INTEGER;
@@ -59,11 +62,14 @@ BEGIN
   
   RETURN TRUE;
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 
 -- Function: formatar_cpf
 -- Formats CPF as 000.000.000-00
-CREATE OR REPLACE FUNCTION formatar_cpf(cpf TEXT) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION formatar_cpf(cpf TEXT) RETURNS TEXT
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 DECLARE
   cpf_limpo TEXT;
 BEGIN
@@ -81,20 +87,26 @@ BEGIN
          SUBSTRING(cpf_limpo, 7, 3) || '-' ||
          SUBSTRING(cpf_limpo, 10, 2);
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 
 -- Function: extract_cpf_from_username
 -- Extracts CPF from username using regex
-CREATE OR REPLACE FUNCTION extract_cpf_from_username(username TEXT) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION extract_cpf_from_username(username TEXT) RETURNS TEXT
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 BEGIN
   -- Extract only numbers from username (assuming CPF is embedded)
   RETURN REGEXP_REPLACE(username, '[^0-9]', '', 'g');
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 
 -- Function: calcular_imc
 -- Calculates BMI (Body Mass Index)
-CREATE OR REPLACE FUNCTION calcular_imc(peso_kg NUMERIC, altura_cm NUMERIC) RETURNS NUMERIC AS $$
+CREATE OR REPLACE FUNCTION calcular_imc(peso_kg NUMERIC, altura_cm NUMERIC) RETURNS NUMERIC
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 DECLARE
   altura_m NUMERIC;
 BEGIN
@@ -105,11 +117,14 @@ BEGIN
   altura_m := altura_cm / 100.0;
   RETURN ROUND((peso_kg / (altura_m * altura_m))::NUMERIC, 2);
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 
 -- Function: calcular_score_ronco
 -- Calculates snoring score: (baixo × 1 + medio × 2 + alto × 3) / 3
-CREATE OR REPLACE FUNCTION calcular_score_ronco(baixo NUMERIC, medio NUMERIC, alto NUMERIC) RETURNS NUMERIC AS $$
+CREATE OR REPLACE FUNCTION calcular_score_ronco(baixo NUMERIC, medio NUMERIC, alto NUMERIC) RETURNS NUMERIC
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 DECLARE
   total NUMERIC;
 BEGIN
@@ -124,11 +139,14 @@ BEGIN
   
   RETURN ROUND(((baixo * 1 + medio * 2 + alto * 3) / 3)::NUMERIC, 2);
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 
 -- Function: calcular_adesao
 -- Calculates treatment adherence percentage
-CREATE OR REPLACE FUNCTION calcular_adesao(sessoes_utilizadas INT, sessoes_total INT) RETURNS NUMERIC AS $$
+CREATE OR REPLACE FUNCTION calcular_adesao(sessoes_utilizadas INT, sessoes_total INT) RETURNS NUMERIC
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 BEGIN
   IF sessoes_total IS NULL OR sessoes_total <= 0 THEN
     RETURN NULL;
@@ -140,11 +158,14 @@ BEGIN
   
   RETURN ROUND((sessoes_utilizadas::NUMERIC / sessoes_total::NUMERIC * 100)::NUMERIC, 2);
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 
 -- Function: calcular_proxima_manutencao
 -- Calculates next maintenance date (6 months after finalization)
-CREATE OR REPLACE FUNCTION calcular_proxima_manutencao(data_finalizacao DATE) RETURNS DATE AS $$
+CREATE OR REPLACE FUNCTION calcular_proxima_manutencao(data_finalizacao DATE) RETURNS DATE
+LANGUAGE plpgsql IMMUTABLE
+SET search_path = ''
+AS $$
 BEGIN
   IF data_finalizacao IS NULL THEN
     RETURN NULL;
@@ -152,5 +173,5 @@ BEGIN
   
   RETURN data_finalizacao + INTERVAL '6 months';
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$;
 

@@ -304,17 +304,17 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
                 <p className="text-xs text-gray-500 mb-1">Total de Mudanças</p>
                 <p className="text-2xl font-bold text-gray-900">{metricas.totalMudancas}</p>
               </div>
-              <div className="bg-info-50 rounded-lg p-4">
-                <p className="text-xs text-info-600 mb-1">Mudanças para Lead</p>
-                <p className="text-2xl font-bold text-info-900">{metricas.mudancasPorStatus.lead}</p>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-xs text-gray-500 mb-1">Mudanças para Lead</p>
+                <p className="text-2xl font-bold text-gray-900">{metricas.mudancasPorStatus.lead}</p>
               </div>
-              <div className="bg-success-50 rounded-lg p-4">
-                <p className="text-xs text-success-600 mb-1">Mudanças para Ativo</p>
-                <p className="text-2xl font-bold text-success-900">{metricas.mudancasPorStatus.ativo}</p>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-xs text-gray-500 mb-1">Mudanças para Ativo</p>
+                <p className="text-2xl font-bold text-gray-900">{metricas.mudancasPorStatus.ativo}</p>
               </div>
-              <div className="bg-neutral-100 rounded-lg p-4">
-                <p className="text-xs text-neutral-600 mb-1">Mudanças para Inativo</p>
-                <p className="text-2xl font-bold text-neutral-900">{metricas.mudancasPorStatus.inativo}</p>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-xs text-gray-500 mb-1">Mudanças para Inativo</p>
+                <p className="text-2xl font-bold text-gray-900">{metricas.mudancasPorStatus.inativo}</p>
               </div>
             </div>
           </CardContent>

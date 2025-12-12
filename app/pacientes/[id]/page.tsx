@@ -137,7 +137,7 @@ export default function PacienteDetailPage() {
 
   return (
     <div className={cn(
-      "pl-8 pr-4 md:pl-12 md:pr-8 pt-8"
+      "pl-8 pr-4 md:pl-12 md:pr-8 pt-8 pb-6 md:pb-8"
     )}>
       {/* Botão Voltar */}
       <button
@@ -172,7 +172,7 @@ export default function PacienteDetailPage() {
       <PacienteTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Conteúdo das Tabs */}
-      <div className="mt-6">
+      <div className="mt-6 mb-4">
         {activeTab === 'exames' && <TabExames pacienteId={paciente.id} />}
         {activeTab === 'sessoes' && <TabSessoes pacienteId={paciente.id} onSessionUpdate={() => setRefreshKey(prev => prev + 1)} />}
         {activeTab === 'evolucao' && <TabEvolucao pacienteId={paciente.id} />}

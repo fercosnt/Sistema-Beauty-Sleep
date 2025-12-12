@@ -1818,7 +1818,7 @@ function extractCPF(patient: any): string | null {
 **Supabase (Edge Function):**
 ```env
 BIOLOGIX_USERNAME=l|DEMO|47349438
-BIOLOGIX_PASSWORD=oA6fGc5qaNw4Dhre
+BIOLOGIX_PASSWORD=sua_senha_biologix_aqui
 BIOLOGIX_PARTNER_ID=4798042LW
 SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=xxx

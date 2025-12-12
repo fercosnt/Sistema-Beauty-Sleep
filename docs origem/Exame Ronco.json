@@ -105,7 +105,7 @@
         "url": "https://api.biologixsleep.com/v2/sessions/open",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n\"username\":\"l|DEMO|47349438\",\n\"password\":\"oA6fGc5qaNw4Dhre\",\n\"source\": 100\n}",
+        "jsonBody": "{\n\"username\":\"l|DEMO|47349438\",\n\"password\":\"[SENHA_REMOVIDA_POR_SEGURANCA]\",\n\"source\": 100\n}",
         "options": {
           "response": {
             "response": {
@@ -2809,7 +2809,7 @@
         "url": "https://api.biologixsleep.com/v2/sessions/open",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n\"username\":\"l|DEMO|47349438\",\n\"password\":\"oA6fGc5qaNw4Dhre\",\n\"source\": 100\n}",
+        "jsonBody": "{\n\"username\":\"l|DEMO|47349438\",\n\"password\":\"[SENHA_REMOVIDA_POR_SEGURANCA]\",\n\"source\": 100\n}",
         "options": {
           "response": {
             "response": {

@@ -3,7 +3,10 @@
 
 -- Trigger: atualizar_sessoes_utilizadas
 -- Updates pacientes.sessoes_utilizadas when sessoes are inserted or deleted
-CREATE OR REPLACE FUNCTION atualizar_sessoes_utilizadas_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION atualizar_sessoes_utilizadas_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
   IF TG_OP = 'INSERT' THEN
     UPDATE pacientes
@@ -18,7 +21,7 @@ BEGIN
   END IF;
   RETURN NULL;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER atualizar_sessoes_utilizadas
   AFTER INSERT OR DELETE ON sessoes
@@ -27,7 +30,10 @@ CREATE TRIGGER atualizar_sessoes_utilizadas
 
 -- Trigger: atualizar_status_ao_criar_sessao
 -- Changes paciente status from 'lead' to 'ativo' when first session is created
-CREATE OR REPLACE FUNCTION atualizar_status_ao_criar_sessao_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION atualizar_status_ao_criar_sessao_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
   UPDATE pacientes
   SET status = 'ativo'
@@ -35,7 +41,7 @@ BEGIN
     AND status = 'lead';
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER atualizar_status_ao_criar_sessao
   AFTER INSERT ON sessoes
@@ -45,7 +51,10 @@ CREATE TRIGGER atualizar_status_ao_criar_sessao
 -- Trigger: calcular_proxima_manutencao_trigger
 -- Calculates proxima_manutencao when status changes to 'finalizado'
 -- Uses the date of the last session, not CURRENT_DATE
-CREATE OR REPLACE FUNCTION calcular_proxima_manutencao_trigger_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION calcular_proxima_manutencao_trigger_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 DECLARE
   ultima_sessao_date DATE;
 BEGIN
@@ -65,7 +74,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER calcular_proxima_manutencao_trigger
   BEFORE UPDATE ON pacientes
@@ -75,14 +84,17 @@ CREATE TRIGGER calcular_proxima_manutencao_trigger
 
 -- Trigger: atualizar_imc
 -- Calculates and sets IMC when exames are inserted or updated
-CREATE OR REPLACE FUNCTION atualizar_imc_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION atualizar_imc_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
   IF NEW.peso_kg IS NOT NULL AND NEW.altura_cm IS NOT NULL THEN
     NEW.imc := calcular_imc(NEW.peso_kg, NEW.altura_cm);
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER atualizar_imc
   BEFORE INSERT OR UPDATE ON exames
@@ -91,7 +103,10 @@ CREATE TRIGGER atualizar_imc
 
 -- Trigger: registrar_historico_status
 -- Records status changes in historico_status table
-CREATE OR REPLACE FUNCTION registrar_historico_status_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION registrar_historico_status_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
   IF NEW.status != OLD.status THEN
     INSERT INTO historico_status (paciente_id, status_anterior, status_novo, user_id)
@@ -99,7 +114,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER registrar_historico_status
   AFTER UPDATE ON pacientes
@@ -109,7 +124,10 @@ CREATE TRIGGER registrar_historico_status
 
 -- Trigger: registrar_edicao_sessao
 -- Records session edits in sessao_historico table
-CREATE OR REPLACE FUNCTION registrar_edicao_sessao_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION registrar_edicao_sessao_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
   IF OLD.data_sessao IS DISTINCT FROM NEW.data_sessao THEN
     INSERT INTO sessao_historico (sessao_id, campo_alterado, valor_anterior, valor_novo, user_id)
@@ -141,7 +159,7 @@ BEGIN
   
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER registrar_edicao_sessao
   AFTER UPDATE ON sessoes
@@ -157,7 +175,10 @@ CREATE TRIGGER registrar_edicao_sessao
 
 -- Trigger: audit_log_trigger
 -- Records all changes to pacientes and sessoes in audit_logs
-CREATE OR REPLACE FUNCTION audit_log_trigger_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION audit_log_trigger_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 DECLARE
   detalhes_json JSONB;
 BEGIN
@@ -184,7 +205,7 @@ BEGIN
   END IF;
   RETURN NULL;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER audit_log_pacientes
   AFTER INSERT OR UPDATE OR DELETE ON pacientes
@@ -198,12 +219,15 @@ CREATE TRIGGER audit_log_sessoes
 
 -- Trigger: atualizar_updated_at
 -- Automatically updates updated_at timestamp on pacientes
-CREATE OR REPLACE FUNCTION atualizar_updated_at_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION atualizar_updated_at_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
   NEW.updated_at := NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER atualizar_updated_at_pacientes
   BEFORE UPDATE ON pacientes

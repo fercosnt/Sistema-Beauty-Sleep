@@ -2,7 +2,10 @@
 -- Fix: Use last session date instead of CURRENT_DATE when calculating proxima_manutencao
 
 -- Replace the trigger function to use the last session date
-CREATE OR REPLACE FUNCTION calcular_proxima_manutencao_trigger_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION calcular_proxima_manutencao_trigger_func() RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 DECLARE
   ultima_sessao_date DATE;
 BEGIN
@@ -22,7 +25,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Fix existing pacientes that have proxima_manutencao calculated incorrectly
 -- Recalculate proxima_manutencao for all finalizado pacientes using their last session date

@@ -2,7 +2,10 @@
 -- Updates audit_log_trigger_func to use get_user_id() instead of NULL
 
 -- Drop and recreate the trigger function with user_id capture
-CREATE OR REPLACE FUNCTION audit_log_trigger_func() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION audit_log_trigger_func() RETURNS TRIGGER
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   detalhes_json JSONB;
   current_user_id UUID;
@@ -33,7 +36,7 @@ BEGIN
   END IF;
   RETURN NULL;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path TO public;
+$$;
 
 -- Note: The triggers audit_log_pacientes and audit_log_sessoes don't need to be recreated
 -- as they already reference the function. The function update will apply automatically.

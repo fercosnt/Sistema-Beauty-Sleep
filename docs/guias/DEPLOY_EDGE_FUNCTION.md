@@ -57,7 +57,7 @@ npx supabase login
 # Configurar secrets
 # ⚠️ IMPORTANTE: Não inclua aspas ao redor dos valores!
 npx supabase secrets set BIOLOGIX_USERNAME=l|DEMO|47349438
-npx supabase secrets set BIOLOGIX_PASSWORD=oA6fGc5qaNw4Dhre
+npx supabase secrets set BIOLOGIX_PASSWORD=sua_senha_biologix_aqui
 npx supabase secrets set BIOLOGIX_SOURCE=100
 npx supabase secrets set BIOLOGIX_PARTNER_ID=4798042LW
 ```

@@ -24,7 +24,7 @@
 
 **Solução:**
 1. Verifique o secret no Dashboard: Edge Functions → Secrets → `BIOLOGIX_PASSWORD`
-2. Deve ser exatamente: `oA6fGc5qaNw4Dhre` (sem aspas)
+2. Deve ser a senha real da sua conta Biologix (sem aspas)
 3. ⚠️ **IMPORTANTE:** Não inclua aspas ao configurar secrets via CLI
 
 ### 3. Erro 403 - "notAuthorized"
@@ -47,7 +47,7 @@
 
 - [x] Secrets configurados corretamente:
   - [x] `BIOLOGIX_USERNAME` = `l|DEMO|47349438`
-  - [x] `BIOLOGIX_PASSWORD` = `oA6fGc5qaNw4Dhre`
+  - [x] `BIOLOGIX_PASSWORD` = `[sua_senha_biologix]`
   - [x] `BIOLOGIX_SOURCE` = `100`
   - [x] `BIOLOGIX_PARTNER_ID` = `4798042LW` ⚠️ **CRÍTICO: Deve ser apenas o ID, não o header Authorization**
 - [x] Edge Function versão 21 deployada e funcionando
@@ -112,7 +112,7 @@ SELECT
 ```bash
 # ⚠️ IMPORTANTE: Não inclua aspas ao redor dos valores!
 npx supabase secrets set BIOLOGIX_USERNAME=l|DEMO|47349438
-npx supabase secrets set BIOLOGIX_PASSWORD=oA6fGc5qaNw4Dhre
+npx supabase secrets set BIOLOGIX_PASSWORD=sua_senha_biologix_aqui
 npx supabase secrets set BIOLOGIX_SOURCE=100
 npx supabase secrets set BIOLOGIX_PARTNER_ID=4798042LW
 ```
