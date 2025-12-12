@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User, Settings, ChevronDown, Menu, X } from 'lucide-react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import BuscaGlobal from './BuscaGlobal'
 import { useSidebar } from '@/components/providers/SidebarProvider'
 import { cn } from '@/utils/cn'
@@ -16,6 +16,7 @@ interface HeaderProps {
 
 export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: HeaderProps) {
   const { isCollapsed } = useSidebar()
+  const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [showMenu, setShowMenu] = useState(false)
@@ -69,20 +70,31 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
       const menuElement = document.querySelector('[data-user-menu]')
+      
+      // Não fechar se clicar em qualquer elemento dentro do menu
+      if (menuElement && menuElement.contains(target)) {
+        return
+      }
+      
+      // Não fechar se clicar em um link ou botão
+      if (target.closest('a') || target.closest('button')) {
+        return
+      }
+      
+      // Fechar apenas se clicar fora do menu
       if (menuElement && !menuElement.contains(target)) {
-        console.log('Click outside, closing menu')
         setShowMenu(false)
       }
     }
 
     // Usar setTimeout para não capturar o próprio clique que abriu o menu
     const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside)
-    }, 100)
+      document.addEventListener('click', handleClickOutside)
+    }, 200)
 
     return () => {
       clearTimeout(timeoutId)
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('click', handleClickOutside)
     }
   }, [showMenu])
 
@@ -97,7 +109,7 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
 
   return (
     <header className={cn(
-      "h-16 sticky top-0 z-50 w-full px-4 md:px-6"
+      "h-16 sticky top-0 z-[100] w-full px-4 md:px-6"
     )}>
       <div className="h-full w-full rounded-b-xl border-b border-white/20 bg-white/10 backdrop-blur-lg relative" style={{ pointerEvents: 'none' }}>
         <div className="flex items-center justify-between px-2 sm:px-4 md:px-6 h-full gap-2 relative z-10" style={{ pointerEvents: 'auto' }}>
@@ -131,18 +143,14 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
           </div>
           
           {/* Lado direito - menu do usuário */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[100] min-w-0" data-user-menu>
-            <div className="relative">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[10000] min-w-0" data-user-menu style={{ pointerEvents: 'auto' }}>
+            <div className="relative z-[10000]" style={{ pointerEvents: 'auto' }}>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  console.log('Button clicked, current showMenu:', showMenu)
-                  setShowMenu((prev) => {
-                    console.log('Setting showMenu to:', !prev)
-                    return !prev
-                  })
+                  setShowMenu((prev) => !prev)
                 }}
-                className="flex items-center gap-1 sm:gap-2 rounded-lg px-2 sm:px-3 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors relative z-[100] cursor-pointer"
+                className="flex items-center gap-1 sm:gap-2 rounded-lg px-2 sm:px-3 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors relative z-[10000] cursor-pointer"
                 type="button"
                 aria-expanded={showMenu}
                 aria-haspopup="true"
@@ -154,25 +162,52 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
                 <ChevronDown className={cn("h-3 w-3 sm:h-4 sm:w-4 text-white flex-shrink-0 transition-transform", showMenu && "rotate-180")} />
               </button>
               {showMenu && (
-                <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70]">
-                  <div className="py-1">
-                    <Link
-                      href="/perfil"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
-                      onClick={() => setShowMenu(false)}
-                    >
-                      <User className="h-4 w-4" />
-                      Perfil
-                    </Link>
-                    <Link
-                      href="/configuracoes"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
-                      onClick={() => setShowMenu(false)}
-                    >
-                      <Settings className="h-4 w-4" />
-                      Configurações
-                    </Link>
-                  </div>
+                <div 
+                  className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[10001] overflow-hidden" 
+                  onClick={(e) => e.stopPropagation()} 
+                  onMouseDown={(e) => e.stopPropagation()}
+                  style={{ pointerEvents: 'auto', zIndex: 10001 }}
+                >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setShowMenu(false)
+                      // Usar setTimeout para garantir que o estado seja atualizado antes da navegação
+                      setTimeout(() => {
+                        router.push('/perfil')
+                      }, 10)
+                    }}
+                    onMouseDown={(e) => {
+                      e.stopPropagation()
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer text-left rounded-t-lg"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <User className="h-4 w-4" />
+                    Perfil
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setShowMenu(false)
+                      // Usar setTimeout para garantir que o estado seja atualizado antes da navegação
+                      setTimeout(() => {
+                        router.push('/configuracoes')
+                      }, 10)
+                    }}
+                    onMouseDown={(e) => {
+                      e.stopPropagation()
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer text-left rounded-b-lg"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <Settings className="h-4 w-4" />
+                    Configurações
+                  </button>
                 </div>
               )}
             </div>

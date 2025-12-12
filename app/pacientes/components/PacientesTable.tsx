@@ -390,7 +390,7 @@ export default function PacientesTable() {
       <FilterChips filtros={filtros} tags={tags} onRemoveFilter={handleRemoveFilter} />
 
       {/* Tabela */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden no-scrollbar">
         {isLoading ? (
           <div className="p-8 text-center text-black">Carregando pacientes...</div>
         ) : pacientes.length === 0 ? (
@@ -399,7 +399,7 @@ export default function PacientesTable() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>

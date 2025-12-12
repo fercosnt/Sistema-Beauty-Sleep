@@ -285,7 +285,14 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="mes" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    if (name === 'Score Médio') {
+                      return [value.toFixed(2), name]
+                    }
+                    return [value, name]
+                  }}
+                />
                 <Legend />
                 <Line type="monotone" dataKey="scoreMedio" stroke="#0284c7" name="Score Médio" />
               </LineChart>

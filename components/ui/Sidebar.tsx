@@ -109,7 +109,7 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
       {/* Sidebar - Dark para admin, Light para equipe/público */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-[60]',
+          'fixed inset-y-0 left-0 z-50',
           'flex flex-col transform transition-all duration-300 ease-in-out',
           isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0',
           // No mobile sempre w-64 quando aberta, no desktop usa collapsed state
@@ -156,7 +156,7 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
                 'absolute right-4 top-1/2 -translate-y-1/2',
                 'w-8 h-8 rounded-full border-2',
                 'flex items-center justify-center',
-                'md:hidden z-[70]',
+                'md:hidden z-50',
                 isAdmin
                   ? 'bg-primary-800 border-white/20 text-white hover:bg-primary-700'
                   : 'bg-neutral-100 border-neutral-300 text-neutral-700 hover:bg-neutral-200'
@@ -174,7 +174,7 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
               'absolute -right-3 top-1/2 -translate-y-1/2',
               'w-6 h-6 rounded-full border-2',
               'flex items-center justify-center',
-              'shadow-lg hidden md:flex z-[70]',
+              'shadow-lg hidden md:flex z-50',
               isAdmin
                 ? 'bg-primary-800 border-white/20 text-white hover:bg-primary-700'
                 : 'bg-neutral-100 border-neutral-300 text-neutral-700 hover:bg-neutral-200'

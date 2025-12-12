@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Filter, Search, Calendar, User, FileText, RefreshCw } from 'lucide-react'
+import { Filter, Search, Calendar, User, FileText, RefreshCw, Eye } from 'lucide-react'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -471,6 +472,7 @@ export default function LogsTable() {
                       <TableHead>Entidade</TableHead>
                       <TableHead>ID Entidade</TableHead>
                       <TableHead>Detalhes</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -515,6 +517,18 @@ export default function LogsTable() {
                         </TableCell>
                         <TableCell>
                           <span className="text-xs text-gray-600">{formatDetalhes(log.detalhes)}</span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link href={`/logs/${log.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<Eye className="h-4 w-4" />}
+                              className="text-primary-600 hover:text-primary-800"
+                            >
+                              Ver Detalhes
+                            </Button>
+                          </Link>
                         </TableCell>
                       </TableRow>
                     ))}

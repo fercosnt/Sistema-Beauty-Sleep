@@ -222,7 +222,7 @@ export default function ModalDetalhesExame({
   if (isLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto custom-scrollbar">
           <DialogHeader>
             <DialogTitle>Detalhes do Exame</DialogTitle>
           </DialogHeader>
@@ -240,15 +240,15 @@ export default function ModalDetalhesExame({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] !p-0 overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4 border-b border-gray-200">
           <DialogTitle>Detalhes do Exame</DialogTitle>
           <DialogDescription>
             Informações completas do exame do paciente.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0 px-6 custom-scrollbar" style={{ maxHeight: 'calc(90vh - 200px)', scrollbarWidth: 'thin', scrollbarColor: '#1e293b transparent', paddingRight: '20px', paddingTop: '16px', paddingBottom: '16px', marginTop: '0', marginBottom: '0' }}>
           {/* Dados Básicos */}
           <Card>
             <CardHeader>
@@ -471,7 +471,7 @@ export default function ModalDetalhesExame({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 px-6 pt-4 pb-6 border-t border-gray-200">
           {canDownloadPDF && exame.biologix_exam_key && exame.biologix_exam_key.trim() ? (
             <Button variant="outline" leftIcon={<Download className="h-4 w-4" />} onClick={handleBaixarPDF}>
               Baixar PDF

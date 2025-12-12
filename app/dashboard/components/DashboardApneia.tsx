@@ -221,7 +221,7 @@ export default function DashboardApneia({ userRole }: DashboardApneiaProps) {
               <Activity className="h-5 w-5 text-primary-600" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{formatValue(kpiData.idoMedio)}</p>
+          <p className="text-3xl font-bold text-gray-900">{formatValue(kpiData.idoMedio, 1)}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -241,7 +241,7 @@ export default function DashboardApneia({ userRole }: DashboardApneiaProps) {
               <Heart className="h-5 w-5 text-success-600" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{formatValue(kpiData.spo2Medio)}%</p>
+          <p className="text-3xl font-bold text-gray-900">{formatValue(kpiData.spo2Medio, 1)}%</p>
         </div>
       </div>
 
@@ -279,7 +279,17 @@ export default function DashboardApneia({ userRole }: DashboardApneiaProps) {
                 <XAxis dataKey="mes" />
                 <YAxis yAxisId="left" />
                 <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    if (name === 'IDO Médio') {
+                      return [value.toFixed(2), name]
+                    }
+                    if (name === 'SpO2 Médio (%)') {
+                      return [`${value.toFixed(2)}%`, name]
+                    }
+                    return [value, name]
+                  }}
+                />
                 <Legend />
                 <Line
                   yAxisId="left"

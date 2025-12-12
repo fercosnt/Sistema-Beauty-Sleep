@@ -2,13 +2,21 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Calendar, Filter, Plus, Edit, Trash2, Tag as TagIcon } from 'lucide-react'
+import { Calendar, Filter, Plus, Edit, Trash2, Tag as TagIcon, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { showSuccess, showError } from '@/components/ui/Toast'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/Dialog'
 import ModalNovaSessao from '../../components/ModalNovaSessao'
 import ModalEditarSessao from '../../components/ModalEditarSessao'
 
@@ -40,6 +48,8 @@ export default function TabSessoes({ pacienteId, onSessionUpdate }: TabSessoesPr
   const [showNovaSessaoModal, setShowNovaSessaoModal] = useState(false)
   const [showEditarSessaoModal, setShowEditarSessaoModal] = useState(false)
   const [selectedSessao, setSelectedSessao] = useState<Sessao | null>(null)
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false)
+  const [sessaoToDelete, setSessaoToDelete] = useState<string | null>(null)
   
   // Filtros
   const [filtroDataInicio, setFiltroDataInicio] = useState('')
@@ -160,29 +170,39 @@ export default function TabSessoes({ pacienteId, onSessionUpdate }: TabSessoesPr
     return new Date(dateString).toLocaleDateString('pt-BR')
   }
 
-  const handleDelete = async (sessaoId: string) => {
-    if (!confirm('Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita.')) {
-      return
-    }
+  const handleDeleteClick = (sessaoId: string) => {
+    setSessaoToDelete(sessaoId)
+    setShowDeleteConfirmModal(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!sessaoToDelete) return
 
     try {
       const supabase = createClient()
       const { error } = await supabase
         .from('sessoes')
         .delete()
-        .eq('id', sessaoId)
+        .eq('id', sessaoToDelete)
 
       if (error) {
         console.error('Erro ao deletar sessão:', error)
-        showError('Erro ao deletar sessão')
+        showError('Erro ao deletar sessão. Verifique se você tem permissão para esta ação.')
+        setShowDeleteConfirmModal(false)
+        setSessaoToDelete(null)
         return
       }
 
       showSuccess('Sessão deletada com sucesso!')
+      setShowDeleteConfirmModal(false)
+      setSessaoToDelete(null)
       fetchSessoes()
+      onSessionUpdate?.()
     } catch (error) {
       console.error('Erro inesperado:', error)
       showError('Erro inesperado ao deletar sessão')
+      setShowDeleteConfirmModal(false)
+      setSessaoToDelete(null)
     }
   }
 
@@ -199,7 +219,11 @@ export default function TabSessoes({ pacienteId, onSessionUpdate }: TabSessoesPr
     return false
   }
 
-  const canDelete = userRole === 'admin'
+  const canDelete = (sessao: Sessao) => {
+    // Apenas admin pode deletar sessões
+    if (!userRole) return false
+    return userRole === 'admin'
+  }
   const canCreate = userRole === 'admin' || userRole === 'equipe'
 
   return (
@@ -369,13 +393,13 @@ export default function TabSessoes({ pacienteId, onSessionUpdate }: TabSessoesPr
                                 <Edit className="h-4 w-4" />
                               </Button>
                             )}
-                            {canDelete && (
+                            {canDelete(sessao) && (
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleDelete(sessao.id)}
+                                onClick={() => handleDeleteClick(sessao.id)}
                                 title="Deletar Sessão"
-                                className="text-danger-600 hover:text-danger-800"
+                                className="text-danger-600 hover:text-danger-800 hover:bg-danger-50"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -421,6 +445,45 @@ export default function TabSessoes({ pacienteId, onSessionUpdate }: TabSessoesPr
           }}
         />
       )}
+
+      {/* Modal de Confirmação de Deleção */}
+      <Dialog open={showDeleteConfirmModal} onOpenChange={setShowDeleteConfirmModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex-shrink-0 h-12 w-12 rounded-full bg-danger-100 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-danger-600" />
+              </div>
+              <DialogTitle className="text-xl font-semibold text-gray-900">
+                Confirmar Exclusão
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-base text-gray-600 pt-2">
+              Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita e a sessão será permanentemente removida do sistema.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteConfirmModal(false)
+                setSessaoToDelete(null)
+              }}
+              className="flex-1 sm:flex-initial"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleDeleteConfirm}
+              className="bg-danger-600 hover:bg-danger-700 text-white flex-1 sm:flex-initial"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Deletar Sessão
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

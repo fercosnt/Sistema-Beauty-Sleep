@@ -17,9 +17,13 @@ export default function MobileLayoutClient({ children, userRole }: MobileLayoutC
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
   const { isCollapsed } = useSidebar();
 
-  // Não renderizar layout padrão no dashboard (usa seu próprio template)
+  // Dashboard usa seu próprio template, mas precisa estar acima da sidebar
   if (pathname === '/dashboard') {
-    return <>{children}</>
+    return (
+      <div className="relative z-[70]">
+        {children}
+      </div>
+    )
   }
 
   // Determinar background baseado no role do usuário
@@ -48,7 +52,7 @@ export default function MobileLayoutClient({ children, userRole }: MobileLayoutC
       />
       {/* Main content - margin matches sidebar width exactly, no extra spacing */}
       <div className={cn(
-        "flex flex-1 flex-col overflow-hidden transition-all duration-300",
+        "flex flex-1 flex-col overflow-hidden transition-all duration-300 relative z-[70]",
         isCollapsed ? "md:ml-16" : "md:ml-64"
       )}>
         {/* Header - only show if user is authenticated */}
@@ -58,7 +62,7 @@ export default function MobileLayoutClient({ children, userRole }: MobileLayoutC
           isMobileMenuOpen={isMobileMenuOpen}
         />
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto relative z-[70]">
           {children}
         </main>
       </div>

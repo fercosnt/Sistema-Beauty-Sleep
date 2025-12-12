@@ -210,8 +210,8 @@ export default function PerfilPage() {
   if (isLoading) {
     return (
       <ContentContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-gray-900">Carregando perfil...</p>
+        <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+          <p className="text-white text-xl font-medium">Carregando perfil...</p>
         </div>
       </ContentContainer>
     )

@@ -468,3 +468,352 @@ header.shepherd-header[class*="shepherd-theme-light"],
   background-image: linear-gradient(135deg, #35BFAD 0%, #8B5CF6 100%) !important;
 }
 
+/* Estilos customizados para barra de rolagem - Chrome, Edge, Safari */
+/* Scrollbar para Admin (fundo escuro) */
+.theme-admin ::-webkit-scrollbar,
+html.theme-admin ::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-admin ::-webkit-scrollbar-track,
+html.theme-admin ::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.theme-admin ::-webkit-scrollbar-thumb,
+html.theme-admin ::-webkit-scrollbar-thumb {
+  background: #64748b !important; /* gray-500 - mais claro para fundo escuro */
+  border-radius: 0 !important;
+  border: none;
+  min-height: 40px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0 !important;
+}
+
+.theme-admin ::-webkit-scrollbar-thumb:hover,
+html.theme-admin ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important; /* gray-400 - mais claro no hover */
+}
+
+.theme-admin ::-webkit-scrollbar-thumb:active,
+html.theme-admin ::-webkit-scrollbar-thumb:active {
+  background: #cbd5e1 !important; /* gray-300 - ainda mais claro no active */
+}
+
+/* Scrollbar para Equipe/Recepção (fundo claro) */
+.theme-equipe ::-webkit-scrollbar,
+html.theme-equipe ::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-equipe ::-webkit-scrollbar-track,
+html.theme-equipe ::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.theme-equipe ::-webkit-scrollbar-thumb,
+html.theme-equipe ::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: #1e293b !important; /* gray-800 - cinza bem escuro para fundo claro */
+  border-radius: 0 !important;
+  border: none;
+  min-height: 40px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0 !important;
+}
+
+.theme-equipe ::-webkit-scrollbar-thumb:hover,
+html.theme-equipe ::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: #0f172a !important; /* gray-900 - ainda mais escuro no hover */
+}
+
+.theme-equipe ::-webkit-scrollbar-thumb:active,
+html.theme-equipe ::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-thumb:active {
+  background: #020617 !important; /* gray-950 - quase preto no active */
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Remover setas da scrollbar */
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Remover setas de forma mais agressiva */
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+::-webkit-scrollbar-button:vertical:start:decrement,
+::-webkit-scrollbar-button:vertical:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+::-webkit-scrollbar-button:horizontal:start:decrement,
+::-webkit-scrollbar-button:horizontal:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Estilos para barra de rolagem em modais/diálogos */
+/* Modal - Admin (fundo claro do modal) */
+.theme-admin .custom-scrollbar::-webkit-scrollbar,
+html.theme-admin .custom-scrollbar::-webkit-scrollbar {
+  width: 18px !important;
+  display: block !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-admin .custom-scrollbar::-webkit-scrollbar-track,
+html.theme-admin .custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.theme-admin .custom-scrollbar::-webkit-scrollbar-thumb,
+html.theme-admin .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b !important; /* gray-800 - escuro para fundo claro do modal */
+  border-radius: 0 !important;
+  border: none;
+  min-height: 40px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0 !important;
+}
+
+.theme-admin .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+html.theme-admin .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0f172a !important;
+}
+
+.theme-admin .custom-scrollbar::-webkit-scrollbar-thumb:active,
+html.theme-admin .custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #020617 !important;
+}
+
+/* Modal - Equipe/Recepção (fundo claro do modal) */
+.theme-equipe .custom-scrollbar::-webkit-scrollbar,
+html.theme-equipe .custom-scrollbar::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+  width: 18px !important;
+  display: block !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-equipe .custom-scrollbar::-webkit-scrollbar-track,
+html.theme-equipe .custom-scrollbar::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.theme-equipe .custom-scrollbar::-webkit-scrollbar-thumb,
+html.theme-equipe .custom-scrollbar::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important; /* gray-300 - muito mais claro para não-admin */
+  border-radius: 0 !important;
+  border: none;
+  min-height: 40px;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0 !important;
+}
+
+.theme-equipe .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+html.theme-equipe .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important; /* gray-400 - um pouco mais escuro no hover */
+}
+
+.theme-equipe .custom-scrollbar::-webkit-scrollbar-thumb:active,
+html.theme-equipe .custom-scrollbar::-webkit-scrollbar-thumb:active,
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #64748b !important; /* gray-500 - um pouco mais escuro no active */
+}
+
+/* Desabilitar scrollbar em elementos com fundo branco */
+.bg-white::-webkit-scrollbar,
+.bg-white *::-webkit-scrollbar,
+[class*="bg-white"]::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.bg-white,
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* Remover setas da scrollbar em modais */
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Remover setas de forma mais agressiva */
+.custom-scrollbar::-webkit-scrollbar-button:start:decrement,
+.custom-scrollbar::-webkit-scrollbar-button:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar-button:vertical:start:decrement,
+.custom-scrollbar::-webkit-scrollbar-button:vertical:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar-button:horizontal:start:decrement,
+.custom-scrollbar::-webkit-scrollbar-button:horizontal:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Estilos para Firefox - Admin (fundo escuro) */
+.theme-admin *,
+html.theme-admin * {
+  scrollbar-width: auto;
+  scrollbar-color: #64748b transparent; /* gray-500 - mais claro para fundo escuro */
+}
+
+/* Estilos para Firefox - Equipe/Recepção (fundo claro) - Muito mais clara */
+.theme-equipe *,
+html.theme-equipe *,
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #cbd5e1 transparent; /* gray-300 - muito mais claro, sem fundo */
+}
+
+[role="dialog"],
+[role="dialog"] *,
+.custom-scrollbar,
+.custom-scrollbar * {
+  scrollbar-width: auto;
+  scrollbar-color: #cbd5e1 transparent; /* gray-300 - muito mais claro para não-admin, sem fundo */
+}
+
+/* Estilos para Range Sliders */
+input[type="range"].slider-primary {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+input[type="range"].slider-primary::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00109E;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+input[type="range"].slider-primary::-webkit-slider-thumb:hover {
+  background: #0015b8;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 16, 158, 0.25);
+}
+
+input[type="range"].slider-primary::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+input[type="range"].slider-primary::-webkit-slider-track {
+  height: 8px;
+  border-radius: 4px;
+  background: transparent;
+}
+
+input[type="range"].slider-primary::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00109E;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+input[type="range"].slider-primary::-moz-range-thumb:hover {
+  background: #0015b8;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 16, 158, 0.25);
+}
+
+input[type="range"].slider-primary::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: transparent;
+}
+

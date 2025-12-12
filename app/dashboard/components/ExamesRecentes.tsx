@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
 import { FileText, Eye } from 'lucide-react'
 
@@ -195,10 +196,10 @@ export default function ExamesRecentes() {
       </div>
 
       {/* Modal de Detalhes do Exame */}
-      {selectedExame && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+      {selectedExame && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-6 md:p-8">
+          <div className="bg-white rounded-lg shadow-xl w-[90vw] max-w-[600px] h-[85vh] max-h-[600px] overflow-y-auto z-[10000] relative">
+            <div className="p-6 md:p-8">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-gray-900">Detalhes do Exame</h3>
                 <button
@@ -244,7 +245,7 @@ export default function ExamesRecentes() {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
+              <div className="mt-4 flex justify-end">
                 <button
                   onClick={() => setSelectedExame(null)}
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
@@ -254,7 +255,8 @@ export default function ExamesRecentes() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

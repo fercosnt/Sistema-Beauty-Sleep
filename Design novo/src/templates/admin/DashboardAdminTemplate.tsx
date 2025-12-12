@@ -472,25 +472,23 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
                     <ChevronDown className={cn("h-3 w-3 sm:h-4 sm:w-4 text-white flex-shrink-0 transition-transform", showMenu && "rotate-180")} />
                     </button>
                   {showMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70]">
-                      <div className="py-1">
-                          <Link
-                            href="/perfil"
-                            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
-                          onClick={() => setShowMenu(false)}
-                          >
-                            <User className="h-4 w-4" />
-                            Perfil
-                          </Link>
-                        <Link
-                          href="/configuracoes"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
-                          onClick={() => setShowMenu(false)}
-                        >
-                          <Settings className="h-4 w-4" />
-                          Configurações
-                        </Link>
-                      </div>
+                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg z-[70] overflow-hidden">
+                      <Link
+                        href="/perfil"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors rounded-t-lg"
+                        onClick={() => setShowMenu(false)}
+                      >
+                        <User className="h-4 w-4" />
+                        Perfil
+                      </Link>
+                      <Link
+                        href="/configuracoes"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors rounded-b-lg"
+                        onClick={() => setShowMenu(false)}
+                      >
+                        <Settings className="h-4 w-4" />
+                        Configurações
+                      </Link>
                     </div>
                   )}
                   </div>

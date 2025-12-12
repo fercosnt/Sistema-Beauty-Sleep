@@ -115,8 +115,8 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
           onClick={() => setIsOpen(!isOpen)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors backdrop-blur-md ${
             hasActiveFilters
-              ? 'bg-white/20 text-white border border-white/30 hover:bg-white/25'
-              : 'bg-white/10 text-white/70 hover:bg-white/15 border border-white/20'
+              ? 'bg-white/25 text-white border border-white/40 hover:bg-white/30'
+              : 'bg-white/20 text-white border border-white/30 hover:bg-white/25'
           }`}
         >
           <Filter className="h-5 w-5" />
@@ -212,32 +212,40 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-600 mb-1">Mínimo</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-2">Mínimo</label>
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={filtros.adesaoMin}
                     onChange={(e) => handleAdesaoChange('min', parseInt(e.target.value))}
-                    className="w-full"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-primary"
+                    style={{
+                      background: `linear-gradient(to right, #00109E 0%, #00109E ${filtros.adesaoMin}%, #e5e7eb ${filtros.adesaoMin}%, #e5e7eb 100%)`
+                    }}
                   />
-                  <div className="text-xs text-gray-700 mt-1">{filtros.adesaoMin}%</div>
+                  <div className="text-xs font-medium text-gray-700 mt-2">{filtros.adesaoMin}%</div>
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-600 mb-1">Máximo</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-2">Máximo</label>
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={filtros.adesaoMax}
                     onChange={(e) => handleAdesaoChange('max', parseInt(e.target.value))}
-                    className="w-full"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-primary"
+                    style={{
+                      background: `linear-gradient(to right, #00109E 0%, #00109E ${filtros.adesaoMax}%, #e5e7eb ${filtros.adesaoMax}%, #e5e7eb 100%)`
+                    }}
                   />
-                  <div className="text-xs text-gray-700 mt-1">{filtros.adesaoMax}%</div>
+                  <div className="text-xs font-medium text-gray-700 mt-2">{filtros.adesaoMax}%</div>
                 </div>
               </div>
-              <div className="text-sm text-gray-700">
-                Faixa: {filtros.adesaoMin}% - {filtros.adesaoMax}%
+              <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                <div className="text-sm text-gray-700">
+                  Faixa selecionada: <span className="font-semibold text-gray-900">{filtros.adesaoMin}% - {filtros.adesaoMax}%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -274,4 +282,5 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
     </div>
   )
 }
+
 

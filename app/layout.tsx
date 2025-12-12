@@ -33,8 +33,8 @@ export default async function RootLayout({
   const userRole = await getUserRole();
 
   return (
-    <html lang="pt-BR">
-      <body>
+    <html lang="pt-BR" className={userRole === 'admin' ? 'theme-admin' : 'theme-equipe'}>
+      <body className={userRole === 'admin' ? 'theme-admin' : 'theme-equipe'}>
         <FaviconSwitcher role={userRole} />
         <ToastContainer />
         {userRole ? (

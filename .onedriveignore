@@ -1,0 +1,35 @@
+# OneDrive ignore file
+# Previne que o OneDrive sincronize pastas de build e cache do Next.js
+# Isso evita erros EBUSY quando o Next.js tenta escrever arquivos
+
+# Next.js build output
+.next/
+out/
+
+# Node modules
+node_modules/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.npm/
+.eslintcache/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files
+.env.local
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+

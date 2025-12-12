@@ -452,6 +452,9 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Espaçamento extra para rodapé */}
+      <div className="pb-8" />
     </div>
   )
 }

@@ -286,10 +286,12 @@ export default function TabNotas({ pacienteId }: TabNotasProps) {
       {/* Lista de Notas */}
       {notas.length === 0 ? (
         <Card>
-          <CardContent className="py-8">
-            <div className="text-center">
-              <StickyNote className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-lg font-medium text-gray-900">Nenhuma nota encontrada</h3>
+          <CardContent className="flex items-center justify-center min-h-[200px] py-8">
+            <div className="flex flex-col items-center justify-center text-center w-full">
+              <div className="flex items-center justify-center mb-4">
+                <StickyNote className="h-12 w-12 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">Nenhuma nota encontrada</h3>
               <p className="mt-1 text-sm text-gray-500">
                 {canCreateNote
                   ? 'Comece adicionando uma nova nota clínica.'
@@ -303,7 +305,7 @@ export default function TabNotas({ pacienteId }: TabNotasProps) {
           {notas.map((nota) => (
             <Card key={nota.id}>
               <CardContent className="p-6">
-                <div className="flex items-start gap-4">
+                <div className="flex items-center gap-4">
                   {/* Avatar do Autor */}
                   <div className="flex-shrink-0">
                     <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
@@ -315,12 +317,12 @@ export default function TabNotas({ pacienteId }: TabNotasProps) {
 
                   {/* Conteúdo da Nota */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-gray-900">
                           {nota.users?.nome || 'Usuário desconhecido'}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-2">
                           <Calendar className="h-3 w-3 text-gray-400" />
                           <p className="text-xs text-gray-500">{formatDateTime(nota.created_at)}</p>
                         </div>
