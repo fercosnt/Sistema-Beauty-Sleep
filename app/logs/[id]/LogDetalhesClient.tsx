@@ -454,7 +454,7 @@ export default function LogDetalhesClient({ logId }: { logId: string }) {
                                     href={`/pacientes/${oldValue}`}
                                     className="text-primary-600 hover:text-primary-800 underline"
                                   >
-                                    {relatedData.paciente.nome} ({relatedData.paciente.cpf})
+                                    {relatedData.paciente?.nome} ({relatedData.paciente?.cpf})
                                   </Link>
                                 ) : (
                                   <pre className="whitespace-pre-wrap font-mono text-xs bg-gray-50 p-2 rounded border max-w-md overflow-auto">
@@ -468,7 +468,7 @@ export default function LogDetalhesClient({ logId }: { logId: string }) {
                                     href={`/pacientes/${newValue}`}
                                     className="text-primary-600 hover:text-primary-800 underline"
                                   >
-                                    {relatedData.paciente.nome} ({relatedData.paciente.cpf})
+                                    {relatedData.paciente?.nome} ({relatedData.paciente?.cpf})
                                   </Link>
                                 ) : (
                                   <pre className="whitespace-pre-wrap font-mono text-xs bg-gray-50 p-2 rounded border max-w-md overflow-auto">
@@ -517,7 +517,7 @@ export default function LogDetalhesClient({ logId }: { logId: string }) {
                               href={`/pacientes/${value}`}
                               className="text-primary-600 hover:text-primary-800 underline font-medium"
                             >
-                              {relatedData.paciente.nome} ({relatedData.paciente.cpf})
+                              {relatedData.paciente?.nome} ({relatedData.paciente?.cpf})
                             </Link>
                           ) : (
                             <pre className="mt-1 text-sm font-mono text-gray-900 whitespace-pre-wrap break-words bg-gray-50 p-2 rounded border">
@@ -563,7 +563,7 @@ export default function LogDetalhesClient({ logId }: { logId: string }) {
                               href={`/pacientes/${value}`}
                               className="text-primary-600 hover:text-primary-800 underline font-medium"
                             >
-                              {relatedData.paciente.nome} ({relatedData.paciente.cpf})
+                              {relatedData.paciente?.nome} ({relatedData.paciente?.cpf})
                             </Link>
                           ) : (
                             <pre className="mt-1 text-sm font-mono text-gray-900 whitespace-pre-wrap break-words bg-gray-50 p-2 rounded border">
