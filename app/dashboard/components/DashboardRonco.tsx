@@ -181,10 +181,13 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
 
   const isRecepcao = userRole === 'recepcao'
 
-  const formatValue = (value: number, isPercentage = false) => {
+  const formatValue = (value: number, isPercentage = false, isInteger = false) => {
     if (isRecepcao) return '--'
     if (isPercentage) {
       return `${value.toFixed(1)}%`
+    }
+    if (isInteger) {
+      return Math.round(value).toString()
     }
     return value.toFixed(2)
   }
@@ -227,7 +230,9 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">Score Médio de Ronco</h3>
+            <h3 className="text-sm font-medium text-gray-600">
+              Média de Score de Ronco
+            </h3>
             <div className="p-2 rounded-lg bg-primary-600 bg-opacity-10">
               <Activity className="h-5 w-5 text-primary-600" />
             </div>
@@ -237,12 +242,16 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">Pacientes com Ronco Alto</h3>
+            <h3 className="text-sm font-medium text-gray-600">
+              Total de Pacientes com Ronco Alto
+            </h3>
             <div className="p-2 rounded-lg bg-danger-600 bg-opacity-10">
               <AlertCircle className="h-5 w-5 text-danger-600" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{formatValue(kpiData.pacientesRoncoAlto)}</p>
+          <p className="text-3xl font-bold text-gray-900">
+            {formatValue(kpiData.pacientesRoncoAlto, false, true)}
+          </p>
         </div>
       </div>
 
