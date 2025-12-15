@@ -191,7 +191,7 @@ export function startConfigTour(
       text: 'Use esta seção para refazer o tour guiado sempre que quiser revisar o sistema.',
       title: 'Tour Guiado',
       attachTo: {
-        element: '[data-tour=\"config-tour\"]',
+        element: '.rounded-lg.border-2.border-gray-300.bg-white.shadow-sm.p-6:nth-of-type(2)',
         on: 'top',
       },
       popperOptions: {
