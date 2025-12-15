@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { OnboardingTour } from '@/components/OnboardingTour'
 
@@ -12,6 +13,8 @@ interface DashboardClientProps {
 export default function DashboardClient({ userRole, userEmail }: DashboardClientProps) {
   const [tourCompleted, setTourCompleted] = useState(true)
   const [userId, setUserId] = useState<string | undefined>()
+  const searchParams = useSearchParams()
+  const forceRefazerTour = searchParams.get('refazerTour') === '1'
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,10 +38,12 @@ export default function DashboardClient({ userRole, userEmail }: DashboardClient
 
   if (!userRole) return null
 
+  const effectiveTourCompleted = forceRefazerTour ? false : tourCompleted
+
   return (
     <OnboardingTour
       role={userRole as 'admin' | 'equipe' | 'recepcao'}
-      tourCompleted={tourCompleted}
+      tourCompleted={effectiveTourCompleted}
       userId={userId}
     />
   )

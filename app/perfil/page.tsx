@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { showSuccess, showError } from '@/components/ui/Toast'
-import { startTour } from '@/components/OnboardingTour'
 import ContentContainer from '@/components/ui/ContentContainer'
 import { Lock, User, Mail, Shield, RefreshCw } from 'lucide-react'
 
@@ -27,6 +27,8 @@ export default function PerfilPage() {
     confirmPassword: '',
   })
   const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({})
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   // Format date to "Month Year" format
   const formatJoinedDate = (dateString: string | null | undefined) => {
@@ -89,6 +91,18 @@ export default function PerfilPage() {
     
     fetchUser()
   }, [])
+
+  // Tour da página Perfil (admin/equipe)
+  useEffect(() => {
+    if (!userData?.role) return
+    const flow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
+    if (!flow) return
+
+    import('@/components/OnboardingTour').then(({ startPerfilTour }) => {
+      startPerfilTour(userData.role as 'admin' | 'equipe' | 'recepcao')
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, userData?.role])
 
   const handleSave = async () => {
     if (!user?.email) {
@@ -201,9 +215,22 @@ export default function PerfilPage() {
     }
   }
 
-  const handleRefazerTour = () => {
-    if (userData?.role) {
-      startTour(userData.role as 'admin' | 'equipe' | 'recepcao')
+  const handleRefazerTour = async () => {
+    if (!userData?.role || !userData?.id) return
+
+    try {
+      const supabase = createClient()
+
+      // Marcar tour como não concluído para forçar novo tour no dashboard
+      await supabase
+        .from('users')
+        .update({ tour_completed: false })
+        .eq('id', userData.id)
+
+      // Redirecionar para o dashboard com flag para forçar o tour completo
+      router.push('/dashboard?refazerTour=1')
+    } catch (error) {
+      console.error('Erro ao reconfigurar tour guiado no perfil:', error)
     }
   }
 

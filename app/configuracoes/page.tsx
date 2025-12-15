@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { startTour } from '@/components/OnboardingTour'
 import { useRouter } from 'next/navigation'
@@ -14,6 +15,7 @@ export default function ConfiguracoesPage() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,8 +36,35 @@ export default function ConfiguracoesPage() {
     fetchUser()
   }, [])
 
-  const handleRefazerTour = () => {
-    if (userData?.role) {
+  // Tour da página Configurações (admin/equipe)
+  useEffect(() => {
+    if (!userData?.role) return
+    const flow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
+    if (!flow) return
+
+    import('@/components/OnboardingTour').then(({ startConfigTour }) => {
+      startConfigTour(userData.role as 'admin' | 'equipe' | 'recepcao', flow)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, userData?.role])
+
+  const handleRefazerTour = async () => {
+    if (!userData?.role || !userData?.id) return
+
+    try {
+      const supabase = createClient()
+
+      // Marcar tour como não concluído para forçar novo tour no dashboard
+      await supabase
+        .from('users')
+        .update({ tour_completed: false })
+        .eq('id', userData.id)
+
+      // Redirecionar para o dashboard com flag para forçar o tour
+      router.push('/dashboard?refazerTour=1')
+    } catch (error) {
+      console.error('Erro ao reconfigurar tour guiado:', error)
+      // Fallback: ainda assim tenta iniciar o tour na página atual
       startTour(userData.role as 'admin' | 'equipe' | 'recepcao')
     }
   }
@@ -47,7 +76,7 @@ export default function ConfiguracoesPage() {
       description: 'Informações da sua conta',
       icon: <User className="h-5 w-5" />,
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4" data-tour="config-perfil">
           <div className="space-y-2">
             <Label className="text-white drop-shadow" htmlFor="userName">Nome</Label>
             <div className="bg-white border border-gray-300 rounded-lg px-4 py-3">
@@ -75,7 +104,7 @@ export default function ConfiguracoesPage() {
       description: 'Revise o tour guiado para relembrar as funcionalidades do sistema',
       icon: <PlayCircle className="h-5 w-5" />,
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4" data-tour="config-tour">
           <p className="text-white/70">
             O tour guiado ajuda você a entender melhor as funcionalidades do sistema Beauty Sleep.
             Clique no botão abaixo para iniciar o tour novamente.

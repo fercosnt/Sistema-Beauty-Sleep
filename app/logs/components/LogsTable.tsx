@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Filter, Search, Calendar, User, FileText, RefreshCw, Eye } from 'lucide-react'
 import Link from 'next/link'
@@ -60,6 +61,7 @@ const ACOES = [
 ]
 
 export default function LogsTable() {
+  const searchParams = useSearchParams()
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [filteredLogs, setFilteredLogs] = useState<AuditLog[]>([])
   const [users, setUsers] = useState<Array<{ id: string; nome: string; email: string }>>([])
@@ -81,6 +83,16 @@ export default function LogsTable() {
     fetchUsers()
     fetchLogs()
   }, [])
+
+  // Tour da página Logs (admin)
+  useEffect(() => {
+    const flow = searchParams.get('tourFlow')
+    if (flow !== 'admin') return
+
+    import('@/components/OnboardingTour').then(({ startLogsTour }) => {
+      startLogsTour('admin')
+    })
+  }, [searchParams])
 
   useEffect(() => {
     applyFilters()
@@ -302,7 +314,7 @@ export default function LogsTable() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card data-tour="logs-filtros">
         <CardContent className="p-6">
           <div className="flex items-center justify-center py-12">
             <RefreshCw className="h-6 w-6 animate-spin text-primary-600 mr-2" />
@@ -316,7 +328,7 @@ export default function LogsTable() {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <Card>
+      <Card data-tour="logs-tabela">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Filter className="h-5 w-5 text-primary-600" />

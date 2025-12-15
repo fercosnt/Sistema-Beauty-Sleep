@@ -190,7 +190,9 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
         </div>
 
         {/* Navigation */}
-        <nav className={cn(
+        <nav
+          data-tour="sidebar-nav"
+          className={cn(
           'flex-1 space-y-2',
           (isCollapsed && !isMobileOpen) ? 'p-2' : 'p-4'
         )}>
@@ -200,6 +202,7 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
               <Link
                 key={item.name}
                 href={item.href}
+                data-tour={item.name === 'Pacientes' ? 'nav-pacientes' : undefined}
                 title={isCollapsed ? item.name : undefined}
                 className={cn(
                   'flex items-center rounded-lg transition-colors',

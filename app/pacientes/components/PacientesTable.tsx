@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Plus, Search, Trash2 } from 'lucide-react'
@@ -39,6 +40,7 @@ interface Tag {
 
 export default function PacientesTable() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [pacientes, setPacientes] = useState<Paciente[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
@@ -87,6 +89,17 @@ export default function PacientesTable() {
 
     fetchUserRole()
   }, [])
+
+  // Iniciar tour específico da página de pacientes quando vier do dashboard
+  useEffect(() => {
+    const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
+    if (!tourFlow || !userRole) return
+
+    // Importação dinâmica para evitar problemas de SSR
+    import('@/components/OnboardingTour').then(({ startPacientesTour }) => {
+      startPacientesTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
+    })
+  }, [searchParams, userRole])
 
   // Buscar tags uma vez
   useEffect(() => {
@@ -358,7 +371,7 @@ export default function PacientesTable() {
     <div className="space-y-6">
       {/* Header com busca e botão novo */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1 max-w-md" data-tour="pacientes-busca">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
@@ -377,6 +390,7 @@ export default function PacientesTable() {
             onClick={() => setIsModalOpen(true)}
             leftIcon={<Plus className="h-5 w-5" />}
             className="bg-white/10 hover:bg-white/20 border border-white/30 text-white backdrop-blur-md"
+            data-tour="pacientes-novo"
           >
             Novo Paciente
           </Button>
@@ -390,7 +404,7 @@ export default function PacientesTable() {
       <FilterChips filtros={filtros} tags={tags} onRemoveFilter={handleRemoveFilter} />
 
       {/* Tabela */}
-      <div className="bg-white rounded-lg shadow overflow-hidden no-scrollbar">
+      <div className="bg-white rounded-lg shadow overflow-hidden no-scrollbar" data-tour="pacientes-tabela">
         {isLoading ? (
           <div className="p-8 text-center text-black">Carregando pacientes...</div>
         ) : pacientes.length === 0 ? (

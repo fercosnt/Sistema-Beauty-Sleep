@@ -88,6 +88,10 @@ async function markTourAsCompleted(userId?: string) {
 
 // Function to start tour manually (for "Refazer Tour" button)
 export function startTour(role: 'admin' | 'equipe' | 'recepcao') {
+  // Garante que nunca existam dois tours ativos ao mesmo tempo
+  if (Shepherd.activeTour) {
+    Shepherd.activeTour.cancel()
+  }
   const steps = getTourSteps(role)
   
   const tour = new Shepherd.Tour({
@@ -102,6 +106,333 @@ export function startTour(role: 'admin' | 'equipe' | 'recepcao') {
   steps.forEach((step) => tour.addStep(step))
   tour.start()
   
+  return tour
+}
+
+// Tour da página Perfil (admin/equipe)
+export function startPerfilTour(role: 'admin' | 'equipe' | 'recepcao') {
+  if (Shepherd.activeTour) {
+    Shepherd.activeTour.cancel()
+  }
+  const steps: ShepherdStepOptions[] = [
+    {
+      id: 'perfil-header',
+      text: 'Aqui você vê suas informações de perfil, role e status de acesso.',
+      title: 'Seu Perfil',
+      attachTo: {
+        element: 'main',
+        on: 'top',
+      },
+      buttons: [
+        {
+          text: 'Concluir',
+          action: function (this: any) {
+            return this.complete()
+          },
+        },
+      ],
+    },
+  ]
+
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+      scrollTo: true,
+      cancelIcon: { enabled: true },
+      classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
+    },
+  })
+
+  steps.forEach((step) => tour.addStep(step))
+  tour.start()
+
+  return tour
+}
+
+// Tour da página Configurações (admin/equipe)
+export function startConfigTour(
+  role: 'admin' | 'equipe' | 'recepcao',
+  flow: 'admin' | 'equipe',
+) {
+  if (Shepherd.activeTour) {
+    Shepherd.activeTour.cancel()
+  }
+  const steps: ShepherdStepOptions[] = [
+    {
+      id: 'config-profile',
+      text: 'Aqui você vê e ajusta informações básicas do seu perfil (nome, email, função).',
+      title: 'Perfil',
+      attachTo: {
+        // Card inteira de Perfil (primeira card de configurações)
+        element: '.rounded-lg.border-2.border-gray-300.bg-white.shadow-sm.p-6:nth-of-type(1)',
+        on: 'bottom',
+      },
+      popperOptions: {
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 40], // Afasta mais para baixo
+            },
+          },
+        ],
+      },
+      buttons: [
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'config-tour',
+      text: 'Use esta seção para refazer o tour guiado sempre que quiser revisar o sistema.',
+      title: 'Tour Guiado',
+      attachTo: {
+        element: '[data-tour=\"config-tour\"]',
+        on: 'top',
+      },
+      popperOptions: {
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [80, -60], // Afasta para a direita e mais para cima
+            },
+          },
+        ],
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            this.complete()
+            window.location.href = `/perfil?tourFlow=${flow}`
+          },
+        },
+      ],
+    },
+  ]
+
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+      scrollTo: true,
+      cancelIcon: { enabled: true },
+      classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
+    },
+  })
+
+  steps.forEach((step) => tour.addStep(step))
+  tour.start()
+
+  return tour
+}
+
+// Tour da página Logs (admin)
+export function startLogsTour(role: 'admin') {
+  if (Shepherd.activeTour) {
+    Shepherd.activeTour.cancel()
+  }
+  const steps: ShepherdStepOptions[] = [
+    {
+      id: 'logs-filters',
+      text: 'Aqui você filtra os logs por usuário, entidade, ação e período.',
+      title: 'Filtros de Logs',
+      attachTo: {
+        element: '[data-tour="logs-filtros"]',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'logs-table',
+      text: 'A tabela mostra todas as ações registradas no sistema. Você pode ver detalhes de cada log.',
+      title: 'Tabela de Logs',
+      attachTo: {
+        element: '[data-tour="logs-tabela"]',
+        on: 'top',
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            this.complete()
+            window.location.href = '/configuracoes?tourFlow=admin'
+          },
+        },
+      ],
+    },
+  ]
+
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+      scrollTo: true,
+      cancelIcon: { enabled: true },
+      classes: 'shepherd-theme-admin',
+    },
+  })
+
+  steps.forEach((step) => tour.addStep(step))
+  tour.start()
+
+  return tour
+}
+
+// Tour da página Usuários (admin)
+export function startUsuariosTour(role: 'admin') {
+  if (Shepherd.activeTour) {
+    Shepherd.activeTour.cancel()
+  }
+  const steps: ShepherdStepOptions[] = [
+    {
+      id: 'users-list',
+      text: 'Aqui você vê todos os usuários do sistema, com role, status e última atividade.',
+      title: 'Lista de Usuários',
+      attachTo: {
+        element: '[data-tour="usuarios-header"]',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'users-new',
+      text: 'Use o botão "Novo Usuário" para criar acessos para a equipe. Apenas Admin pode fazer isso.',
+      title: 'Criar Usuário',
+      attachTo: {
+        element: '[data-tour="usuarios-novo"]',
+        on: 'left',
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            this.complete()
+            window.location.href = '/logs?tourFlow=admin'
+          },
+        },
+      ],
+    },
+  ]
+
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+      scrollTo: true,
+      cancelIcon: { enabled: true },
+      classes: 'shepherd-theme-admin',
+    },
+  })
+
+  steps.forEach((step) => tour.addStep(step))
+  tour.start()
+
+  return tour
+}
+
+// Tour específico para a página de Pacientes (chamado via query string ?tourFlow=admin|equipe)
+export function startPacientesTour(
+  role: 'admin' | 'equipe' | 'recepcao',
+  flow: 'admin' | 'equipe',
+) {
+  if (Shepherd.activeTour) {
+    Shepherd.activeTour.cancel()
+  }
+  const steps: ShepherdStepOptions[] = [
+    {
+      id: 'patients-list',
+      text: 'Esta é a lista de pacientes. Você pode buscar por nome ou CPF e ver o status atual de cada um.',
+      title: 'Lista de Pacientes',
+      attachTo: {
+        element: '[data-tour="pacientes-tabela"]',
+        on: 'top',
+      },
+      buttons: [
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'new-patient',
+      text: 'Use o botão "Novo Paciente" para pré-cadastrar um lead ou paciente (apenas Admin/Equipe).',
+      title: 'Criar Paciente',
+      attachTo: {
+        element: '[data-tour="pacientes-novo"]',
+        on: 'left',
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            this.complete()
+            if (flow === 'admin') {
+              window.location.href = '/usuarios?tourFlow=admin'
+            } else {
+              window.location.href = '/configuracoes?tourFlow=equipe'
+            }
+          },
+        },
+      ],
+    },
+  ]
+
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+      scrollTo: true,
+      cancelIcon: { enabled: true },
+      classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
+    },
+  })
+
+  steps.forEach((step) => tour.addStep(step))
+  tour.start()
+
   return tour
 }
 
@@ -162,15 +493,22 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
     },
     {
       id: 'navigation',
-      text: 'Use a sidebar para navegar: Dashboard, Pacientes, Usuários (apenas Admin) e Logs (apenas Admin).',
+      text: 'Use a sidebar à esquerda para navegar: Dashboard, Pacientes, Usuários (apenas Admin) e Logs (apenas Admin).',
       title: 'Navegação',
       attachTo: {
         element: 'aside',
         on: 'right',
       },
       buttons: [
-        { text: 'Voltar', action: function(this: any) { return this.back() } },
-        { text: 'Próximo', action: function(this: any) { return this.next() } },
+        { text: 'Voltar', action: function (this: any) { return this.back() } },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            // Termina o tour do Dashboard (admin) na sidebar e inicia fluxo em Pacientes
+            this.complete()
+            window.location.href = '/pacientes?tourFlow=admin'
+          },
+        },
       ],
     },
     {
@@ -191,7 +529,7 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
       text: 'Clique em "Novo Paciente" para pré-cadastrar um lead ou paciente. O sistema valida CPF automaticamente. (Será implementado na Fase 4)',
       title: 'Criar Paciente',
       attachTo: {
-        element: 'a[href="/pacientes"]',
+        element: '[data-tour="nav-pacientes"]',
         on: 'right',
       },
       buttons: [
@@ -204,7 +542,7 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
       text: 'O perfil mostra tudo sobre o paciente: dados, exames sincronizados automaticamente do Biologix, sessões de tratamento e gráficos de evolução. (Será implementado na Fase 5)',
       title: 'Perfil de Paciente',
       attachTo: {
-        element: 'a[href="/pacientes"]',
+        element: '[data-tour="nav-pacientes"]',
         on: 'right',
       },
       buttons: [
@@ -217,7 +555,7 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
       text: 'Registre cada sessão de tratamento aqui: data, protocolos usados e contadores de pulsos (inicial e final). Sessões editadas ficam com histórico de auditoria. (Será implementado na Fase 5)',
       title: 'Criar Sessão',
       attachTo: {
-        element: 'a[href="/pacientes"]',
+        element: '[data-tour="nav-pacientes"]',
         on: 'right',
       },
       buttons: [
@@ -230,48 +568,17 @@ function getAdminTourSteps(): ShepherdStepOptions[] {
       text: 'Use tags para organizar pacientes por protocolos (Atropina, Vonau, Nasal) ou categorias personalizadas. Crie novas tags em Configurações. (Será implementado na Fase 4)',
       title: 'Tags e Protocolos',
       attachTo: {
-        element: 'a[href="/pacientes"]',
+        element: '[data-tour="nav-pacientes"]',
         on: 'right',
       },
       buttons: [
         { text: 'Voltar', action: function(this: any) { return this.back() } },
-        { text: 'Próximo', action: function(this: any) { return this.next() } },
-      ],
-    },
-    {
-      id: 'evolution',
-      text: 'Visualize a evolução dos principais indicadores: IDO, SpO2, ronco. Compare o primeiro exame com o último para ver a melhora percentual. (Será implementado na Fase 6)',
-      title: 'Evolução Temporal',
-      attachTo: {
-        element: 'a[href="/pacientes"]',
-        on: 'right',
-      },
-      buttons: [
-        { text: 'Voltar', action: function(this: any) { return this.back() } },
-        { text: 'Próximo', action: function(this: any) { return this.next() } },
-      ],
-    },
-    {
-      id: 'users-management',
-      text: 'Como Admin, você pode criar e gerenciar usuários. Existem 3 roles: Admin (você), Equipe (dentistas) e Recepção (visualização).',
-      title: 'Gestão de Usuários',
-      attachTo: {
-        element: 'a[href="/usuarios"]',
-        on: 'right',
-      },
-      buttons: [
-        { text: 'Voltar', action: function(this: any) { return this.back() } },
-        { text: 'Próximo', action: function(this: any) { return this.next() } },
-      ],
-    },
-    {
-      id: 'completion',
-      text: 'Você já sabe o básico! Explore as outras abas do dashboard (Ronco, Apneia) e o histórico de status. Se precisar refazer o tour, vá em Configurações de Perfil.',
-      title: 'Tudo pronto! 🎉',
-      buttons: [
         {
-          text: 'Concluir Tour',
-          action: function(this: any) { return this.complete() },
+          text: 'Próximo',
+          action: function(this: any) {
+            this.complete()
+            window.location.href = '/pacientes?tourFlow=admin'
+          }
         },
       ],
     },
@@ -304,7 +611,7 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       id: 'actions-pending',
       text: 'O widget "Ações Pendentes" mostra leads sem follow-up, pacientes sem sessão e manutenções atrasadas. Clique para ver detalhes. (Será implementado na Fase 3)',
       title: 'Widget Ações Pendentes',
-      attachTo: { element: 'main', on: 'top' },
+      attachTo: { element: '[data-tour="actions-pending"]', on: 'bottom' },
       buttons: [
         { text: 'Voltar', action: function(this: any) { return this.back() } },
         { text: 'Próximo', action: function(this: any) { return this.next() } },
@@ -312,19 +619,26 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
     },
     {
       id: 'navigation',
-      text: 'Use a sidebar para navegar: Dashboard e Pacientes.',
+      text: 'Use a sidebar à esquerda para navegar: Dashboard e Pacientes.',
       title: 'Navegação',
       attachTo: { element: 'aside', on: 'right' },
       buttons: [
-        { text: 'Voltar', action: function(this: any) { return this.back() } },
-        { text: 'Próximo', action: function(this: any) { return this.next() } },
+        { text: 'Voltar', action: function (this: any) { return this.back() } },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            // Termina o tour do Dashboard (equipe) na sidebar e inicia fluxo em Pacientes
+            this.complete()
+            window.location.href = '/pacientes?tourFlow=equipe'
+          },
+        },
       ],
     },
     {
       id: 'create-patient',
       text: 'Clique em "Novo Paciente" para pré-cadastrar um lead ou paciente. O sistema valida CPF automaticamente. (Será implementado na Fase 4)',
       title: 'Criar Paciente',
-      attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
+      attachTo: { element: '[data-tour="nav-pacientes"]', on: 'right' },
       buttons: [
         { text: 'Voltar', action: function(this: any) { return this.back() } },
         { text: 'Próximo', action: function(this: any) { return this.next() } },
@@ -334,7 +648,7 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       id: 'patient-profile',
       text: 'O perfil mostra tudo sobre o paciente: dados, exames sincronizados automaticamente do Biologix, sessões de tratamento e gráficos de evolução. (Será implementado na Fase 5)',
       title: 'Perfil de Paciente',
-      attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
+      attachTo: { element: '[data-tour="nav-pacientes"]', on: 'right' },
       buttons: [
         { text: 'Voltar', action: function(this: any) { return this.back() } },
         { text: 'Próximo', action: function(this: any) { return this.next() } },
@@ -344,7 +658,7 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       id: 'create-session',
       text: 'Registre cada sessão de tratamento aqui: data, protocolos usados e contadores de pulsos. Você pode editar suas próprias sessões, mas não de outros dentistas. (Será implementado na Fase 5)',
       title: 'Criar Sessão',
-      attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
+      attachTo: { element: '[data-tour="nav-pacientes"]', on: 'right' },
       buttons: [
         { text: 'Voltar', action: function(this: any) { return this.back() } },
         { text: 'Próximo', action: function(this: any) { return this.next() } },
@@ -354,12 +668,15 @@ function getEquipeTourSteps(): ShepherdStepOptions[] {
       id: 'evolution',
       text: 'Visualize a evolução dos principais indicadores: IDO, SpO2, ronco. Compare o primeiro exame com o último para ver a melhora percentual. (Será implementado na Fase 6)',
       title: 'Evolução Temporal',
-      attachTo: { element: 'a[href="/pacientes"]', on: 'right' },
+      attachTo: { element: '[data-tour="nav-pacientes"]', on: 'right' },
       buttons: [
         { text: 'Voltar', action: function(this: any) { return this.back() } },
         {
-          text: 'Concluir Tour',
-          action: function(this: any) { return this.complete() },
+          text: 'Próximo',
+          action: function(this: any) {
+            this.complete()
+            window.location.href = '/pacientes?tourFlow=equipe'
+          },
         },
       ],
     },

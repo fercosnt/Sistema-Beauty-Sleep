@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Edit2, Ban, Key, UserCheck, UserX, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -36,6 +37,7 @@ interface User {
 }
 
 export default function UsuariosTable() {
+  const searchParams = useSearchParams()
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showNovoUsuarioModal, setShowNovoUsuarioModal] = useState(false)
@@ -47,6 +49,16 @@ export default function UsuariosTable() {
   useEffect(() => {
     fetchUsers()
   }, [])
+
+  // Tour da página Usuários (fluxo admin)
+  useEffect(() => {
+    const flow = searchParams.get('tourFlow')
+    if (flow !== 'admin') return
+
+    import('@/components/OnboardingTour').then(({ startUsuariosTour }) => {
+      startUsuariosTour('admin')
+    })
+  }, [searchParams])
 
   const fetchUsers = async () => {
     try {
@@ -204,7 +216,7 @@ export default function UsuariosTable() {
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between" data-tour="usuarios-header">
         <div>
           <h2 className="text-2xl font-bold text-white">Lista de Usuários</h2>
           <p className="mt-1 text-sm text-white">
@@ -216,6 +228,7 @@ export default function UsuariosTable() {
           onClick={() => setShowNovoUsuarioModal(true)}
           leftIcon={<Plus className="h-5 w-5" />}
           className="bg-white/10 hover:bg-white/20 border border-white/30 text-white backdrop-blur-md"
+          data-tour="usuarios-novo"
         >
           Novo Usuário
         </Button>

@@ -98,7 +98,8 @@ export default function WidgetAcoesPendentes() {
             pacientes: pacientesSemSessao || [],
             icon: Clock,
             urgency: 'high',
-            color: 'text-warning-600 bg-warning-50',
+        // Usa cor primária para diferenciar visualmente de Manutenção Atrasada
+        color: 'text-primary-600 bg-primary-50',
           },
           {
             title: 'Manutenção Atrasada',
@@ -106,7 +107,8 @@ export default function WidgetAcoesPendentes() {
             pacientes: manutencaoAtrasada || [],
             icon: Calendar,
             urgency: 'medium',
-            color: 'text-warning-600 bg-warning-50',
+        // Usa vermelho para destacar bem manutenção vencida
+        color: 'text-danger-600 bg-danger-50',
           },
           {
             title: 'Completando Tratamento',
@@ -144,7 +146,7 @@ export default function WidgetAcoesPendentes() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white rounded-lg shadow p-6 mb-6" data-tour="actions-pending">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Ações Pendentes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[...Array(4)].map((_, i) => (
@@ -162,7 +164,7 @@ export default function WidgetAcoesPendentes() {
 
   if (totalAcoes === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white rounded-lg shadow p-6 mb-6" data-tour="actions-pending">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Ações Pendentes</h2>
         <p className="text-gray-500 text-center py-8">Nenhuma ação pendente no momento! 🎉</p>
       </div>
@@ -170,7 +172,7 @@ export default function WidgetAcoesPendentes() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 mb-6">
+    <div className="bg-white rounded-lg shadow p-6 mb-6" data-tour="actions-pending">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Ações Pendentes</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {acoes.map((acao, index) => {
@@ -185,7 +187,9 @@ export default function WidgetAcoesPendentes() {
           return (
             <div
               key={index}
-              className={`border rounded-lg p-4 ${acao.count > 0 ? 'border-gray-200' : 'border-gray-100 opacity-50'}`}
+              className={`border rounded-lg p-4 ${
+                acao.count > 0 ? 'border-gray-200' : 'border-gray-200 opacity-75'
+              }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">

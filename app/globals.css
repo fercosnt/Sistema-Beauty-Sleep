@@ -817,3 +817,17 @@ input[type="range"].slider-primary::-moz-range-track {
   background: transparent;
 }
 
+/* Destaque suave para as seções usadas no tour de Configurações (apenas durante o tour) */
+.rounded-lg.border-2.border-gray-300.bg-white.shadow-sm.p-6:has(.shepherd-enabled[data-tour="config-perfil"]) {
+  border-color: rgba(148, 163, 184, 0.9);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.20);
+}
+
+.shepherd-enabled[data-tour="config-tour"] {
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(248, 250, 252, 0.9);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
+}
+
