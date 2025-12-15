@@ -545,6 +545,11 @@ export default function HeaderPerfil({ paciente, onPacienteUpdate }: HeaderPerfi
                   <p className="text-sm font-medium text-gray-900">
                     {formatDate(paciente.data_nascimento)}
                   </p>
+                  {idade !== null && (
+                    <p className="text-xs text-gray-600 mt-0.5">
+                      Idade: <span className="font-medium">{idade} anos</span>
+                    </p>
+                  )}
                 </div>
               </div>
             )}

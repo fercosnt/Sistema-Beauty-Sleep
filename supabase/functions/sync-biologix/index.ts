@@ -30,6 +30,31 @@ function extractCPF(username: string): string | null {
 }
 
 /**
+ * Safely converts a numeric value to fit into a NUMERIC column with limited precision/scale.
+ * Used to avoid "numeric field overflow" when values from Biologix exceed DB limits.
+ */
+function clampNumeric(
+  value: number | null | undefined,
+  maxAbs: number,
+): number | null {
+  if (value === null || value === undefined) return null;
+  const num = Number(value);
+  if (isNaN(num)) return null;
+
+  if (num > maxAbs) {
+    console.warn(`Clamping numeric value ${num} to max ${maxAbs}`);
+    return maxAbs;
+  }
+
+  if (num < -maxAbs) {
+    console.warn(`Clamping numeric value ${num} to min ${-maxAbs}`);
+    return -maxAbs;
+  }
+
+  return num;
+}
+
+/**
  * Calculates snoring score: (baixo × 1 + medio × 2 + alto × 3) / 3
  */
 function calculateScoreRonco(
@@ -154,7 +179,7 @@ Deno.serve(async (req: Request) => {
         // 1. Try to find by biologix_id first (primary method)
         let { data: existingPaciente } = await supabase
           .from('pacientes')
-          .select('id, biologix_id, cpf')
+          .select('id, biologix_id, cpf, data_nascimento')
           .eq('biologix_id', biologixId)
           .single();
 
@@ -166,7 +191,7 @@ Deno.serve(async (req: Request) => {
           // 2. Fallback: Try to find by CPF if biologix_id not found
           const { data: pacienteByCpf } = await supabase
             .from('pacientes')
-            .select('id, biologix_id, cpf')
+            .select('id, biologix_id, cpf, data_nascimento')
             .eq('cpf', cpf)
             .single();
 
@@ -192,7 +217,33 @@ Deno.serve(async (req: Request) => {
           }
         }
 
-        // 3. Create new paciente if not found
+        // 3. If paciente already exists, try to backfill missing data_nascimento using Biologix data
+        if (pacienteExisted && exam.patient.birthDate) {
+          const currentBirthDate =
+            existingPaciente?.data_nascimento ??
+            // If we found by CPF, use that record as fallback
+            (typeof pacienteByCpf !== 'undefined' ? (pacienteByCpf as any).data_nascimento : null);
+
+          // Only update if birth date is not set yet
+          if (!currentBirthDate) {
+            const { error: birthDateUpdateError } = await supabase
+              .from('pacientes')
+              .update({ data_nascimento: exam.patient.birthDate })
+              .eq('id', pacienteId);
+
+            if (birthDateUpdateError) {
+              console.warn(
+                `Failed to backfill data_nascimento for paciente ${pacienteId}: ${birthDateUpdateError.message}`,
+              );
+            } else {
+              console.log(
+                `Backfilled data_nascimento for paciente ${pacienteId} with ${exam.patient.birthDate}`,
+              );
+            }
+          }
+        }
+
+        // 4. Create new paciente if not found
         if (!pacienteId) {
           // Validate that we have at least CPF or can create without it
           if (!cpf && !biologixId) {
@@ -255,11 +306,14 @@ Deno.serve(async (req: Request) => {
           altura_cm: exam.base?.heightCm || null,
           // IMC will be calculated by trigger
           score_ronco: scoreRonco,
-          ido: exam.result?.oximetry?.odi || null,
+          // DB column ido is NUMERIC(4,2) -> max ~99.99; clamp to avoid overflow
+          ido: clampNumeric(exam.result?.oximetry?.odi, 99.99),
           ido_categoria: exam.result?.oximetry?.odiCategory ?? null,
-          spo2_min: exam.result?.oximetry?.spO2Min || null,
-          spo2_avg: exam.result?.oximetry?.spO2Avg || null,
-          spo2_max: exam.result?.oximetry?.spO2Max || null,
+          // SpO2 columns are NUMERIC(4,2) as well; SpO2 clínica pode ser 100,
+          // então clamp em 99.99 para caber no tipo
+          spo2_min: clampNumeric(exam.result?.oximetry?.spO2Min, 99.99),
+          spo2_avg: clampNumeric(exam.result?.oximetry?.spO2Avg, 99.99),
+          spo2_max: clampNumeric(exam.result?.oximetry?.spO2Max, 99.99),
         };
 
         // Upsert exam (unique by biologix_exam_id)
