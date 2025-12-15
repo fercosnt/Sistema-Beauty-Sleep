@@ -231,7 +231,7 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-600">
-              Média de Score de Ronco
+              Score Médio de Ronco
             </h3>
             <div className="p-2 rounded-lg bg-primary-600 bg-opacity-10">
               <Activity className="h-5 w-5 text-primary-600" />
