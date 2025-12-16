@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { FileText, Eye } from 'lucide-react'
+import { FileText, Eye, User } from 'lucide-react'
 
 interface Exame {
   id: string
@@ -17,6 +18,7 @@ interface Exame {
 }
 
 export default function ExamesRecentes() {
+  const router = useRouter()
   const [exames, setExames] = useState<Exame[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedExame, setSelectedExame] = useState<Exame | null>(null)
@@ -245,7 +247,18 @@ export default function ExamesRecentes() {
                 </div>
               </div>
 
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    if (selectedExame?.paciente_id) {
+                      router.push(`/pacientes/${selectedExame.paciente_id}`)
+                    }
+                  }}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  Ver Paciente
+                </button>
                 <button
                   onClick={() => setSelectedExame(null)}
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
