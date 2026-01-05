@@ -59,8 +59,8 @@ export default function ComparacaoExames({ exames }: ComparacaoExamesProps) {
   // Função para formatar porcentagem
   const formatarPorcentagem = (valor: number | null): string => {
     if (valor === null) return '-'
-    const sinal = valor > 0 ? '+' : ''
-    return `${sinal}${valor.toFixed(1)}%`
+    const sinal = valor > 0 ? '+' : valor < 0 ? '-' : ''
+    return `${sinal}${sinal ? ' ' : ''}${Math.abs(valor).toFixed(1)}%`
   }
 
   return (
@@ -112,7 +112,7 @@ export default function ComparacaoExames({ exames }: ComparacaoExamesProps) {
                             }`}
                           >
                             {comp.variacao !== null
-                              ? `${comp.variacao > 0 ? '+' : ''}${formatarValor(comp.variacao, unidade)}`
+                              ? `${comp.variacao > 0 ? '+' : comp.variacao < 0 ? '-' : ''}${comp.variacao !== 0 ? ' ' : ''}${formatarValor(Math.abs(comp.variacao), unidade)}`
                               : '-'}
                           </span>
                         </td>
@@ -183,7 +183,7 @@ export default function ComparacaoExames({ exames }: ComparacaoExamesProps) {
                             }`}
                           >
                             {comp.variacao !== null
-                              ? `${comp.variacao > 0 ? '+' : ''}${formatarValor(comp.variacao, unidade)}`
+                              ? `${comp.variacao > 0 ? '+' : comp.variacao < 0 ? '-' : ''}${comp.variacao !== 0 ? ' ' : ''}${formatarValor(Math.abs(comp.variacao), unidade)}`
                               : '-'}
                           </span>
                         </td>
