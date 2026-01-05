@@ -53,7 +53,9 @@ export default function ComparacaoExames({ exames }: ComparacaoExamesProps) {
   // Função para formatar valor
   const formatarValor = (valor: number | null, unidade: string = ''): string => {
     if (valor === null) return '-'
-    return `${valor.toFixed(2)}${unidade ? ` ${unidade}` : ''}`
+    // Se a unidade for %, não adicionar espaço antes
+    const separador = unidade === '%' ? '' : unidade ? ' ' : ''
+    return `${valor.toFixed(2)}${separador}${unidade}`
   }
 
   // Função para formatar porcentagem
