@@ -140,7 +140,7 @@ export default function CasosCriticosRonco({ dateRange, userRole }: CasosCritico
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-danger-600" />
-          Casos Críticos (Score Ronco > 2)
+          Casos Críticos (Score Ronco {'>'} 2)
         </CardTitle>
       </CardHeader>
       <CardContent>

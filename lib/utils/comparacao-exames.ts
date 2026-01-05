@@ -218,7 +218,7 @@ export function calcularComparacaoMetricas(
   if (exameInicial.tipo === 1 && exameFinal.tipo === 1) {
     const cargaInicial = exameInicial.carga_hipoxica
     const cargaFinal = exameFinal.carga_hipoxica
-    if (cargaInicial !== null && cargaFinal !== null) {
+    if (cargaInicial !== null && cargaInicial !== undefined && cargaFinal !== null && cargaFinal !== undefined) {
       const variacao = cargaFinal - cargaInicial
       const melhoraPercentual = calcularMelhoraPercentual(cargaInicial, cargaFinal, true)
       comparacoes.push({
