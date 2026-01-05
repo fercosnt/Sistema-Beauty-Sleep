@@ -841,59 +841,69 @@ export default function ModalDetalhesExame({
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {exame.ido !== null && exame.ido !== undefined && (
-                    <div>
-                      <GaugeChart
-                        value={exame.ido}
-                        max={60}
-                        label="IDO (Índice de Dessaturação de Oxigênio)"
-                        unit="eventos/hora"
-                        color={
-                          exame.ido_categoria === 0 ? 'green' :
-                          exame.ido_categoria === 1 ? 'yellow' :
-                          exame.ido_categoria === 2 ? 'orange' : 'red'
-                        }
-                        size="lg"
-                      />
-                      {exame.ido_categoria !== null && (
-                        <div className="mt-2 text-center">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getIDOCategoriaColor(
-                              exame.ido_categoria
-                            )}`}
-                          >
-                            {getIDOCategoriaLabel(exame.ido_categoria)}
-                          </span>
+                {(() => {
+                  const temIDO = exame.ido !== null && exame.ido !== undefined
+                  const temSpo2_90 = exame.tempo_spo2_90_seg !== null && exame.duracao_total_seg !== null
+                  const temAmbos = temIDO && temSpo2_90
+                  
+                  if (!temIDO && !temSpo2_90) return null
+                  
+                  return (
+                    <div className={`grid gap-8 ${temAmbos ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 justify-items-center'}`}>
+                      {temIDO && exame.ido !== null && (
+                        <div className={temAmbos ? '' : 'max-w-md w-full'}>
+                          <GaugeChart
+                            value={exame.ido}
+                            max={60}
+                            label="IDO (Índice de Dessaturação de Oxigênio)"
+                            unit="eventos/hora"
+                            color={
+                              exame.ido_categoria === 0 ? 'green' :
+                              exame.ido_categoria === 1 ? 'yellow' :
+                              exame.ido_categoria === 2 ? 'orange' : 'red'
+                            }
+                            size="lg"
+                          />
+                          {exame.ido_categoria !== null && (
+                            <div className="mt-2 text-center">
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getIDOCategoriaColor(
+                                  exame.ido_categoria
+                                )}`}
+                              >
+                                {getIDOCategoriaLabel(exame.ido_categoria)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="mt-4 text-xs text-gray-500 text-center">
+                            <p>Normal: 0-5 | Leve: 5-15 | Moderado: 15-30 | Acentuado: 30+</p>
+                          </div>
                         </div>
                       )}
-                      <div className="mt-4 text-xs text-gray-500 text-center">
-                        <p>Normal: 0-5 | Leve: 5-15 | Moderado: 15-30 | Acentuado: 30+</p>
-                      </div>
+                      {temSpo2_90 && exame.tempo_spo2_90_seg !== null && exame.duracao_total_seg !== null && (
+                        <div className={temAmbos ? '' : 'max-w-md w-full'}>
+                          <GaugeChart
+                            value={(exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100}
+                            max={100}
+                            label="Tempo com SpO2 < 90%"
+                            unit="%"
+                            color={
+                              (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100 < 5 ? 'green' :
+                              (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100 < 10 ? 'yellow' :
+                              (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100 < 20 ? 'orange' : 'red'
+                            }
+                            size="lg"
+                          />
+                          <div className="mt-2 text-center">
+                            <p className="text-sm text-gray-600">
+                              {formatDuration(exame.tempo_spo2_90_seg)} de {formatDuration(exame.duracao_total_seg)}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {exame.tempo_spo2_90_seg !== null && exame.duracao_total_seg && (
-                    <div>
-                      <GaugeChart
-                        value={(exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100}
-                        max={100}
-                        label="Tempo com SpO2 < 90%"
-                        unit="%"
-                        color={
-                          (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100 < 5 ? 'green' :
-                          (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100 < 10 ? 'yellow' :
-                          (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100 < 20 ? 'orange' : 'red'
-                        }
-                        size="lg"
-                      />
-                      <div className="mt-2 text-center">
-                        <p className="text-sm text-gray-600">
-                          {formatDuration(exame.tempo_spo2_90_seg)} de {formatDuration(exame.duracao_total_seg)}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  )
+                })()}
               </CardContent>
             </Card>
           )}
