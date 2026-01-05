@@ -170,26 +170,26 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
 
 ### Fase 2.4: Sistema de Alertas
 
-- [ ] **8.0 Criar tabela de Alertas no banco de dados**
-  - [ ] 8.1 Criar migration `012_alertas.sql`
-  - [ ] 8.2 Definir tabela `alertas` com campos: id, tipo, urgencia, titulo, mensagem, paciente_id, exame_id, status, resolvido_por, resolvido_em, dados_extras, created_at
-  - [ ] 8.3 Adicionar constraints CHECK para tipo (critico/manutencao/followup) e urgencia (alta/media/baixa)
-  - [ ] 8.4 Criar índices para status, tipo, created_at, paciente_id
-  - [ ] 8.5 Habilitar RLS na tabela
-  - [ ] 8.6 Criar policy para admin e equipe poderem ver alertas
-  - [ ] 8.7 Criar policy para admin e equipe poderem atualizar alertas
-  - [ ] 8.8 Aplicar migration com `npx supabase db push`
+- [x] **8.0 Criar tabela de Alertas no banco de dados**
+  - [x] 8.1 Criar migration `014_alertas.sql`
+  - [x] 8.2 Definir tabela `alertas` com campos: id, tipo, urgencia, titulo, mensagem, paciente_id, exame_id, status, resolvido_por, resolvido_em, dados_extras, created_at
+  - [x] 8.3 Adicionar constraints CHECK para tipo (critico/manutencao/followup) e urgencia (alta/media/baixa)
+  - [x] 8.4 Criar índices para status, tipo, created_at, paciente_id
+  - [x] 8.5 Habilitar RLS na tabela
+  - [x] 8.6 Criar policy para admin e equipe poderem ver alertas
+  - [x] 8.7 Criar policy para admin e equipe poderem atualizar alertas
+  - [ ] 8.8 Aplicar migration no Supabase Dashboard (SQL Editor)
   - [ ] 8.9 Verificar tabela criada corretamente
 
-- [ ] **9.0 Implementar geração de alertas críticos no Sync Biologix**
-  - [ ] 9.1 Criar `lib/utils/alertas.ts` com funções de criação de alertas
-  - [ ] 9.2 Implementar função `criarAlertaCritico(tipo, pacienteId, exameId, dados)`
-  - [ ] 9.3 Modificar `sync-biologix/index.ts` - Após inserir exame, verificar IDO acentuado (categoria = 3)
-  - [ ] 9.4 Modificar `sync-biologix/index.ts` - Verificar SpO2 crítico (spo2_min < 80%)
-  - [ ] 9.5 Modificar `sync-biologix/index.ts` - Verificar Fibrilação Atrial (fibrilacao_atrial = 1)
-  - [ ] 9.6 Modificar `sync-biologix/index.ts` - Buscar exame anterior e verificar piora de IDO
-  - [ ] 9.7 Modificar `sync-biologix/index.ts` - Buscar exame anterior e verificar piora de Score Ronco
-  - [ ] 9.8 Modificar `sync-biologix/index.ts` - Verificar eficiência do sono < 75%
+- [x] **9.0 Implementar geração de alertas críticos no Sync Biologix**
+  - [x] 9.1 Criar `supabase/functions/sync-biologix/alertas.ts` com funções de criação de alertas
+  - [x] 9.2 Implementar função `criarAlertaCritico(tipo, pacienteId, exameId, dados)`
+  - [x] 9.3 Modificar `sync-biologix/index.ts` - Após inserir exame, verificar IDO acentuado (categoria = 3)
+  - [x] 9.4 Modificar `sync-biologix/index.ts` - Verificar SpO2 crítico (spo2_min < 80%)
+  - [x] 9.5 Modificar `sync-biologix/index.ts` - Verificar Fibrilação Atrial (fibrilacao_atrial = 1)
+  - [x] 9.6 Modificar `sync-biologix/index.ts` - Buscar exame anterior e verificar piora de IDO
+  - [x] 9.7 Modificar `sync-biologix/index.ts` - Buscar exame anterior e verificar piora de Score Ronco
+  - [x] 9.8 Modificar `sync-biologix/index.ts` - Verificar eficiência do sono < 75%
   - [ ] 9.9 Testar sync com exame que gera alerta crítico
 
 - [ ] **10.0 Criar Edge Function para alertas de manutenção/follow-up**

@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { BiologixClient } from './biologix-client.ts';
 import { ExamDto, EXAM_TYPE, EXAM_STATUS, IDO_CATEGORY } from './types.ts';
+import { criarAlertaCritico, existeAlertaPendente } from './alertas.ts';
 
 interface Env {
   SUPABASE_URL: string;
@@ -401,6 +402,7 @@ Deno.serve(async (req: Request) => {
           .eq('biologix_exam_id', exam.examId)
           .single();
 
+        let exameId: string;
         if (existingExam) {
           const { error: updateError } = await supabase
             .from('exames')
@@ -410,16 +412,250 @@ Deno.serve(async (req: Request) => {
           if (updateError) {
             throw new Error(`Failed to update exam: ${updateError.message}`);
           }
+          exameId = existingExam.id;
           updated++;
         } else {
-          const { error: insertError } = await supabase
+          const { data: newExam, error: insertError } = await supabase
             .from('exames')
-            .insert(examData);
+            .insert(examData)
+            .select('id')
+            .single();
 
           if (insertError) {
             throw new Error(`Failed to insert exam: ${insertError.message}`);
           }
+          exameId = newExam.id;
           created++;
+        }
+
+        // ============================================
+        // Verificar condições críticas e criar alertas
+        // ============================================
+        
+        // 9.3: Verificar IDO acentuado (categoria = 3)
+        if (examData.ido_categoria === 3 && examData.ido !== null) {
+          const jaExiste = await existeAlertaPendente(
+            supabase,
+            'critico',
+            pacienteId,
+            exameId
+          );
+          
+          if (!jaExiste) {
+            await criarAlertaCritico(
+              supabase,
+              'critico',
+              pacienteId,
+              exameId,
+              {
+                titulo: 'IDO Acentuado Detectado',
+                mensagem: `Paciente apresentou IDO acentuado (${examData.ido.toFixed(1)} eventos/hora) no exame realizado em ${examData.data_exame}. Requer atenção imediata.`,
+                urgencia: 'alta',
+                dados_extras: {
+                  ido: examData.ido,
+                  ido_categoria: examData.ido_categoria,
+                  tipo_exame: exam.type === EXAM_TYPE.RONCO ? 'Ronco' : 'Sono',
+                },
+              }
+            );
+          }
+        }
+
+        // 9.4: Verificar SpO2 crítico (spo2_min < 80%)
+        if (examData.spo2_min !== null && examData.spo2_min < 80) {
+          const jaExiste = await existeAlertaPendente(
+            supabase,
+            'critico',
+            pacienteId,
+            exameId
+          );
+          
+          if (!jaExiste) {
+            await criarAlertaCritico(
+              supabase,
+              'critico',
+              pacienteId,
+              exameId,
+              {
+                titulo: 'SpO2 Crítico Detectado',
+                mensagem: `Paciente apresentou SpO2 mínimo crítico (${examData.spo2_min.toFixed(1)}%) no exame realizado em ${examData.data_exame}. Requer atenção médica imediata.`,
+                urgencia: 'alta',
+                dados_extras: {
+                  spo2_min: examData.spo2_min,
+                  spo2_avg: examData.spo2_avg,
+                  spo2_max: examData.spo2_max,
+                  tipo_exame: exam.type === EXAM_TYPE.RONCO ? 'Ronco' : 'Sono',
+                },
+              }
+            );
+          }
+        }
+
+        // 9.5: Verificar Fibrilação Atrial (fibrilacao_atrial = 1)
+        if (examData.fibrilacao_atrial === 1) {
+          const jaExiste = await existeAlertaPendente(
+            supabase,
+            'critico',
+            pacienteId,
+            exameId
+          );
+          
+          if (!jaExiste) {
+            await criarAlertaCritico(
+              supabase,
+              'critico',
+              pacienteId,
+              exameId,
+              {
+                titulo: 'Fibrilação Atrial Detectada',
+                mensagem: `Fibrilação atrial foi detectada no exame realizado em ${examData.data_exame}. Requer avaliação cardiológica imediata.`,
+                urgencia: 'alta',
+                dados_extras: {
+                  fibrilacao_atrial: examData.fibrilacao_atrial,
+                  tipo_exame: exam.type === EXAM_TYPE.RONCO ? 'Ronco' : 'Sono',
+                },
+              }
+            );
+          }
+        }
+
+        // 9.6: Verificar piora de IDO (comparar com exame anterior)
+        if (examData.ido !== null && examData.ido_categoria !== null) {
+          const { data: examesAnteriores } = await supabase
+            .from('exames')
+            .select('ido, ido_categoria, data_exame')
+            .eq('paciente_id', pacienteId)
+            .eq('tipo', exam.type)
+            .not('ido', 'is', null)
+            .not('id', 'eq', exameId)
+            .order('data_exame', { ascending: false })
+            .limit(1);
+
+          if (examesAnteriores && examesAnteriores.length > 0) {
+            const exameAnterior = examesAnteriores[0];
+            const idoAnterior = parseFloat(exameAnterior.ido);
+            const idoAtual = parseFloat(examData.ido);
+
+            // Considerar piora se IDO aumentou significativamente (> 30% de aumento)
+            // ou se categoria piorou (ex: de 1 para 2 ou 3, ou de 2 para 3)
+            const aumentoPercentual = ((idoAtual - idoAnterior) / idoAnterior) * 100;
+            const categoriaPiorou = 
+              (exameAnterior.ido_categoria !== null && examData.ido_categoria !== null) &&
+              examData.ido_categoria > exameAnterior.ido_categoria;
+
+            if (aumentoPercentual > 30 || categoriaPiorou) {
+              const jaExiste = await existeAlertaPendente(
+                supabase,
+                'critico',
+                pacienteId,
+                exameId
+              );
+              
+              if (!jaExiste) {
+                await criarAlertaCritico(
+                  supabase,
+                  'critico',
+                  pacienteId,
+                  exameId,
+                  {
+                    titulo: 'Piora Significativa de IDO',
+                    mensagem: `IDO piorou significativamente: de ${idoAnterior.toFixed(1)} para ${idoAtual.toFixed(1)} eventos/hora (${aumentoPercentual.toFixed(1)}% de aumento). Exame anterior: ${exameAnterior.data_exame}.`,
+                    urgencia: categoriaPiorou ? 'alta' : 'media',
+                    dados_extras: {
+                      ido_anterior: idoAnterior,
+                      ido_atual: idoAtual,
+                      aumento_percentual: aumentoPercentual,
+                      categoria_anterior: exameAnterior.ido_categoria,
+                      categoria_atual: examData.ido_categoria,
+                      tipo_exame: exam.type === EXAM_TYPE.RONCO ? 'Ronco' : 'Sono',
+                    },
+                  }
+                );
+              }
+            }
+          }
+        }
+
+        // 9.7: Verificar piora de Score Ronco (apenas para exames de Ronco)
+        if (exam.type === EXAM_TYPE.RONCO && examData.score_ronco !== null) {
+          const { data: examesAnteriores } = await supabase
+            .from('exames')
+            .select('score_ronco, data_exame')
+            .eq('paciente_id', pacienteId)
+            .eq('tipo', EXAM_TYPE.RONCO)
+            .not('score_ronco', 'is', null)
+            .not('id', 'eq', exameId)
+            .order('data_exame', { ascending: false })
+            .limit(1);
+
+          if (examesAnteriores && examesAnteriores.length > 0) {
+            const exameAnterior = examesAnteriores[0];
+            const scoreAnterior = parseFloat(exameAnterior.score_ronco);
+            const scoreAtual = parseFloat(examData.score_ronco);
+
+            // Considerar piora se score aumentou > 30% ou se aumentou de forma significativa (> 0.5 pontos)
+            const aumentoPercentual = ((scoreAtual - scoreAnterior) / scoreAnterior) * 100;
+            const aumentoAbsoluto = scoreAtual - scoreAnterior;
+
+            if (aumentoPercentual > 30 || aumentoAbsoluto > 0.5) {
+              const jaExiste = await existeAlertaPendente(
+                supabase,
+                'critico',
+                pacienteId,
+                exameId
+              );
+              
+              if (!jaExiste) {
+                await criarAlertaCritico(
+                  supabase,
+                  'critico',
+                  pacienteId,
+                  exameId,
+                  {
+                    titulo: 'Piora de Score de Ronco',
+                    mensagem: `Score de ronco piorou: de ${scoreAnterior.toFixed(2)} para ${scoreAtual.toFixed(2)} (${aumentoPercentual.toFixed(1)}% de aumento). Exame anterior: ${exameAnterior.data_exame}.`,
+                    urgencia: aumentoAbsoluto > 1.0 ? 'alta' : 'media',
+                    dados_extras: {
+                      score_anterior: scoreAnterior,
+                      score_atual: scoreAtual,
+                      aumento_percentual: aumentoPercentual,
+                      aumento_absoluto: aumentoAbsoluto,
+                      tipo_exame: 'Ronco',
+                    },
+                  }
+                );
+              }
+            }
+          }
+        }
+
+        // 9.8: Verificar eficiência do sono < 75%
+        if (examData.eficiencia_sono_pct !== null && examData.eficiencia_sono_pct < 75) {
+          const jaExiste = await existeAlertaPendente(
+            supabase,
+            'critico',
+            pacienteId,
+            exameId
+          );
+          
+          if (!jaExiste) {
+            await criarAlertaCritico(
+              supabase,
+              'critico',
+              pacienteId,
+              exameId,
+              {
+                titulo: 'Eficiência do Sono Baixa',
+                mensagem: `Eficiência do sono está abaixo do ideal (${examData.eficiencia_sono_pct.toFixed(1)}% < 75%) no exame realizado em ${examData.data_exame}. Pode indicar problemas de qualidade do sono.`,
+                urgencia: examData.eficiencia_sono_pct < 60 ? 'alta' : 'media',
+                dados_extras: {
+                  eficiencia_sono_pct: examData.eficiencia_sono_pct,
+                  tempo_sono_seg: examData.tempo_sono_seg,
+                  tipo_exame: exam.type === EXAM_TYPE.RONCO ? 'Ronco' : 'Sono',
+                },
+              }
+            );
+          }
         }
 
         processed++;
