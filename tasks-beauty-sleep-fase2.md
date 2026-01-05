@@ -192,18 +192,18 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
   - [x] 9.8 Modificar `sync-biologix/index.ts` - Verificar eficiência do sono < 75%
   - [ ] 9.9 Testar sync com exame que gera alerta crítico
 
-- [ ] **10.0 Criar Edge Function para alertas de manutenção/follow-up**
-  - [ ] 10.1 Criar pasta `supabase/functions/check-alerts/`
-  - [ ] 10.2 Criar `index.ts` com lógica principal
-  - [ ] 10.3 Implementar verificação de manutenção em 7 dias (proxima_manutencao = HOJE + 7)
-  - [ ] 10.4 Implementar verificação de manutenção atrasada (proxima_manutencao < HOJE)
-  - [ ] 10.5 Implementar verificação de manutenção muito atrasada (proxima_manutencao < HOJE - 30)
-  - [ ] 10.6 Implementar verificação de manutenção 6 meses (status='finalizado' + 6 meses)
-  - [ ] 10.7 Implementar verificação de lead sem contato (status='lead' AND created_at < HOJE - 3)
-  - [ ] 10.8 Implementar verificação de paciente sem sessão (status='ativo' AND sessoes=0 AND created_at < HOJE - 7)
-  - [ ] 10.9 Implementar verificação de não resposta ao tratamento (5+ sessões e <20% melhora)
-  - [ ] 10.10 Evitar duplicação de alertas (verificar se já existe alerta pendente)
-  - [ ] 10.11 Configurar cron job para executar às 8h BRT (11h UTC)
+- [x] **10.0 Criar Edge Function para alertas de manutenção/follow-up**
+  - [x] 10.1 Criar pasta `supabase/functions/check-alerts/`
+  - [x] 10.2 Criar `index.ts` com lógica principal
+  - [x] 10.3 Implementar verificação de manutenção em 7 dias (proxima_manutencao = HOJE + 7)
+  - [x] 10.4 Implementar verificação de manutenção atrasada (proxima_manutencao < HOJE)
+  - [x] 10.5 Implementar verificação de manutenção muito atrasada (proxima_manutencao < HOJE - 30)
+  - [x] 10.6 Implementar verificação de manutenção 6 meses (status='finalizado' + 6 meses)
+  - [x] 10.7 Implementar verificação de lead sem contato (status='lead' AND created_at < HOJE - 3)
+  - [x] 10.8 Implementar verificação de paciente sem sessão (status='ativo' AND sessoes=0 AND created_at < HOJE - 7)
+  - [x] 10.9 Implementar verificação de não resposta ao tratamento (5+ sessões e <20% melhora)
+  - [x] 10.10 Evitar duplicação de alertas (verificar se já existe alerta pendente)
+  - [x] 10.11 Configurar cron job para executar às 8h BRT (11h UTC)
   - [ ] 10.12 Deploy da Edge Function
   - [ ] 10.13 Testar execução manual da function
 
