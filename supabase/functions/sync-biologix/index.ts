@@ -404,35 +404,40 @@ Deno.serve(async (req: Request) => {
 
         let exameId: string;
         if (existingExam) {
-          // Remover campos que podem não existir na tabela (se migration não foi aplicada)
-          const examDataToUpdate = { ...examData };
-          
-          // Verificar se campos de BPM existem antes de tentar atualizar
-          // Se houver erro, tentar novamente sem esses campos
           const { error: updateError } = await supabase
             .from('exames')
-            .update(examDataToUpdate)
+            .update(examData)
             .eq('id', existingExam.id);
 
           if (updateError) {
-            // Se erro for sobre campos não encontrados, remover esses campos e tentar novamente
-            if (updateError.message.includes('bpm_min') || 
-                updateError.message.includes('bpm_medio') || 
-                updateError.message.includes('bpm_max') ||
-                updateError.message.includes('Could not find')) {
-              console.warn(`Campos de BPM não encontrados para exame ${exam.examId}, removendo do update`);
-              delete examDataToUpdate.bpm_min;
-              delete examDataToUpdate.bpm_medio;
-              delete examDataToUpdate.bpm_max;
+            // Se erro for sobre campos não encontrados, filtrar apenas campos que existem
+            if (updateError.message.includes('Could not find') || updateError.message.includes('column')) {
+              console.warn(`Alguns campos não encontrados para exame ${exam.examId}, tentando com campos básicos`);
+              
+              // Criar objeto apenas com campos básicos que sempre existem
+              const basicFields = [
+                'paciente_id', 'biologix_exam_id', 'biologix_exam_key', 'tipo', 'status', 'data_exame',
+                'peso_kg', 'altura_cm',
+                'ido', 'ido_categoria', 'spo2_min', 'spo2_avg', 'spo2_max',
+                'score_ronco'
+              ];
+              
+              const examDataBasic: any = {};
+              for (const field of basicFields) {
+                if (examData[field] !== undefined) {
+                  examDataBasic[field] = examData[field];
+                }
+              }
               
               const { error: retryError } = await supabase
                 .from('exames')
-                .update(examDataToUpdate)
+                .update(examDataBasic)
                 .eq('id', existingExam.id);
               
               if (retryError) {
                 throw new Error(`Failed to update exam: ${retryError.message}`);
               }
+              console.warn(`Exame ${exam.examId} atualizado apenas com campos básicos. Aplique a migration 016 para campos completos.`);
             } else {
               throw new Error(`Failed to update exam: ${updateError.message}`);
             }
@@ -440,29 +445,35 @@ Deno.serve(async (req: Request) => {
           exameId = existingExam.id;
           updated++;
         } else {
-          // Para insert, também verificar se campos existem
-          const examDataToInsert = { ...examData };
-          
           const { data: newExam, error: insertError } = await supabase
             .from('exames')
-            .insert(examDataToInsert)
+            .insert(examData)
             .select('id')
             .single();
 
           if (insertError) {
-            // Se erro for sobre campos não encontrados, remover esses campos e tentar novamente
-            if (insertError.message.includes('bpm_min') || 
-                insertError.message.includes('bpm_medio') || 
-                insertError.message.includes('bpm_max') ||
-                insertError.message.includes('Could not find')) {
-              console.warn(`Campos de BPM não encontrados para exame ${exam.examId}, removendo do insert`);
-              delete examDataToInsert.bpm_min;
-              delete examDataToInsert.bpm_medio;
-              delete examDataToInsert.bpm_max;
+            // Se erro for sobre campos não encontrados, filtrar apenas campos que existem
+            if (insertError.message.includes('Could not find') || insertError.message.includes('column')) {
+              console.warn(`Alguns campos não encontrados para exame ${exam.examId}, tentando com campos básicos`);
+              
+              // Criar objeto apenas com campos básicos que sempre existem
+              const basicFields = [
+                'paciente_id', 'biologix_exam_id', 'biologix_exam_key', 'tipo', 'status', 'data_exame',
+                'peso_kg', 'altura_cm',
+                'ido', 'ido_categoria', 'spo2_min', 'spo2_avg', 'spo2_max',
+                'score_ronco'
+              ];
+              
+              const examDataBasic: any = {};
+              for (const field of basicFields) {
+                if (examData[field] !== undefined) {
+                  examDataBasic[field] = examData[field];
+                }
+              }
               
               const { data: retryExam, error: retryError } = await supabase
                 .from('exames')
-                .insert(examDataToInsert)
+                .insert(examDataBasic)
                 .select('id')
                 .single();
               
@@ -470,6 +481,7 @@ Deno.serve(async (req: Request) => {
                 throw new Error(`Failed to insert exam: ${retryError.message}`);
               }
               exameId = retryExam.id;
+              console.warn(`Exame ${exam.examId} inserido apenas com campos básicos. Aplique a migration 016 para campos completos.`);
             } else {
               throw new Error(`Failed to insert exam: ${insertError.message}`);
             }
