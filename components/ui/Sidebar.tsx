@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Users, UserCog, FileText, LogOut, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { LayoutDashboard, Users, UserCog, FileText, LogOut, ChevronLeft, ChevronRight, X, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -91,6 +91,7 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Pacientes', href: '/pacientes', icon: Users },
+    { name: 'Alertas', href: '/alertas', icon: AlertCircle },
     ...(isAdmin ? [
       { name: 'Usuários', href: '/usuarios', icon: UserCog },
       { name: 'Logs', href: '/logs', icon: FileText },

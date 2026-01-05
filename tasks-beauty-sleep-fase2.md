@@ -220,16 +220,16 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
   - [x] 11.10 Integrar NotificationCenter em `Header.tsx`
   - [ ] 11.11 Testar notificações com alertas reais
 
-- [ ] **12.0 Criar página de Alertas (/alertas)**
-  - [ ] 12.1 Criar `app/alertas/page.tsx` com layout básico
-  - [ ] 12.2 Criar componente `AlertasFilters.tsx` com filtros de tipo, urgência, status
-  - [ ] 12.3 Criar componente `AlertaCard.tsx` para exibir alerta individual
-  - [ ] 12.4 Criar componente `AlertasList.tsx` para lista de alertas
-  - [ ] 12.5 Implementar query com filtros e paginação
-  - [ ] 12.6 Implementar ação "Ver Paciente" em cada alerta
-  - [ ] 12.7 Implementar ação "Marcar como Resolvido" em cada alerta
-  - [ ] 12.8 Implementar seleção múltipla e ação em lote "Resolver Selecionados"
-  - [ ] 12.9 Adicionar link para /alertas na Sidebar
+- [x] **12.0 Criar página de Alertas (/alertas)**
+  - [x] 12.1 Criar `app/alertas/page.tsx` com layout básico
+  - [x] 12.2 Criar componente `AlertasFilters.tsx` com filtros de tipo, urgência, status
+  - [x] 12.3 Criar componente `AlertaCard.tsx` para exibir alerta individual
+  - [x] 12.4 Criar componente `AlertasList.tsx` para lista de alertas
+  - [x] 12.5 Implementar query com filtros e paginação
+  - [x] 12.6 Implementar ação "Ver Paciente" em cada alerta
+  - [x] 12.7 Implementar ação "Marcar como Resolvido" em cada alerta
+  - [x] 12.8 Implementar seleção múltipla e ação em lote "Resolver Selecionados"
+  - [x] 12.9 Adicionar link para /alertas na Sidebar
   - [ ] 12.10 Testar página com diferentes tipos de alertas
 
 ---
