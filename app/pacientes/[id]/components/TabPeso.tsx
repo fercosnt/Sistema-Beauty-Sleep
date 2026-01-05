@@ -74,8 +74,39 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
     }
   }
 
+  // Função para reduzir dados quando há muitos pontos
+  const reduzirDados = <T,>(dados: T[], maxPontos: number = 30): T[] => {
+    if (dados.length <= maxPontos) {
+      return dados
+    }
+
+    // Sempre manter primeiro e último
+    const primeiro = dados[0]
+    const ultimo = dados[dados.length - 1]
+    
+    // Calcular passo para pegar pontos uniformemente distribuídos
+    const passo = (dados.length - 1) / (maxPontos - 1)
+    
+    const dadosReduzidos: T[] = [primeiro]
+    const indicesUsados = new Set<number>([0, dados.length - 1])
+    
+    // Adicionar pontos intermediários distribuídos uniformemente
+    for (let i = 1; i < maxPontos - 1; i++) {
+      const indice = Math.round(i * passo)
+      if (indice > 0 && indice < dados.length - 1 && !indicesUsados.has(indice)) {
+        dadosReduzidos.push(dados[indice])
+        indicesUsados.add(indice)
+      }
+    }
+    
+    // Garantir que o último está incluído
+    dadosReduzidos.push(ultimo)
+    
+    return dadosReduzidos
+  }
+
   // Preparar dados para gráficos
-  const chartData = exames.map((exame) => ({
+  const chartDataCompleto = exames.map((exame) => ({
     data: new Date(exame.data_exame).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -84,6 +115,14 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
     peso: exame.peso_kg,
     imc: exame.imc,
   }))
+
+  // Filtrar e reduzir dados de peso separadamente
+  const chartDataPesoCompleto = chartDataCompleto.filter((d) => d.peso !== null && d.peso !== undefined)
+  const chartDataPeso = reduzirDados(chartDataPesoCompleto, 30)
+
+  // Filtrar e reduzir dados de IMC separadamente
+  const chartDataIMCCompleto = chartDataCompleto.filter((d) => d.imc !== null && d.imc !== undefined)
+  const chartDataIMC = reduzirDados(chartDataIMCCompleto, 30)
 
   // Calcular comparação
   const pesoInicial = exames.length > 0 ? exames[0].peso_kg : null
@@ -153,16 +192,29 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
       {exames.some((e) => e.peso_kg !== null) && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Scale className="h-5 w-5 text-primary-600" />
-              Evolução do Peso
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Scale className="h-5 w-5 text-primary-600" />
+                Evolução do Peso
+              </CardTitle>
+              {chartDataPesoCompleto.length > 30 && (
+                <span className="text-xs text-gray-500">
+                  Mostrando {chartDataPeso.length} de {chartDataPesoCompleto.length} pontos
+                </span>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData.filter((d) => d.peso !== null && d.peso !== undefined)}>
+              <LineChart data={chartDataPeso}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="data" stroke="#6b7280" />
+                <XAxis 
+                  dataKey="data" 
+                  stroke="#6b7280"
+                  angle={chartDataPeso.length > 15 ? -45 : 0}
+                  textAnchor={chartDataPeso.length > 15 ? 'end' : 'middle'}
+                  height={chartDataPeso.length > 15 ? 80 : 30}
+                />
                 <YAxis stroke="#6b7280" label={{ value: 'Peso (kg)', angle: -90, position: 'insideLeft' }} />
                 <Tooltip
                   contentStyle={{
@@ -177,7 +229,8 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
                   dataKey="peso"
                   stroke="#00109E"
                   strokeWidth={2}
-                  dot={{ fill: '#00109E', r: 4 }}
+                  dot={{ fill: '#00109E', r: chartDataPeso.length > 20 ? 3 : 4 }}
+                  activeDot={{ r: 6 }}
                   name="Peso (kg)"
                 />
               </LineChart>
@@ -190,16 +243,29 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
       {exames.some((e) => e.imc !== null) && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Scale className="h-5 w-5 text-primary-600" />
-              Evolução do IMC
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Scale className="h-5 w-5 text-primary-600" />
+                Evolução do IMC
+              </CardTitle>
+              {chartDataPesoCompleto.length > 30 && (
+                <span className="text-xs text-gray-500">
+                  Mostrando {chartDataPeso.length} de {chartDataPesoCompleto.length} pontos
+                </span>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData.filter((d) => d.imc !== null && d.imc !== undefined)}>
+              <LineChart data={chartDataIMC}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="data" stroke="#6b7280" />
+                <XAxis 
+                  dataKey="data" 
+                  stroke="#6b7280"
+                  angle={chartDataIMC.length > 15 ? -45 : 0}
+                  textAnchor={chartDataIMC.length > 15 ? 'end' : 'middle'}
+                  height={chartDataIMC.length > 15 ? 80 : 30}
+                />
                 <YAxis stroke="#6b7280" label={{ value: 'IMC', angle: -90, position: 'insideLeft' }} />
                 <Tooltip
                   contentStyle={{
@@ -228,7 +294,8 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
                   dataKey="imc"
                   stroke="#35BFAD"
                   strokeWidth={2}
-                  dot={{ fill: '#35BFAD', r: 4 }}
+                  dot={{ fill: '#35BFAD', r: chartDataIMC.length > 20 ? 3 : 4 }}
+                  activeDot={{ r: 6 }}
                   name="IMC"
                 />
               </LineChart>

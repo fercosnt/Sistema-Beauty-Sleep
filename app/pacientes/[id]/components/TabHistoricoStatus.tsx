@@ -274,7 +274,7 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
   if (historico.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8">
+        <CardContent className="pt-16 pb-8">
           <div className="text-center">
             <History className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-lg font-medium text-gray-900">Nenhum histórico encontrado</h3>

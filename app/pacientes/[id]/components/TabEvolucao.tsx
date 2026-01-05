@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { TrendingUp, TrendingDown, CheckCircle, XCircle, Calendar, Filter, AlertCircle } from 'lucide-react'
+import { TrendingUp, TrendingDown, CheckCircle, XCircle, Calendar, Filter, AlertCircle, BarChart3 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Label } from '@/components/ui/Label'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import ComparacaoExames from './ComparacaoExames'
 
 interface Exame {
   id: string
@@ -15,6 +16,23 @@ interface Exame {
   ido: number | null
   score_ronco: number | null
   spo2_avg: number | null
+  spo2_min: number | null
+  spo2_max: number | null
+  tempo_spo2_90_seg?: number | null
+  num_dessaturacoes?: number | null
+  num_eventos_hipoxemia?: number | null
+  tempo_hipoxemia_seg?: number | null
+  carga_hipoxica?: number | null
+  bpm_min?: number | null
+  bpm_medio?: number | null
+  bpm_max?: number | null
+  duracao_total_seg?: number | null
+  [key: string]: any // Permitir campos adicionais do banco
+}
+
+interface Sessao {
+  id: string
+  data_sessao: string
 }
 
 interface TabEvolucaoProps {
@@ -30,14 +48,58 @@ interface ComparacaoMetrica {
   melhorou: boolean
 }
 
+type MetricKey = 
+  | 'score_ronco'
+  | 'ido'
+  | 'tempo_spo2_90'
+  | 'spo2_min'
+  | 'spo2_avg'
+  | 'spo2_max'
+  | 'num_dessaturacoes'
+  | 'num_eventos_hipoxemia'
+  | 'tempo_hipoxemia'
+  | 'carga_hipoxica'
+  | 'bpm_min'
+  | 'bpm_medio'
+  | 'bpm_max'
+
+interface MetricConfig {
+  key: MetricKey
+  label: string
+  unit: string
+  color: string
+  dataKey: string
+  filterType?: number // 0 = Ronco, 1 = Sono, undefined = ambos
+  menorMelhor?: boolean // Para cálculo de melhora
+}
+
+const METRICS: MetricConfig[] = [
+  { key: 'score_ronco', label: 'Score de Ronco', unit: 'pontos', color: '#35BFAD', dataKey: 'scoreRonco', filterType: 0, menorMelhor: true },
+  { key: 'ido', label: 'IDO', unit: '/hora', color: '#00109E', dataKey: 'ido', filterType: 1, menorMelhor: true },
+  { key: 'tempo_spo2_90', label: 'Tempo com SpO2 < 90%', unit: '%', color: '#EF4444', dataKey: 'tempoSpo2_90', filterType: 1, menorMelhor: true },
+  { key: 'spo2_min', label: 'SpO2 Mínima', unit: '%', color: '#F59E0B', dataKey: 'spo2Min', filterType: 1, menorMelhor: false },
+  { key: 'spo2_avg', label: 'SpO2 Média', unit: '%', color: '#10B981', dataKey: 'spo2Medio', filterType: 1, menorMelhor: false },
+  { key: 'spo2_max', label: 'SpO2 Máxima', unit: '%', color: '#3B82F6', dataKey: 'spo2Max', filterType: 1, menorMelhor: false },
+  { key: 'num_dessaturacoes', label: 'Número de Dessaturações', unit: '#', color: '#8B5CF6', dataKey: 'numDessaturacoes', filterType: 1, menorMelhor: true },
+  { key: 'num_eventos_hipoxemia', label: 'Número de Eventos de Hipoxemia', unit: '#', color: '#EC4899', dataKey: 'numEventosHipoxemia', filterType: 1, menorMelhor: true },
+  { key: 'tempo_hipoxemia', label: 'Tempo Total em Hipoxemia', unit: 'min', color: '#F97316', dataKey: 'tempoHipoxemia', filterType: 1, menorMelhor: true },
+  { key: 'carga_hipoxica', label: 'Carga Hipóxica', unit: '%.min/hora', color: '#DC2626', dataKey: 'cargaHipoxica', filterType: 1, menorMelhor: true },
+  { key: 'bpm_min', label: 'Frequência Cardíaca Mínima', unit: 'bpm', color: '#6366F1', dataKey: 'bpmMin', filterType: 1, menorMelhor: false },
+  { key: 'bpm_medio', label: 'Frequência Cardíaca Média', unit: 'bpm', color: '#14B8A6', dataKey: 'bpmMedio', filterType: 1, menorMelhor: false },
+  { key: 'bpm_max', label: 'Frequência Cardíaca Máxima', unit: 'bpm', color: '#06B6D4', dataKey: 'bpmMax', filterType: 1, menorMelhor: false },
+]
+
 export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
   const [exames, setExames] = useState<Exame[]>([])
+  const [sessoes, setSessoes] = useState<Sessao[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [dateRange, setDateRange] = useState<'all' | '6' | '12'>('all')
+  const [selectedMetric, setSelectedMetric] = useState<MetricKey>('ido')
   const [sessoesCount, setSessoesCount] = useState(0)
 
   useEffect(() => {
     fetchExames()
+    fetchSessoes()
     fetchSessoesCount()
   }, [pacienteId, dateRange])
 
@@ -46,9 +108,10 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
       setIsLoading(true)
       const supabase = createClient()
 
+      // Buscar todos os campos primeiro (como TabExames faz)
       let query = supabase
         .from('exames')
-        .select('id, data_exame, tipo, ido, score_ronco, spo2_avg')
+        .select('*')
         .eq('paciente_id', pacienteId)
         .order('data_exame', { ascending: true })
 
@@ -63,14 +126,42 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
 
       if (error) {
         console.error('Erro ao buscar exames:', error)
+        console.error('Detalhes do erro:', JSON.stringify(error, null, 2))
+        setExames([])
         return
       }
 
+      console.log('Exames encontrados:', data?.length || 0, 'exames')
+      if (data && data.length > 0) {
+        console.log('Primeiro exame:', data[0])
+      }
+      
       setExames(data || [])
     } catch (error) {
       console.error('Erro inesperado:', error)
+      setExames([])
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchSessoes = async () => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('sessoes')
+        .select('id, data_sessao')
+        .eq('paciente_id', pacienteId)
+        .order('data_sessao', { ascending: true })
+
+      if (error) {
+        console.error('Erro ao buscar sessões:', error)
+        return
+      }
+
+      setSessoes(data || [])
+    } catch (error) {
+      console.error('Erro ao buscar sessões:', error)
     }
   }
 
@@ -91,16 +182,72 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
   }
 
   // Preparar dados para gráficos
-  const chartData = exames.map((exame) => ({
-    data: new Date(exame.data_exame).toLocaleDateString('pt-BR', {
+  const prepareChartData = () => {
+    return exames.map((exame) => {
+      const dataExame = new Date(exame.data_exame)
+      const dataFormatada = dataExame.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+      })
+
+      // Calcular % de tempo com SpO2 < 90%
+      const tempoSpo2_90Pct = exame.duracao_total_seg && exame.tempo_spo2_90_seg
+        ? (exame.tempo_spo2_90_seg / exame.duracao_total_seg) * 100
+        : null
+
+      // Converter tempo de hipoxemia de segundos para minutos
+      const tempoHipoxemiaMin = exame.tempo_hipoxemia_seg
+        ? exame.tempo_hipoxemia_seg / 60
+        : null
+
+      return {
+        data: dataFormatada,
+        dataFull: exame.data_exame,
+        dataTimestamp: dataExame.getTime(),
+        tipo: exame.tipo,
+        ido: exame.ido,
+        scoreRonco: exame.score_ronco,
+        spo2Medio: exame.spo2_avg,
+        spo2Min: exame.spo2_min,
+        spo2Max: exame.spo2_max,
+        tempoSpo2_90: tempoSpo2_90Pct,
+        numDessaturacoes: exame.num_dessaturacoes,
+        numEventosHipoxemia: exame.num_eventos_hipoxemia,
+        tempoHipoxemia: tempoHipoxemiaMin,
+        cargaHipoxica: exame.carga_hipoxica,
+        bpmMin: exame.bpm_min,
+        bpmMedio: exame.bpm_medio,
+        bpmMax: exame.bpm_max,
+      }
+    })
+  }
+
+  const chartData = prepareChartData()
+
+  // Obter métrica selecionada
+  const selectedMetricConfig = METRICS.find(m => m.key === selectedMetric) || METRICS[1]
+
+  // Filtrar dados para a métrica selecionada
+  const filteredChartData = chartData.filter((d) => {
+    const value = d[selectedMetricConfig.dataKey as keyof typeof d]
+    if (value === null || value === undefined) return false
+    
+    // Filtrar por tipo de exame se necessário
+    if (selectedMetricConfig.filterType !== undefined) {
+      return d.tipo === selectedMetricConfig.filterType
+    }
+    
+    return true
+  })
+
+  // Preparar marcadores de sessões (formato de data para corresponder ao XAxis)
+  const sessionMarkers = sessoes.map((sessao) => {
+    const dataSessao = new Date(sessao.data_sessao)
+    return dataSessao.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
-    }),
-    dataFull: exame.data_exame,
-    ido: exame.ido,
-    scoreRonco: exame.score_ronco,
-    spo2Medio: exame.spo2_avg,
-  }))
+    })
+  })
 
   // Calcular comparação Primeiro vs Último
   const calcularComparacao = (): ComparacaoMetrica[] => {
@@ -159,7 +306,6 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
       })
     }
 
-
     return comparacoes
   }
 
@@ -190,17 +336,34 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
   if (exames.length < 2) {
     return (
       <Card>
-        <CardContent className="py-8">
+        <CardContent className="pt-16 pb-8">
           <div className="text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-lg font-medium text-gray-900">Dados insuficientes</h3>
             <p className="mt-1 text-sm text-gray-500">
               É necessário pelo menos 2 exames para análise de evolução.
             </p>
+            {/* Debug temporário - remover depois */}
+            <p className="mt-2 text-xs text-gray-400">
+              Exames encontrados: {exames.length} | Paciente ID: {pacienteId}
+            </p>
           </div>
         </CardContent>
       </Card>
     )
+  }
+
+  // Filtrar métricas disponíveis baseado nos tipos de exames disponíveis
+  const availableMetrics = METRICS.filter((metric) => {
+    if (metric.filterType === undefined) return true
+    return exames.some((e) => e.tipo === metric.filterType)
+  })
+
+  // Se a métrica selecionada não está disponível, selecionar a primeira disponível
+  if (!availableMetrics.find(m => m.key === selectedMetric)) {
+    if (availableMetrics.length > 0 && selectedMetric !== availableMetrics[0].key) {
+      setSelectedMetric(availableMetrics[0].key as MetricKey)
+    }
   }
 
   return (
@@ -245,6 +408,34 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
         </CardContent>
       </Card>
 
+      {/* Seletor de Métrica */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-primary-600" />
+            Selecionar Métrica
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            {availableMetrics.map((metric) => (
+              <Button
+                key={metric.key}
+                variant={selectedMetric === metric.key ? 'primary' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedMetric(metric.key)}
+                className="justify-start text-left h-auto py-2 px-3"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-medium">{metric.label}</span>
+                  <span className="text-xs text-gray-500">{metric.unit}</span>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Badges de Resposta ao Tratamento */}
       {(estaRespondendo || naoEstaRespondendo) && (
         <Card>
@@ -267,195 +458,93 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
         </Card>
       )}
 
-      {/* Gráfico IDO */}
-      {exames.some((e) => e.tipo === 1 && e.ido !== null) && (
+      {/* Gráfico da Métrica Selecionada */}
+      {filteredChartData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Evolução do IDO</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData.filter((d) => d.ido !== null && d.ido !== undefined)}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="data" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="ido"
-                  stroke="#00109E"
-                  strokeWidth={2}
-                  dot={{ fill: '#00109E', r: 4 }}
-                  name="IDO (eventos/hora)"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Gráfico Score Ronco */}
-      {exames.some((e) => e.tipo === 0 && e.score_ronco !== null) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Evolução do Score de Ronco</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart
-                data={chartData.filter((d) => d.scoreRonco !== null && d.scoreRonco !== undefined)}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="data" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="scoreRonco"
-                  stroke="#35BFAD"
-                  strokeWidth={2}
-                  dot={{ fill: '#35BFAD', r: 4 }}
-                  name="Score de Ronco"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Gráfico SpO2 Médio */}
-      {exames.some((e) => e.tipo === 1 && e.spo2_avg !== null) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Evolução do SpO2 Médio</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart
-                data={chartData.filter((d) => d.spo2Medio !== null && d.spo2Medio !== undefined)}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="data" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="spo2Medio"
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  dot={{ fill: '#10B981', r: 4 }}
-                  name="SpO2 Médio (%)"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-
-      {/* Card de Comparação */}
-      {comparacoes.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary-600" />
-              Comparação: Primeiro Exame vs Último Exame
+            <CardTitle>
+              Evolução: {selectedMetricConfig.label} ({selectedMetricConfig.unit})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {comparacoes.map((comp, index) => {
-                const mudancaPercentualAbs = comp.mudancaPercentual !== null ? Math.abs(comp.mudancaPercentual) : 0
-                const corBadge =
-                  mudancaPercentualAbs >= 20 && comp.melhorou
-                    ? 'bg-success-100 text-success-800 border-success-200'
-                    : mudancaPercentualAbs >= 20 && !comp.melhorou
-                      ? 'bg-danger-100 text-danger-800 border-danger-200'
-                      : 'bg-warning-100 text-warning-800 border-warning-200'
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={filteredChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis 
+                  dataKey="data" 
+                  stroke="#6b7280"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis stroke="#6b7280" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                  }}
+                  formatter={(value: any) => {
+                    if (value === null || value === undefined) return '-'
+                    return `${Number(value).toFixed(2)} ${selectedMetricConfig.unit}`
+                  }}
+                />
+                <Legend />
+                {/* Marcadores de sessões */}
+                {sessionMarkers.map((markerDate, index) => {
+                  // Verificar se há um ponto de dados próximo a esta data de sessão
+                  // (dentro do range de dados do gráfico)
+                  const markerTimestamp = new Date(sessoes[index].data_sessao).getTime()
+                  const chartStart = filteredChartData[0]?.dataTimestamp || 0
+                  const chartEnd = filteredChartData[filteredChartData.length - 1]?.dataTimestamp || 0
+                  
+                  // Só mostrar marcador se estiver dentro do range do gráfico
+                  if (markerTimestamp < chartStart || markerTimestamp > chartEnd) return null
+                  
+                  return (
+                    <ReferenceLine
+                      key={index}
+                      x={markerDate}
+                      stroke="#10B981"
+                      strokeDasharray="5 5"
+                      strokeWidth={2}
+                      label={{ value: 'Sessão', position: 'top', fill: '#10B981', fontSize: 10 }}
+                    />
+                  )
+                })}
+                <Line
+                  type="monotone"
+                  dataKey={selectedMetricConfig.dataKey}
+                  stroke={selectedMetricConfig.color}
+                  strokeWidth={2}
+                  dot={{ fill: selectedMetricConfig.color, r: 5 }}
+                  name={`${selectedMetricConfig.label} (${selectedMetricConfig.unit})`}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
-                return (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-lg font-semibold text-gray-900">{comp.metrica}</h4>
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${corBadge}`}>
-                        {comp.melhorou ? (
-                          <TrendingDown className="h-4 w-4 mr-1" />
-                        ) : (
-                          <TrendingUp className="h-4 w-4 mr-1" />
-                        )}
-                        {comp.mudancaPercentual !== null && (
-                          <>
-                            {comp.mudancaPercentual > 0 ? '+' : ''}
-                            {comp.mudancaPercentual.toFixed(1)}%
-                          </>
-                        )}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Primeiro Exame</p>
-                        <p className="text-lg font-bold text-gray-900">
-                          {comp.primeiroValor?.toFixed(1) || '-'}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(exames[0].data_exame).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      <div className="bg-primary-50 rounded-lg p-3">
-                        <p className="text-xs text-primary-600 mb-1">Último Exame</p>
-                        <p className="text-lg font-bold text-primary-900">
-                          {comp.ultimoValor?.toFixed(1) || '-'}
-                        </p>
-                        <p className="text-xs text-primary-600 mt-1">
-                          {new Date(exames[exames.length - 1].data_exame).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <p className="text-sm text-gray-600">
-                        Mudança absoluta:{' '}
-                        <span
-                          className={`font-semibold ${
-                            comp.melhorou ? 'text-success-600' : 'text-danger-600'
-                          }`}
-                        >
-                          {comp.mudancaAbsoluta && comp.mudancaAbsoluta > 0 ? '+' : ''}
-                          {comp.mudancaAbsoluta?.toFixed(1) || '-'}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
+      {filteredChartData.length === 0 && (
+        <Card>
+          <CardContent className="pt-16 pb-8">
+            <div className="text-center">
+              <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-lg font-medium text-gray-900">Sem dados disponíveis</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Não há dados disponíveis para a métrica selecionada no período escolhido.
+              </p>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Componente de Comparação */}
+      <ComparacaoExames exames={exames} />
 
       {/* Espaçamento extra para rodapé */}
       <div className="pb-8" />
     </div>
   )
 }
-

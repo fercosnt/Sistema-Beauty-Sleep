@@ -108,37 +108,37 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
 
 ### Fase 2.2: Tab Evolução
 
-- [ ] **4.0 Implementar Tab Evolução - Gráficos Expandidos**
-  - [ ] 4.1 Refatorar `TabEvolucao.tsx` para suportar múltiplos gráficos
-  - [ ] 4.2 Criar seletor de métrica para alternar entre os 13 gráficos
-  - [ ] 4.3 Implementar gráfico 1: Score de Ronco (já existe, manter)
-  - [ ] 4.4 Implementar gráfico 2: IDO (/hora)
-  - [ ] 4.5 Implementar gráfico 3: Tempo com SpO2 < 90% (%)
-  - [ ] 4.6 Implementar gráfico 4: SpO2 Mínima (%)
-  - [ ] 4.7 Implementar gráfico 5: SpO2 Média (%)
-  - [ ] 4.8 Implementar gráfico 6: SpO2 Máxima (%)
-  - [ ] 4.9 Implementar gráfico 7: Número de Dessaturações (#)
-  - [ ] 4.10 Implementar gráfico 8: Número de Eventos de Hipoxemia (#)
-  - [ ] 4.11 Implementar gráfico 9: Tempo Total em Hipoxemia (min)
-  - [ ] 4.12 Implementar gráfico 10: Carga Hipóxica (%.min/hora)
-  - [ ] 4.13 Implementar gráfico 11: Frequência Cardíaca Mínima (bpm)
-  - [ ] 4.14 Implementar gráfico 12: Frequência Cardíaca Média (bpm)
-  - [ ] 4.15 Implementar gráfico 13: Frequência Cardíaca Máxima (bpm)
-  - [ ] 4.16 Adicionar marcadores de sessões de tratamento em todos os gráficos
-  - [ ] 4.17 Implementar filtro de período (6 meses, 12 meses, Todo histórico)
+- [x] **4.0 Implementar Tab Evolução - Gráficos Expandidos**
+  - [x] 4.1 Refatorar `TabEvolucao.tsx` para suportar múltiplos gráficos
+  - [x] 4.2 Criar seletor de métrica para alternar entre os 13 gráficos
+  - [x] 4.3 Implementar gráfico 1: Score de Ronco (já existe, manter)
+  - [x] 4.4 Implementar gráfico 2: IDO (/hora)
+  - [x] 4.5 Implementar gráfico 3: Tempo com SpO2 < 90% (%)
+  - [x] 4.6 Implementar gráfico 4: SpO2 Mínima (%)
+  - [x] 4.7 Implementar gráfico 5: SpO2 Média (%)
+  - [x] 4.8 Implementar gráfico 6: SpO2 Máxima (%)
+  - [x] 4.9 Implementar gráfico 7: Número de Dessaturações (#)
+  - [x] 4.10 Implementar gráfico 8: Número de Eventos de Hipoxemia (#)
+  - [x] 4.11 Implementar gráfico 9: Tempo Total em Hipoxemia (min)
+  - [x] 4.12 Implementar gráfico 10: Carga Hipóxica (%.min/hora)
+  - [x] 4.13 Implementar gráfico 11: Frequência Cardíaca Mínima (bpm)
+  - [x] 4.14 Implementar gráfico 12: Frequência Cardíaca Média (bpm)
+  - [x] 4.15 Implementar gráfico 13: Frequência Cardíaca Máxima (bpm)
+  - [x] 4.16 Adicionar marcadores de sessões de tratamento em todos os gráficos
+  - [x] 4.17 Implementar filtro de período (6 meses, 12 meses, Todo histórico)
   - [ ] 4.18 Testar gráficos com pacientes que têm múltiplos exames
 
-- [ ] **5.0 Implementar Tab Evolução - Comparações de Exames**
-  - [ ] 5.1 Criar `lib/utils/comparacao-exames.ts` com funções de cálculo
-  - [ ] 5.2 Implementar função `calcularMelhoraPercentual(valorInicial, valorFinal, menorMelhor)`
-  - [ ] 5.3 Implementar função `obterPrimeiroUltimoExame(exames)`
-  - [ ] 5.4 Implementar função `obterPiorMelhorExame(exames)` baseado em IDO
-  - [ ] 5.5 Criar componente `ComparacaoExames.tsx` para tabelas de comparação
-  - [ ] 5.6 Implementar tabela "Primeiro vs Último Exame" com 5 métricas
-  - [ ] 5.7 Implementar tabela "Pior vs Melhor Exame" com 5 métricas
-  - [ ] 5.8 Adicionar indicadores visuais (verde/amarelo/vermelho) para % melhora
-  - [ ] 5.9 Integrar componente de comparação na TabEvolucao
-  - [ ] 5.10 Escrever testes para funções de cálculo
+- [x] **5.0 Implementar Tab Evolução - Comparações de Exames**
+  - [x] 5.1 Criar `lib/utils/comparacao-exames.ts` com funções de cálculo
+  - [x] 5.2 Implementar função `calcularMelhoraPercentual(valorInicial, valorFinal, menorMelhor)`
+  - [x] 5.3 Implementar função `obterPrimeiroUltimoExame(exames)`
+  - [x] 5.4 Implementar função `obterPiorMelhorExame(exames)` baseado em IDO
+  - [x] 5.5 Criar componente `ComparacaoExames.tsx` para tabelas de comparação
+  - [x] 5.6 Implementar tabela "Primeiro vs Último Exame" com 5 métricas
+  - [x] 5.7 Implementar tabela "Pior vs Melhor Exame" com 5 métricas
+  - [x] 5.8 Adicionar indicadores visuais (verde/amarelo/vermelho) para % melhora
+  - [x] 5.9 Integrar componente de comparação na TabEvolucao
+  - [x] 5.10 Escrever testes para funções de cálculo
   - [ ] 5.11 Testar comparações com pacientes reais
 
 ---

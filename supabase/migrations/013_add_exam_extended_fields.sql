@@ -83,7 +83,16 @@ ALTER TABLE exames
   ADD COLUMN IF NOT EXISTS ronco_alto_pct NUMERIC(5,2); -- % ronco alto
 
 -- ============================================
--- 8. Campos de Histograma (JSONB)
+-- 8. Campos de Frequência Cardíaca
+-- ============================================
+-- Frequência cardíaca mínima, média e máxima
+ALTER TABLE exames
+  ADD COLUMN IF NOT EXISTS bpm_min INTEGER, -- Frequência cardíaca mínima (bpm)
+  ADD COLUMN IF NOT EXISTS bpm_medio INTEGER, -- Frequência cardíaca média (bpm)
+  ADD COLUMN IF NOT EXISTS bpm_max INTEGER; -- Frequência cardíaca máxima (bpm)
+
+-- ============================================
+-- 9. Campos de Histograma (JSONB)
 -- ============================================
 -- Histogramas de SpO2 e frequência cardíaca
 ALTER TABLE exames
@@ -91,13 +100,13 @@ ALTER TABLE exames
   ADD COLUMN IF NOT EXISTS bpm_histograma JSONB; -- Histograma de frequência cardíaca
 
 -- ============================================
--- 9. Campos de Cardiologia
+-- 10. Campos de Cardiologia
 -- ============================================
 ALTER TABLE exames
   ADD COLUMN IF NOT EXISTS fibrilacao_atrial INTEGER; -- 0=Negativa, 1=Positiva, <0=Inconclusivo
 
 -- ============================================
--- 10. Campos de Ficha Médica (verificar se existem)
+-- 11. Campos de Ficha Médica (verificar se existem)
 -- ============================================
 -- Verificar se campos existem, se não, criar como TEXT
 DO $$
@@ -124,8 +133,11 @@ BEGIN
 END $$;
 
 -- ============================================
--- 11. Adicionar comentários para documentação
+-- 12. Adicionar comentários para documentação
 -- ============================================
+COMMENT ON COLUMN exames.bpm_min IS 'Frequência cardíaca mínima (bpm)';
+COMMENT ON COLUMN exames.bpm_medio IS 'Frequência cardíaca média (bpm)';
+COMMENT ON COLUMN exames.bpm_max IS 'Frequência cardíaca máxima (bpm)';
 COMMENT ON COLUMN exames.hora_inicio IS 'Data/hora de início do exame (extraído de startTime)';
 COMMENT ON COLUMN exames.hora_fim IS 'Data/hora de fim do exame (calculado: inicio + duracao)';
 COMMENT ON COLUMN exames.duracao_total_seg IS 'Duração total do exame em segundos';
