@@ -155,15 +155,15 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
   - [x] 6.7 Implementar filtros de período dinâmicos (7d, 30d, 60d, 90d, 6m, 1a, personalizado)
   - [ ] 6.8 Testar aba Ronco com dados reais
 
-- [ ] **7.0 Melhorias no Dashboard - Aba Apneia**
-  - [ ] 7.1 Criar componente `TopMelhoriasApneia.tsx` para tabela de top melhorias
-  - [ ] 7.2 Implementar query para buscar primeiro e último exame por paciente (IDO)
-  - [ ] 7.3 Calcular % de melhora para cada paciente
-  - [ ] 7.4 Implementar tabela com colunas: Nome, IDO Inicial, IDO Final, % Melhora
-  - [ ] 7.5 Adicionar ordenação por % Melhora decrescente, limitado a 10
-  - [ ] 7.6 Adicionar link "Ver Paciente" em cada linha
-  - [ ] 7.7 Integrar componente em `DashboardApneia.tsx`
-  - [ ] 7.8 Implementar filtros de período dinâmicos
+- [x] **7.0 Melhorias no Dashboard - Aba Apneia**
+  - [x] 7.1 Criar componente `TopMelhoriasApneia.tsx` para tabela de top melhorias
+  - [x] 7.2 Implementar query para buscar primeiro e último exame por paciente (IDO)
+  - [x] 7.3 Calcular % de melhora para cada paciente
+  - [x] 7.4 Implementar tabela com colunas: Nome, IDO Inicial, IDO Final, % Melhora
+  - [x] 7.5 Adicionar ordenação por % Melhora decrescente, limitado a 10
+  - [x] 7.6 Adicionar link "Ver Paciente" em cada linha
+  - [x] 7.7 Integrar componente em `DashboardApneia.tsx`
+  - [x] 7.8 Implementar filtros de período dinâmicos
   - [ ] 7.9 Testar aba Apneia com dados reais
 
 ---
