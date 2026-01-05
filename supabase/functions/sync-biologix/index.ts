@@ -294,6 +294,26 @@ Deno.serve(async (req: Request) => {
           );
         }
 
+        // Parse conditions array to boolean fields
+        const conditions = exam.base?.conditions || [];
+        const hasCondition = (condition: string) => conditions.includes(condition);
+
+        // Parse treatments array to boolean fields
+        const treatments = exam.base?.treatments || [];
+        const hasTreatment = (treatment: string) => treatments.includes(treatment);
+
+        // Calculate end time from start time + duration
+        let horaInicio: string | null = null;
+        let horaFim: string | null = null;
+        if (exam.base?.startTime) {
+          horaInicio = exam.base.startTime;
+          if (exam.base.durationSecs) {
+            const startDate = new Date(exam.base.startTime);
+            const endDate = new Date(startDate.getTime() + exam.base.durationSecs * 1000);
+            horaFim = endDate.toISOString();
+          }
+        }
+
         // Prepare exam data
         const examData: any = {
           paciente_id: pacienteId,
@@ -302,18 +322,76 @@ Deno.serve(async (req: Request) => {
           tipo: exam.type,
           status: exam.status,
           data_exame: exam.base?.startTime ? exam.base.startTime.split('T')[0] : new Date().toISOString().split('T')[0],
+          
+          // Campos de tempo
+          hora_inicio: horaInicio,
+          hora_fim: horaFim,
+          duracao_total_seg: exam.base?.durationSecs || null,
+          duracao_valida_seg: exam.result?.oximetry?.validDurationSecs || exam.result?.snoring?.validDurationSecs || null,
+          
+          // Dados do paciente
           peso_kg: exam.base?.weightKg || null,
           altura_cm: exam.base?.heightCm || null,
           // IMC will be calculated by trigger
+          
+          // Condições na noite do exame
+          consumo_alcool: hasCondition('Álcool') || hasCondition('Alcool') || hasCondition('Alcohol'),
+          congestao_nasal: hasCondition('Congestão Nasal') || hasCondition('Congestao Nasal'),
+          sedativos: hasCondition('Sedativos'),
+          placa_bruxismo: hasCondition('Placa de Bruxismo') || hasCondition('Bruxismo'),
+          marcapasso: hasCondition('Marcapasso'),
+          
+          // Tratamentos na noite do exame
+          cpap: hasTreatment('CPAP'),
+          aparelho_avanco: hasTreatment('Aparelho de Avanço Mandibular') || hasTreatment('AAM'),
+          terapia_posicional: hasTreatment('Terapia Posicional'),
+          oxigenio: hasTreatment('Oxigênio') || hasTreatment('Oxigenio'),
+          suporte_ventilatorio: hasTreatment('Suporte Ventilatório') || hasTreatment('Ventilacao'),
+          
+          // Ficha médica (arrays convertidos para TEXT separado por vírgula)
+          condicoes: conditions.length > 0 ? conditions.join(', ') : null,
+          sintomas: exam.base?.symptoms && exam.base.symptoms.length > 0 ? exam.base.symptoms.join(', ') : null,
+          doencas: exam.base?.illnesses && exam.base.illnesses.length > 0 ? exam.base.illnesses.join(', ') : null,
+          medicamentos: exam.base?.medicines && exam.base.medicines.length > 0 ? exam.base.medicines.join(', ') : null,
+          
+          // Ronco
+          ronco_duracao_seg: exam.result?.snoring?.snoringDurationSecs || null,
+          ronco_silencio_pct: exam.result?.snoring?.silentDurationPercent || null,
+          ronco_baixo_pct: exam.result?.snoring?.lowDurationPercent || null,
+          ronco_medio_pct: exam.result?.snoring?.mediumDurationPercent || null,
+          ronco_alto_pct: exam.result?.snoring?.highDurationPercent || null,
           score_ronco: scoreRonco,
+          
+          // Oximetria
           // DB column ido is NUMERIC(4,2) -> max ~99.99; clamp to avoid overflow
           ido: clampNumeric(exam.result?.oximetry?.odi, 99.99),
+          ido_sono: clampNumeric(exam.result?.oximetry?.odi, 99.99), // IDOs (mesmo valor que IDO para agora)
           ido_categoria: exam.result?.oximetry?.odiCategory ?? null,
           // SpO2 columns are NUMERIC(4,2) as well; SpO2 clínica pode ser 100,
           // então clamp em 99.99 para caber no tipo
           spo2_min: clampNumeric(exam.result?.oximetry?.spO2Min, 99.99),
           spo2_avg: clampNumeric(exam.result?.oximetry?.spO2Avg, 99.99),
           spo2_max: clampNumeric(exam.result?.oximetry?.spO2Max, 99.99),
+          tempo_spo2_90_seg: exam.result?.oximetry?.spO2Under90Secs || null,
+          tempo_spo2_80_seg: exam.result?.oximetry?.spO2Under80Secs || null,
+          num_dessaturacoes: exam.result?.oximetry?.nbDesaturations || null,
+          num_eventos_hipoxemia: exam.result?.oximetry?.nbHypoxemiaEvents || null,
+          tempo_hipoxemia_seg: exam.result?.oximetry?.hypoxemiaTotalDurationSecs || null,
+          carga_hipoxica: clampNumeric(exam.result?.oximetry?.hypoxicBurden, 999.99),
+          
+          // Frequência cardíaca
+          bpm_min: exam.result?.oximetry?.hrMin || null,
+          bpm_medio: exam.result?.oximetry?.hrAvg || null,
+          bpm_max: exam.result?.oximetry?.hrMax || null,
+          
+          // Sono estimado
+          tempo_sono_seg: exam.result?.oximetry?.sleepDurationSecs || null,
+          tempo_dormir_seg: exam.result?.oximetry?.sleepLatencySecs || null,
+          tempo_acordado_seg: exam.result?.oximetry?.wakeTimeAfterSleepSecs || null,
+          eficiencia_sono_pct: clampNumeric(exam.result?.oximetry?.sleepEfficiencyPercent, 100),
+          
+          // Cardiologia
+          fibrilacao_atrial: exam.result?.cardiology?.afNotification ?? null,
         };
 
         // Upsert exam (unique by biologix_exam_id)

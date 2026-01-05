@@ -69,11 +69,11 @@ export default function ToastContainer() {
   if (currentToasts.length === 0) return null
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-4 right-4 z-[99999] space-y-2 pointer-events-none">
       {currentToasts.map((toast) => (
         <div
           key={toast.id}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[300px] max-w-md animate-in slide-in-from-top-5 ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl min-w-[300px] max-w-md animate-in slide-in-from-top-5 pointer-events-auto ${
             toast.type === 'success'
               ? 'bg-success-50 text-success-800 border border-success-200'
               : toast.type === 'error'
