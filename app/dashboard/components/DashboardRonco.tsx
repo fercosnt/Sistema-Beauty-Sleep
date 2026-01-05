@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Activity, TrendingUp, AlertCircle } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import CasosCriticosRonco from './CasosCriticosRonco'
 
 interface DashboardRoncoProps {
   userRole: string | null
@@ -43,7 +44,7 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
   const [tendencia, setTendencia] = useState<TendenciaData[]>([])
   const [melhorias, setMelhorias] = useState<MelhoriaPaciente[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [dateRange, setDateRange] = useState<'30' | '60' | '90' | '180' | '365' | 'all'>('90')
+  const [dateRange, setDateRange] = useState<'7' | '30' | '60' | '90' | '180' | '365' | 'all'>('90')
 
   useEffect(() => {
     const fetchRoncoData = async () => {
@@ -53,10 +54,24 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
         // Calcular data inicial baseada no range selecionado
         const hoje = new Date()
         const dataInicial = new Date()
-        if (dateRange !== 'all') {
-          dataInicial.setDate(hoje.getDate() - parseInt(dateRange))
-        } else {
+        
+        if (dateRange === '7') {
+          dataInicial.setDate(hoje.getDate() - 7)
+        } else if (dateRange === '30') {
+          dataInicial.setDate(hoje.getDate() - 30)
+        } else if (dateRange === '60') {
+          dataInicial.setDate(hoje.getDate() - 60)
+        } else if (dateRange === '90') {
+          dataInicial.setDate(hoje.getDate() - 90)
+        } else if (dateRange === '180') {
+          dataInicial.setMonth(hoje.getMonth() - 6)
+        } else if (dateRange === '365') {
+          dataInicial.setFullYear(hoje.getFullYear() - 1)
+        } else if (dateRange === 'all') {
           dataInicial.setFullYear(2000) // Data muito antiga para pegar tudo
+        } else {
+          // Fallback para 90 dias
+          dataInicial.setDate(hoje.getDate() - 90)
         }
 
         // Buscar exames de ronco (tipo = 0) no período
@@ -217,11 +232,12 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
           onChange={(e) => setDateRange(e.target.value as any)}
           className="bg-white/10 border border-white/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/50"
         >
+          <option value="7" className="bg-primary-900 text-white">Últimos 7 dias</option>
           <option value="30" className="bg-primary-900 text-white">Últimos 30 dias</option>
           <option value="60" className="bg-primary-900 text-white">Últimos 60 dias</option>
           <option value="90" className="bg-primary-900 text-white">Últimos 90 dias</option>
-          <option value="180" className="bg-primary-900 text-white">Últimos 180 dias</option>
-          <option value="365" className="bg-primary-900 text-white">Últimos 365 dias</option>
+          <option value="180" className="bg-primary-900 text-white">Últimos 6 meses</option>
+          <option value="365" className="bg-primary-900 text-white">Último ano</option>
           <option value="all" className="bg-primary-900 text-white">Todo o período</option>
         </select>
       </div>
@@ -311,6 +327,9 @@ export default function DashboardRonco({ userRole }: DashboardRoncoProps) {
           )}
         </div>
       </div>
+
+      {/* Casos Críticos */}
+      <CasosCriticosRonco dateRange={dateRange} userRole={userRole} />
 
       {/* Top 10 Melhorias */}
       <div className="bg-white rounded-lg shadow p-6">

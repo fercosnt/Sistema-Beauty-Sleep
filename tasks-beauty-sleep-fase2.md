@@ -145,14 +145,14 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
 
 ### Fase 2.3: Dashboard
 
-- [ ] **6.0 Melhorias no Dashboard - Aba Ronco**
-  - [ ] 6.1 Criar componente `CasosCriticosRonco.tsx` para tabela de casos críticos
-  - [ ] 6.2 Implementar query para buscar pacientes com score_ronco > 2
-  - [ ] 6.3 Implementar tabela com colunas: Nome, Score Ronco, Último Exame, Ação
-  - [ ] 6.4 Adicionar ordenação por Score Ronco decrescente
-  - [ ] 6.5 Adicionar link "Ver Paciente" em cada linha
-  - [ ] 6.6 Integrar componente em `DashboardRonco.tsx`
-  - [ ] 6.7 Implementar filtros de período dinâmicos (7d, 30d, 60d, 90d, 6m, 1a, personalizado)
+- [x] **6.0 Melhorias no Dashboard - Aba Ronco**
+  - [x] 6.1 Criar componente `CasosCriticosRonco.tsx` para tabela de casos críticos
+  - [x] 6.2 Implementar query para buscar pacientes com score_ronco > 2
+  - [x] 6.3 Implementar tabela com colunas: Nome, Score Ronco, Último Exame, Ação
+  - [x] 6.4 Adicionar ordenação por Score Ronco decrescente
+  - [x] 6.5 Adicionar link "Ver Paciente" em cada linha
+  - [x] 6.6 Integrar componente em `DashboardRonco.tsx`
+  - [x] 6.7 Implementar filtros de período dinâmicos (7d, 30d, 60d, 90d, 6m, 1a, personalizado)
   - [ ] 6.8 Testar aba Ronco com dados reais
 
 - [ ] **7.0 Melhorias no Dashboard - Aba Apneia**
