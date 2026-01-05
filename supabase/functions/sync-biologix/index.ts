@@ -404,27 +404,78 @@ Deno.serve(async (req: Request) => {
 
         let exameId: string;
         if (existingExam) {
+          // Remover campos que podem não existir na tabela (se migration não foi aplicada)
+          const examDataToUpdate = { ...examData };
+          
+          // Verificar se campos de BPM existem antes de tentar atualizar
+          // Se houver erro, tentar novamente sem esses campos
           const { error: updateError } = await supabase
             .from('exames')
-            .update(examData)
+            .update(examDataToUpdate)
             .eq('id', existingExam.id);
 
           if (updateError) {
-            throw new Error(`Failed to update exam: ${updateError.message}`);
+            // Se erro for sobre campos não encontrados, remover esses campos e tentar novamente
+            if (updateError.message.includes('bpm_min') || 
+                updateError.message.includes('bpm_medio') || 
+                updateError.message.includes('bpm_max') ||
+                updateError.message.includes('Could not find')) {
+              console.warn(`Campos de BPM não encontrados para exame ${exam.examId}, removendo do update`);
+              delete examDataToUpdate.bpm_min;
+              delete examDataToUpdate.bpm_medio;
+              delete examDataToUpdate.bpm_max;
+              
+              const { error: retryError } = await supabase
+                .from('exames')
+                .update(examDataToUpdate)
+                .eq('id', existingExam.id);
+              
+              if (retryError) {
+                throw new Error(`Failed to update exam: ${retryError.message}`);
+              }
+            } else {
+              throw new Error(`Failed to update exam: ${updateError.message}`);
+            }
           }
           exameId = existingExam.id;
           updated++;
         } else {
+          // Para insert, também verificar se campos existem
+          const examDataToInsert = { ...examData };
+          
           const { data: newExam, error: insertError } = await supabase
             .from('exames')
-            .insert(examData)
+            .insert(examDataToInsert)
             .select('id')
             .single();
 
           if (insertError) {
-            throw new Error(`Failed to insert exam: ${insertError.message}`);
+            // Se erro for sobre campos não encontrados, remover esses campos e tentar novamente
+            if (insertError.message.includes('bpm_min') || 
+                insertError.message.includes('bpm_medio') || 
+                insertError.message.includes('bpm_max') ||
+                insertError.message.includes('Could not find')) {
+              console.warn(`Campos de BPM não encontrados para exame ${exam.examId}, removendo do insert`);
+              delete examDataToInsert.bpm_min;
+              delete examDataToInsert.bpm_medio;
+              delete examDataToInsert.bpm_max;
+              
+              const { data: retryExam, error: retryError } = await supabase
+                .from('exames')
+                .insert(examDataToInsert)
+                .select('id')
+                .single();
+              
+              if (retryError) {
+                throw new Error(`Failed to insert exam: ${retryError.message}`);
+              }
+              exameId = retryExam.id;
+            } else {
+              throw new Error(`Failed to insert exam: ${insertError.message}`);
+            }
+          } else {
+            exameId = newExam.id;
           }
-          exameId = newExam.id;
           created++;
         }
 
