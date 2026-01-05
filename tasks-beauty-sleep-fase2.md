@@ -207,17 +207,17 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
   - [ ] 10.12 Deploy da Edge Function
   - [ ] 10.13 Testar execução manual da function
 
-- [ ] **11.0 Implementar Centro de Notificações no Header**
-  - [ ] 11.1 Criar componente `NotificationBadge.tsx` com contador
-  - [ ] 11.2 Criar componente `NotificationCenter.tsx` com dropdown
-  - [ ] 11.3 Implementar query para buscar alertas pendentes do usuário
-  - [ ] 11.4 Implementar contagem de alertas por urgência
-  - [ ] 11.5 Implementar cor do badge baseada na urgência máxima (vermelho > amarelo > verde)
-  - [ ] 11.6 Implementar dropdown com últimos 5 alertas
-  - [ ] 11.7 Implementar preview de alerta no dropdown (tipo, título, tempo relativo)
-  - [ ] 11.8 Adicionar botão "Marcar como Visualizado" em cada alerta
-  - [ ] 11.9 Adicionar link "Ver todos" para /alertas
-  - [ ] 11.10 Integrar NotificationCenter em `Header.tsx`
+- [x] **11.0 Implementar Centro de Notificações no Header**
+  - [x] 11.1 Criar componente `NotificationBadge.tsx` com contador
+  - [x] 11.2 Criar componente `NotificationCenter.tsx` com dropdown
+  - [x] 11.3 Implementar query para buscar alertas pendentes do usuário
+  - [x] 11.4 Implementar contagem de alertas por urgência
+  - [x] 11.5 Implementar cor do badge baseada na urgência máxima (vermelho > amarelo > verde)
+  - [x] 11.6 Implementar dropdown com últimos 5 alertas
+  - [x] 11.7 Implementar preview de alerta no dropdown (tipo, título, tempo relativo)
+  - [x] 11.8 Adicionar botão "Marcar como Visualizado" em cada alerta
+  - [x] 11.9 Adicionar link "Ver todos" para /alertas
+  - [x] 11.10 Integrar NotificationCenter em `Header.tsx`
   - [ ] 11.11 Testar notificações com alertas reais
 
 - [ ] **12.0 Criar página de Alertas (/alertas)**

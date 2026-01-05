@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { User, Settings, ChevronDown, Menu, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import BuscaGlobal from './BuscaGlobal'
+import NotificationCenter from './NotificationCenter'
 import { useSidebar } from '@/components/providers/SidebarProvider'
 import { cn } from '@/utils/cn'
 
@@ -142,8 +143,11 @@ export default function Header({ userRole, onMenuToggle, isMobileMenuOpen }: Hea
             </div>
           </div>
           
-          {/* Lado direito - menu do usuário */}
+          {/* Lado direito - notificações e menu do usuário */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[10000] min-w-0" data-user-menu style={{ pointerEvents: 'auto' }}>
+            {/* Centro de Notificações */}
+            <NotificationCenter />
+            
             <div className="relative z-[10000]" style={{ pointerEvents: 'auto' }}>
               <button
                 onClick={(e) => {
