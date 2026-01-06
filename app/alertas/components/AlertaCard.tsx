@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle, Wrench, UserCheck, Check, Eye, Clock, User } from 'lucide-react'
+import { AlertCircle, Wrench, UserCheck, Check, Eye, Clock, User, RotateCcw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/utils/cn'
 import Link from 'next/link'
@@ -20,6 +20,7 @@ interface Alerta {
   paciente_id: string | null
   exame_id: string | null
   created_at: string
+  resolvido_em?: string | null
   pacientes?: PacienteInfo | null
 }
 
@@ -28,9 +29,11 @@ interface AlertaCardProps {
   isSelected: boolean
   onSelect: (id: string) => void
   onMarkAsResolved: (id: string) => void
+  onReopen?: (id: string) => void
+  onDelete?: (id: string) => void
 }
 
-export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResolved }: AlertaCardProps) {
+export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResolved, onReopen, onDelete }: AlertaCardProps) {
   const getTipoIcon = (tipo: string) => {
     switch (tipo) {
       case 'critico':
@@ -108,100 +111,187 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
+  const getDeletionDate = (resolvidoEm: string | null): { date: Date | null; text: string } => {
+    if (!resolvidoEm) return { date: null, text: '' }
+    
+    const resolvidoDate = new Date(resolvidoEm)
+    const deletionDate = new Date(resolvidoDate)
+    deletionDate.setDate(deletionDate.getDate() + 3) // Adiciona 3 dias
+    
+    const now = new Date()
+    const diffInMs = deletionDate.getTime() - now.getTime()
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24))
+    
+    if (diffInDays < 0) {
+      return { date: deletionDate, text: 'Será deletado em breve' }
+    } else if (diffInDays === 0) {
+      return { date: deletionDate, text: 'Será deletado hoje' }
+    } else if (diffInDays === 1) {
+      return { date: deletionDate, text: 'Será deletado amanhã' }
+    } else {
+      const formattedDate = deletionDate.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+      })
+      return { date: deletionDate, text: `Será deletado em ${formattedDate} (${diffInDays} dias)` }
+    }
+  }
+
   return (
     <div
       className={cn(
-        'rounded-lg border border-gray-200 bg-white p-4 transition-all',
-        getUrgenciaColor(alerta.urgencia),
-        isSelected && 'ring-2 ring-primary-500',
-        alerta.status === 'resolvido' && 'opacity-60'
+        'group relative rounded-xl border-l-0 border-t border-r border-b bg-white shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden',
+        isSelected && 'ring-2 ring-primary-500 border-primary-300',
+        alerta.status === 'resolvido' && 'opacity-75',
+        !isSelected && 'border-gray-200 hover:border-gray-300'
       )}
     >
-      <div className="flex items-start gap-4">
-        {/* Checkbox para seleção */}
-        <div className="flex-shrink-0 pt-1">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={() => onSelect(alerta.id)}
-            className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-            disabled={alerta.status === 'resolvido'}
-          />
-        </div>
+      {/* Borda lateral colorida por urgência - cobre toda a borda esquerda */}
+      <div className={cn(
+        'absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl',
+        alerta.urgencia === 'alta' && 'bg-error-500',
+        alerta.urgencia === 'media' && 'bg-warning-500',
+        alerta.urgencia === 'baixa' && 'bg-success-500'
+      )} />
 
-        {/* Ícone do tipo */}
-        <div className="flex-shrink-0 mt-0.5">
-          {getTipoIcon(alerta.tipo)}
-        </div>
-
-        {/* Conteúdo */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-sm font-semibold text-gray-900">{alerta.titulo}</h3>
-                <span className={cn('px-2 py-0.5 rounded-full text-xs font-medium', getStatusColor(alerta.status))}>
-                  {alerta.status === 'pendente' ? 'Pendente' : alerta.status === 'resolvido' ? 'Resolvido' : 'Ignorado'}
-                </span>
-              </div>
-              <p className="text-sm text-gray-600 line-clamp-2">{alerta.mensagem}</p>
-            </div>
+      <div className="p-5 pl-7">
+        <div className="flex items-start gap-4">
+          {/* Checkbox para seleção */}
+          <div className="flex-shrink-0 pt-0.5">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onSelect(alerta.id)}
+              className="h-5 w-5 rounded-md border-2 border-gray-300 text-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 focus:border-primary-500 cursor-pointer transition-all hover:border-primary-400 checked:bg-primary-600 checked:border-primary-600"
+            />
           </div>
 
-          {/* Metadados */}
-          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mt-3">
-            <div className="flex items-center gap-1">
-              <span className="font-medium">Tipo:</span>
-              <span>{getTipoLabel(alerta.tipo)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium">Urgência:</span>
-              <span className={cn(
-                'px-1.5 py-0.5 rounded',
-                alerta.urgencia === 'alta' && 'bg-error-100 text-error-700',
-                alerta.urgencia === 'media' && 'bg-warning-100 text-warning-700',
-                alerta.urgencia === 'baixa' && 'bg-success-100 text-success-700'
-              )}>
-                {getUrgenciaLabel(alerta.urgencia)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>{formatTimeAgo(alerta.created_at)}</span>
-            </div>
-            {alerta.pacientes && (
-              <div className="flex items-center gap-1">
-                <User className="h-3 w-3" />
-                <span>{alerta.pacientes.nome}</span>
-              </div>
-            )}
+          {/* Ícone do tipo com fundo */}
+          <div className={cn(
+            'flex-shrink-0 p-2.5 rounded-lg',
+            alerta.tipo === 'critico' && 'bg-error-50',
+            alerta.tipo === 'manutencao' && 'bg-warning-50',
+            alerta.tipo === 'followup' && 'bg-primary-50'
+          )}>
+            {getTipoIcon(alerta.tipo)}
           </div>
 
-          {/* Ações */}
-          <div className="flex items-center gap-2 mt-4">
-            {alerta.paciente_id && (
-              <Link href={`/pacientes/${alerta.paciente_id}`}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1"
-                >
-                  <Eye className="h-4 w-4" />
-                  Ver Paciente
-                </Button>
-              </Link>
+          {/* Conteúdo */}
+          <div className="flex-1 min-w-0">
+            {/* Header com título e status */}
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <h3 className="text-base font-semibold text-gray-900">{alerta.titulo}</h3>
+                  <span className={cn(
+                    'px-2.5 py-0.5 rounded-full text-xs font-semibold',
+                    getStatusColor(alerta.status)
+                  )}>
+                    {alerta.status === 'pendente' ? 'Pendente' : alerta.status === 'resolvido' ? 'Resolvido' : 'Ignorado'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed">{alerta.mensagem}</p>
+              </div>
+            </div>
+
+            {/* Metadados em grid */}
+            <div className="mt-5">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">Tipo</span>
+                  <span className="text-xs text-gray-700 font-medium">{getTipoLabel(alerta.tipo)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">Urgência</span>
+                  <span className={cn(
+                    'px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap',
+                    alerta.urgencia === 'alta' && 'bg-error-100 text-error-700',
+                    alerta.urgencia === 'media' && 'bg-warning-100 text-warning-700',
+                    alerta.urgencia === 'baixa' && 'bg-success-100 text-success-700'
+                  )}>
+                    {getUrgenciaLabel(alerta.urgencia)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                  <span className="text-xs text-gray-600 whitespace-nowrap">{formatTimeAgo(alerta.created_at)}</span>
+                </div>
+                {alerta.pacientes && (
+                  <div className="flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                    <span className="text-xs text-gray-600 truncate">{alerta.pacientes.nome}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Prazo de deleção (apenas para alertas resolvidos) */}
+            {alerta.status === 'resolvido' && alerta.resolvido_em && (
+              <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                  <span className="text-xs text-gray-600">
+                    {getDeletionDate(alerta.resolvido_em).text}
+                  </span>
+                </div>
+              </div>
             )}
-            {alerta.status === 'pendente' && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => onMarkAsResolved(alerta.id)}
-                className="flex items-center gap-1"
-              >
-                <Check className="h-4 w-4" />
-                Marcar como Resolvido
-              </Button>
-            )}
+
+            {/* Ações */}
+            <div className="mt-5 relative">
+              <div className="flex items-center gap-2">
+                {alerta.paciente_id && (
+                  <Link href={`/pacientes/${alerta.paciente_id}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 border-gray-300 hover:border-gray-400"
+                    >
+                      <Eye className="h-4 w-4" />
+                      Ver Paciente
+                    </Button>
+                  </Link>
+                )}
+                {alerta.status === 'pendente' && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => onMarkAsResolved(alerta.id)}
+                    className="flex items-center gap-1.5"
+                  >
+                    <Check className="h-4 w-4" />
+                    Marcar como Resolvido
+                  </Button>
+                )}
+                {alerta.status === 'resolvido' && (
+                  <div className="flex items-center gap-2">
+                    {onReopen && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onReopen(alerta.id)}
+                        className="flex items-center gap-1.5 text-warning-700 hover:text-warning-800 border-warning-300 hover:border-warning-400 bg-warning-50 hover:bg-warning-100"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                        Reabrir Alerta
+                      </Button>
+                    )}
+                    {onDelete && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onDelete(alerta.id)}
+                        className="flex items-center gap-1.5 text-error-700 hover:text-error-800 border-error-300 hover:border-error-400 bg-error-50 hover:bg-error-100"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Deletar
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

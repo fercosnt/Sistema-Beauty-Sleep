@@ -13,6 +13,7 @@ import { LogOut, User, Settings, ChevronDown, ChevronLeft, ChevronRight } from '
 import Link from 'next/link'
 import { cn } from '../../utils/cn'
 import { Glass } from '../../components/glass/Glass'
+import NotificationCenter from '@/components/ui/NotificationCenter'
 
 export interface MetricCardData {
   /**
@@ -452,8 +453,10 @@ export const DashboardAdminTemplate: React.FC<DashboardAdminTemplateProps> = ({
                   </div>
                 )}
                 
-                {/* Lado direito - menu do usuário */}
-              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[100] min-w-0" data-user-menu>
+                {/* Lado direito - notificações e menu do usuário */}
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 relative z-[10000] min-w-0" data-user-menu style={{ pointerEvents: 'auto' }}>
+                {/* Centro de Notificações */}
+                <NotificationCenter />
                   <div className="relative">
                     <button
                     onClick={(e) => {

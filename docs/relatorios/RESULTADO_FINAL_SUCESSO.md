@@ -22,17 +22,17 @@
 
 ## ✅ Problema Resolvido
 
-O problema era que o secret `BIOLOGIX_PARTNER_ID` estava configurado incorretamente no Supabase, contendo o header Authorization em vez do valor correto `4798042LW`.
+O problema era que o secret `BIOLOGIX_PARTNER_ID` estava configurado incorretamente no Supabase, contendo o header Authorization em vez do valor correto do Partner ID.
 
 **Após a correção do secret, a Edge Function funcionou perfeitamente!**
 
 ## 📋 Exemplos de Dados Sincronizados
 
-Alguns exames sincronizados:
-- **Fernando de Almeida Brandão** (CPF: 16303479812) - Exame ID: 4550615EU
-- **Marcia De Queiroz** (CPF: 26191025882) - Exame ID: 4389886AP
-- **Edna Matta** (CPF: 12556328878) - Exame ID: 5101972YE
-- **Marcelo Cusnir** (CPF: 03069152864) - Exame ID: 0058287NR
+Alguns exames sincronizados (dados fictícios para exemplo):
+- **Paciente Exemplo 1** (CPF: 11111111111) - Exame ID: 4550615EU
+- **Paciente Exemplo 2** (CPF: 22222222222) - Exame ID: 4389886AP
+- **Paciente Exemplo 3** (CPF: 33333333333) - Exame ID: 5101972YE
+- **Paciente Exemplo 4** (CPF: 44444444444) - Exame ID: 0058287NR
 
 ## 🎯 Status Final da Integração
 

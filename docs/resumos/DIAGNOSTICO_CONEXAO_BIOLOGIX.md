@@ -67,8 +67,8 @@ const { data: existingPaciente } = await supabase
 
 **Encontrado:**
 - 1 paciente criado pela Edge Function sem `biologix_id`:
-  - Nome: Juliana Kagan Reis
-  - CPF: 09218264788
+  - Nome: [Paciente Exemplo]
+  - CPF: [CPF fictício para exemplo]
   - Status: lead
   - Criado: 2025-11-28 13:00:06
 

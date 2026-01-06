@@ -76,7 +76,7 @@ Na seção **Environment Variables**, adicione:
 #### Variáveis Obrigatórias:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://qigbblypwkgflwnrrhzg.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://[seu-project-id].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_anon_key_aqui
 SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
 ```
@@ -84,10 +84,10 @@ SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
 #### Variáveis Opcionais (se usar Biologix):
 
 ```
-BIOLOGIX_USERNAME=l|DEMO|47349438
+BIOLOGIX_USERNAME=seu_username_biologix
 BIOLOGIX_PASSWORD=sua_senha_aqui
 BIOLOGIX_SOURCE=100
-BIOLOGIX_PARTNER_ID=4798042LW
+BIOLOGIX_PARTNER_ID=seu_partner_id_aqui
 ```
 
 **Como adicionar**:

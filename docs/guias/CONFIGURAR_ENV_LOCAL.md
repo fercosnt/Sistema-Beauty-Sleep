@@ -9,13 +9,13 @@ Crie um arquivo chamado `.env.local` na raiz do projeto (mesmo nível do `packag
 ## 📋 Passo 2: Obter as Credenciais do Supabase
 
 1. Acesse o **Supabase Dashboard**: https://supabase.com/dashboard
-2. Selecione seu projeto: `qigbblypwkgflwnrrhzg`
+2. Selecione seu projeto no Supabase Dashboard
 3. Vá em **Settings** → **API**
 4. Copie os seguintes valores:
 
 ### Project URL
 - Encontre em **Project URL**
-- Exemplo: `https://qigbblypwkgflwnrrhzg.supabase.co`
+- Exemplo: `https://[seu-project-id].supabase.co`
 
 ### Anon Key
 - Encontre em **Project API keys** → **anon** / **public**
@@ -33,15 +33,15 @@ Copie o conteúdo abaixo e preencha com seus valores reais:
 
 ```env
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://qigbblypwkgflwnrrhzg.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://[seu-project-id].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_anon_key_aqui
 SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
 
 # Biologix API Credentials (opcional para migração)
-BIOLOGIX_USERNAME=l|DEMO|47349438
+BIOLOGIX_USERNAME=seu_username_biologix
 BIOLOGIX_PASSWORD=sua_senha_aqui
 BIOLOGIX_SOURCE=100
-BIOLOGIX_PARTNER_ID=4798042LW
+BIOLOGIX_PARTNER_ID=seu_partner_id_aqui
 ```
 
 ## ✅ Verificar Configuração

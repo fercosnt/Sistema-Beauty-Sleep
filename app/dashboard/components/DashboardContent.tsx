@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardAdminTemplate } from '@beautysmile/templates/admin/DashboardAdminTemplate'
-import { LayoutDashboard, Users, UserCog, FileText } from 'lucide-react'
+import { LayoutDashboard, Users, UserCog, FileText, AlertCircle } from 'lucide-react'
 import BuscaGlobal from '@/components/ui/BuscaGlobal'
 import DashboardTabs from './DashboardTabs'
 import KPICards from './KPICards'
@@ -131,6 +131,14 @@ export default function DashboardContent({ userRole }: DashboardContentProps) {
         isActive: pathname?.startsWith('/usuarios'),
         onClick: () => router.push('/usuarios')
       },
+    ] : []),
+    { 
+      label: 'Alertas', 
+      icon: <AlertCircle className="h-5 w-5" />,
+      isActive: pathname?.startsWith('/alertas'),
+      onClick: () => router.push('/alertas')
+    },
+    ...(isAdmin ? [
       { 
         label: 'Logs', 
         icon: <FileText className="h-5 w-5" />,

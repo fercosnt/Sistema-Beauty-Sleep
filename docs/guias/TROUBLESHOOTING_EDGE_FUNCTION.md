@@ -12,7 +12,7 @@
 
 **Solução:**
 1. Verifique o secret no Dashboard: Edge Functions → Secrets → `BIOLOGIX_USERNAME`
-2. Deve ser exatamente: `l|DEMO|47349438` (sem espaços extras)
+2. Deve ser exatamente o username fornecido pela Biologix (sem espaços extras)
 3. Redeploy a Edge Function após configurar secrets:
    ```bash
    npx supabase functions deploy sync-biologix
@@ -33,15 +33,15 @@
 
 **Solução:**
 1. Verifique o secret `BIOLOGIX_PARTNER_ID`:
-   - Deve ser: `4798042LW` (sem aspas, sem espaços)
-   - **NÃO deve conter:** `basic NTQ0ODUxNVJIOmlqR2pFTVdsY1N0NnZFcklLUld3bFZuNTlKTnNpZUhC`
+   - Deve ser o Partner ID fornecido pela Biologix (sem aspas, sem espaços)
+   - **NÃO deve conter:** header Authorization ou outros valores incorretos
 2. Se o problema persistir, pode ser questão de permissões na conta Biologix (contate o suporte)
 
 ### 4. Erro 500 - URL incorreta
 
 **Causa:** `BIOLOGIX_PARTNER_ID` estava sendo substituído pelo header Authorization na URL.
 
-**Solução:** ✅ **RESOLVIDO** - Verifique se o secret `BIOLOGIX_PARTNER_ID` contém apenas `4798042LW`
+**Solução:** ✅ **RESOLVIDO** - Verifique se o secret `BIOLOGIX_PARTNER_ID` contém apenas o Partner ID correto (não o header Authorization)
 
 ## ✅ Checklist de Verificação
 
@@ -49,7 +49,7 @@
   - [x] `BIOLOGIX_USERNAME` = `l|DEMO|47349438`
   - [x] `BIOLOGIX_PASSWORD` = `[sua_senha_biologix]`
   - [x] `BIOLOGIX_SOURCE` = `100`
-  - [x] `BIOLOGIX_PARTNER_ID` = `4798042LW` ⚠️ **CRÍTICO: Deve ser apenas o ID, não o header Authorization**
+  - [x] `BIOLOGIX_PARTNER_ID` = `[seu_partner_id]` ⚠️ **CRÍTICO: Deve ser apenas o ID, não o header Authorization**
 - [x] Edge Function versão 21 deployada e funcionando
 - [x] Valores dos secrets sem aspas e sem espaços extras
 
@@ -57,7 +57,7 @@
 
 ### 1. Verificar Logs da Edge Function
 
-1. Acesse: https://supabase.com/dashboard/project/qigbblypwkgflwnrrhzg/logs/edge-functions
+1. Acesse: Supabase Dashboard → Seu Projeto → Logs → Edge Functions
 2. Filtre por função: `sync-biologix`
 3. Verifique o log mais recente:
    - ✅ Status 200 = Funcionando
@@ -111,10 +111,10 @@ SELECT
 ### Via CLI:
 ```bash
 # ⚠️ IMPORTANTE: Não inclua aspas ao redor dos valores!
-npx supabase secrets set BIOLOGIX_USERNAME=l|DEMO|47349438
+npx supabase secrets set BIOLOGIX_USERNAME=seu_username_biologix
 npx supabase secrets set BIOLOGIX_PASSWORD=sua_senha_biologix_aqui
 npx supabase secrets set BIOLOGIX_SOURCE=100
-npx supabase secrets set BIOLOGIX_PARTNER_ID=4798042LW
+npx supabase secrets set BIOLOGIX_PARTNER_ID=seu_partner_id_aqui
 ```
 
 ## 📝 Logs Importantes para Debug
@@ -123,14 +123,14 @@ Se a Edge Function retornar erro, verifique nos logs:
 
 1. **Environment Variables Check:**
    - Deve mostrar valores corretos para todas as variáveis
-   - `BIOLOGIX_PARTNER_ID` deve mostrar `4798042LW` (não o header Authorization)
+   - `BIOLOGIX_PARTNER_ID` deve mostrar o Partner ID correto (não o header Authorization)
 
 2. **BiologixClient Constructor:**
-   - Deve mostrar `partnerId received: 4798042LW`
+   - Deve mostrar `partnerId received: [seu_partner_id]`
    - Não deve mostrar erro de validação
 
 3. **Request Details:**
-   - URL deve ser: `https://api.biologixsleep.com/v2/partners/4798042LW/exams?offset=0&limit=100`
+   - URL deve ser: `https://api.biologixsleep.com/v2/partners/[seu_partner_id]/exams?offset=0&limit=100`
    - Não deve conter `basic%20NTQ0ODUxNVJIOmlqR2pFTVdsY1N0NnZFcklLUld3bFZuNTlKTnNpZUhC` na URL
 
 ## ✅ Status Atual: Funcionando

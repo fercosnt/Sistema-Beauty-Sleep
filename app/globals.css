@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scrollbar customizada para central de notificações */
+.notification-center-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.notification-center-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-center-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.notification-center-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.notification-center-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 /* Importar variáveis CSS e keyframes do Design System */
 @import './design-system-variables.css';
 

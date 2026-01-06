@@ -26,9 +26,9 @@
 ### 2. **MODERADO - Credenciais em Arquivo de Exemplo**
 **Arquivo:** `env.local.example`  
 **Problemas:**
-- URL do Supabase hardcoded: `https://qigbblypwkgflwnrrhzg.supabase.co`
-- Username Biologix: `l|DEMO|47349438`
-- Partner ID: `4798042LW`
+- URL do Supabase hardcoded: `[removido por segurança]`
+- Username Biologix: `[removido por segurança]`
+- Partner ID: `[removido por segurança]`
 
 **Ação Necessária:**
 - ✅ Substituir por placeholders genéricos

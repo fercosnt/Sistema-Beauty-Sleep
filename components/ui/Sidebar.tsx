@@ -91,11 +91,13 @@ export default function Sidebar({ userRole, isMobileOpen = false, onMobileClose 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Pacientes', href: '/pacientes', icon: Users },
-    { name: 'Alertas', href: '/alertas', icon: AlertCircle },
     ...(isAdmin ? [
       { name: 'Usuários', href: '/usuarios', icon: UserCog },
+      { name: 'Alertas', href: '/alertas', icon: AlertCircle },
       { name: 'Logs', href: '/logs', icon: FileText },
-    ] : []),
+    ] : [
+      { name: 'Alertas', href: '/alertas', icon: AlertCircle },
+    ]),
   ]
 
   return (

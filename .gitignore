@@ -102,3 +102,19 @@ Thumbs.db
 
 scripts/test-biologix-api.sh
 
+# Arquivos temporários de debug/correção
+scripts/*-corrigir-*.sql
+scripts/*-debug-*.sql
+scripts/*-verificar-*.sql
+scripts/*-test-*.sql
+scripts/*-solucao-*.sql
+scripts/*-confirmar-*.sql
+scripts/*-forcar-*.sql
+scripts/*-remover-*.sql
+
+# Documentação temporária/antiga (opcional - descomente se quiser ignorar)
+# docs/testes-antigos/
+# docs/resumos/DIAGNOSTICO_CONEXAO_BIOLOGIX.md
+# docs/relatorios/RESULTADO_FINAL_SUCESSO.md
+# docs/relatorios/RELATORIO_COMPLETO_BIOLOGIX.md
+

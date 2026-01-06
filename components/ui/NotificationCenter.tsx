@@ -26,24 +26,123 @@ interface Alerta {
 export default function NotificationCenter() {
   const router = useRouter()
   const [alertas, setAlertas] = useState<Alerta[]>([])
+  const [totalAlertas, setTotalAlertas] = useState(0)
+  const [urgenciaMaxima, setUrgenciaMaxima] = useState<'alta' | 'media' | 'baixa' | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  // Função para buscar alertas (definida fora do useEffect para poder ser reutilizada)
+  const fetchAlertas = async () => {
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        setIsLoading(false)
+        return
+      }
+
+      // Buscar total de alertas pendentes e urgência máxima (para o badge)
+      const { count, error: countError } = await supabase
+        .from('alertas')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pendente')
+
+      if (countError) {
+        console.error('Erro ao contar alertas:', countError)
+      } else {
+        setTotalAlertas(count || 0)
+      }
+
+      // Buscar urgência máxima entre todos os alertas pendentes
+      const { data: allAlertas, error: urgencyError } = await supabase
+        .from('alertas')
+        .select('urgencia')
+        .eq('status', 'pendente')
+
+      if (!urgencyError && allAlertas && allAlertas.length > 0) {
+        const prioridades = { alta: 3, media: 2, baixa: 1 }
+        const maxUrgencia = allAlertas.reduce((max, alerta) => {
+          const prioridadeAtual = prioridades[alerta.urgencia as keyof typeof prioridades] || 0
+          const prioridadeMax = prioridades[max as keyof typeof prioridades] || 0
+          return prioridadeAtual > prioridadeMax ? alerta.urgencia : max
+        }, allAlertas[0].urgencia as 'alta' | 'media' | 'baixa')
+        setUrgenciaMaxima(maxUrgencia)
+      } else {
+        setUrgenciaMaxima(null)
+      }
+
+      // Buscar todos os alertas pendentes para exibir no dropdown
+      const { data, error } = await supabase
+        .from('alertas')
+        .select(`
+          id,
+          tipo,
+          urgencia,
+          titulo,
+          mensagem,
+          paciente_id,
+          exame_id,
+          created_at,
+          pacientes(nome)
+        `)
+        .eq('status', 'pendente')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Erro ao buscar alertas:', error)
+        setAlertas([])
+      } else {
+        // Transformar dados para o formato esperado
+        const alertasFormatados = (data || []).map((alerta: any) => ({
+          ...alerta,
+          pacientes: Array.isArray(alerta.pacientes) && alerta.pacientes.length > 0
+            ? alerta.pacientes[0]
+            : null
+        }))
+        setAlertas(alertasFormatados)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar alertas:', error)
+      setAlertas([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Buscar alertas pendentes
   useEffect(() => {
-    const fetchAlertas = async () => {
+    fetchAlertas()
+
+    // Atualizar a cada 30 segundos
+    const interval = setInterval(fetchAlertas, 30000)
+
+    // Escutar evento quando alerta é resolvido em outra página
+    const handleAlertaResolvido = (event: CustomEvent) => {
+      const { alertaId } = event.detail
+      // Remover alerta da lista local se estiver presente
+      setAlertas((prev) => {
+        const alertaExiste = prev.some(a => a.id === alertaId)
+        if (alertaExiste) {
+          return prev.filter((a) => a.id !== alertaId)
+        }
+        return prev
+      })
+      // Atualizar contador total
+      setTotalAlertas((prev) => Math.max(0, prev - 1))
+      // Recarregar dados para garantir sincronização
+      fetchAlertas()
+    }
+
+    // Escutar evento quando alerta é reaberto em outra página
+    const handleAlertaReaberto = async (event: CustomEvent) => {
+      const { alertaId } = event.detail
+      
+      // Buscar dados do alerta reaberto para adicionar à lista
       try {
         const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-
-        if (!user) {
-          setIsLoading(false)
-          return
-        }
-
-        // Buscar alertas pendentes ordenados por data (mais recentes primeiro)
-        const { data, error } = await supabase
+        const { data: alertaReaberto, error } = await supabase
           .from('alertas')
           .select(`
             id,
@@ -56,37 +155,65 @@ export default function NotificationCenter() {
             created_at,
             pacientes(nome)
           `)
+          .eq('id', alertaId)
           .eq('status', 'pendente')
-          .order('created_at', { ascending: false })
-          .limit(5)
+          .single()
 
-        if (error) {
-          console.error('Erro ao buscar alertas:', error)
-          setAlertas([])
-        } else {
+        if (!error && alertaReaberto) {
           // Transformar dados para o formato esperado
-          const alertasFormatados = (data || []).map((alerta: any) => ({
-            ...alerta,
-            pacientes: Array.isArray(alerta.pacientes) && alerta.pacientes.length > 0
-              ? alerta.pacientes[0]
+          const alertaFormatado = {
+            ...alertaReaberto,
+            pacientes: Array.isArray(alertaReaberto.pacientes) && alertaReaberto.pacientes.length > 0
+              ? alertaReaberto.pacientes[0]
               : null
-          }))
-          setAlertas(alertasFormatados)
+          }
+
+          // Adicionar à lista se não estiver presente e se for um dos mais recentes
+          setAlertas((prev) => {
+            const jaExiste = prev.some(a => a.id === alertaId)
+            if (jaExiste) {
+              return prev
+            }
+            // Adicionar no início da lista e manter apenas os 5 mais recentes
+            const novaLista = [alertaFormatado, ...prev]
+            return novaLista.slice(0, 5)
+          })
+
+          // Atualizar contador total
+          setTotalAlertas((prev) => prev + 1)
+
+          // Recalcular urgência máxima
+          const { data: allAlertas } = await supabase
+            .from('alertas')
+            .select('urgencia')
+            .eq('status', 'pendente')
+
+          if (allAlertas && allAlertas.length > 0) {
+            const prioridades = { alta: 3, media: 2, baixa: 1 }
+            const maxUrgencia = allAlertas.reduce((max, alerta) => {
+              const prioridadeAtual = prioridades[alerta.urgencia as keyof typeof prioridades] || 0
+              const prioridadeMax = prioridades[max as keyof typeof prioridades] || 0
+              return prioridadeAtual > prioridadeMax ? alerta.urgencia : max
+            }, allAlertas[0].urgencia as 'alta' | 'media' | 'baixa')
+            setUrgenciaMaxima(maxUrgencia)
+          }
         }
       } catch (error) {
-        console.error('Erro ao buscar alertas:', error)
-        setAlertas([])
-      } finally {
-        setIsLoading(false)
+        console.error('Erro ao buscar alerta reaberto:', error)
       }
+
+      // Recarregar dados completos para garantir sincronização
+      fetchAlertas()
     }
 
-    fetchAlertas()
+    window.addEventListener('alerta-resolvido', handleAlertaResolvido as EventListener)
+    window.addEventListener('alerta-reaberto', handleAlertaReaberto as EventListener)
 
-    // Atualizar a cada 30 segundos
-    const interval = setInterval(fetchAlertas, 30000)
-
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('alerta-resolvido', handleAlertaResolvido as EventListener)
+      window.removeEventListener('alerta-reaberto', handleAlertaReaberto as EventListener)
+    }
   }, [])
 
   // Fechar dropdown ao clicar fora
@@ -103,38 +230,110 @@ export default function NotificationCenter() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen])
 
-  // Calcular contagem e urgência máxima
-  const totalAlertas = alertas.length
-  const urgenciaMaxima = alertas.length > 0
-    ? alertas.reduce((max, alerta) => {
-        const prioridades = { alta: 3, media: 2, baixa: 1 }
-        return prioridades[alerta.urgencia] > prioridades[max] ? alerta.urgencia : max
-      }, alertas[0].urgencia as 'alta' | 'media' | 'baixa')
-    : null
-
   // Marcar alerta como resolvido
   const handleMarkAsRead = async (alertaId: string) => {
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user: authUser } } = await supabase.auth.getUser()
 
-      if (!user) return
+      if (!authUser) return
 
+      // Buscar o ID do usuário na tabela users usando o email
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', authUser.email)
+        .single()
+
+      if (userError || !userData) {
+        console.error('Erro ao buscar usuário:', userError)
+        return
+      }
+
+      // Encontrar o alerta antes de removê-lo para verificar urgência
+      const alertaRemovido = alertas.find(a => a.id === alertaId)
+      const tinhaUrgenciaMaxima = alertaRemovido && alertaRemovido.urgencia === urgenciaMaxima
+
+      // Remover alerta da lista local IMEDIATAMENTE (otimista)
+      setAlertas((prev) => prev.filter((a) => a.id !== alertaId))
+      // Atualizar contador total IMEDIATAMENTE
+      setTotalAlertas((prev) => Math.max(0, prev - 1))
+
+      // Atualizar no banco de dados
       const { error } = await supabase
         .from('alertas')
         .update({
           status: 'resolvido',
-          resolvido_por: user.id,
+          resolvido_por: userData.id,
           resolvido_em: new Date().toISOString(),
         })
         .eq('id', alertaId)
 
       if (error) {
         console.error('Erro ao marcar alerta como resolvido:', error)
-      } else {
-        // Remover alerta da lista local
-        setAlertas((prev) => prev.filter((a) => a.id !== alertaId))
+        // Reverter mudanças locais em caso de erro
+        // Recarregar dados do servidor
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { count } = await supabase
+            .from('alertas')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pendente')
+          setTotalAlertas(count || 0)
+          
+          const { data } = await supabase
+            .from('alertas')
+            .select(`
+              id,
+              tipo,
+              urgencia,
+              titulo,
+              mensagem,
+              paciente_id,
+              exame_id,
+              created_at,
+              pacientes(nome)
+            `)
+            .eq('status', 'pendente')
+            .order('created_at', { ascending: false })
+            .limit(5)
+          
+          if (data) {
+            const alertasFormatados = data.map((alerta: any) => ({
+              ...alerta,
+              pacientes: Array.isArray(alerta.pacientes) && alerta.pacientes.length > 0
+                ? alerta.pacientes[0]
+                : null
+            }))
+            setAlertas(alertasFormatados)
+          }
+        }
+        return
       }
+
+      // Se removemos o alerta com urgência máxima, recalcular
+      if (tinhaUrgenciaMaxima) {
+        const { data: remainingAlertas } = await supabase
+          .from('alertas')
+          .select('urgencia')
+          .eq('status', 'pendente')
+        
+        if (remainingAlertas && remainingAlertas.length > 0) {
+          const prioridades = { alta: 3, media: 2, baixa: 1 }
+          const maxUrgencia = remainingAlertas.reduce((max, alerta) => {
+            const prioridadeAtual = prioridades[alerta.urgencia as keyof typeof prioridades] || 0
+            const prioridadeMax = prioridades[max as keyof typeof prioridades] || 0
+            return prioridadeAtual > prioridadeMax ? alerta.urgencia : max
+          }, remainingAlertas[0].urgencia as 'alta' | 'media' | 'baixa')
+          setUrgenciaMaxima(maxUrgencia)
+        } else {
+          setUrgenciaMaxima(null)
+        }
+      }
+
+      // Recarregar lista completa para mostrar todos os alertas pendentes
+      // Isso garante que quando um alerta é resolvido, os próximos aparecem
+      fetchAlertas()
     } catch (error) {
       console.error('Erro ao marcar alerta como resolvido:', error)
     }
@@ -209,7 +408,7 @@ export default function NotificationCenter() {
           </div>
 
           {/* Lista de alertas */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-[600px] overflow-y-auto notification-center-scroll">
             {isLoading ? (
               <div className="px-4 py-8 text-center text-sm text-gray-500">
                 Carregando...
@@ -256,11 +455,11 @@ export default function NotificationCenter() {
                           </div>
                           <button
                             onClick={() => handleMarkAsRead(alerta.id)}
-                            className="flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 transition-colors"
+                            className="flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors px-2 py-1 rounded hover:bg-primary-50"
                             type="button"
                           >
                             <Check className="h-3 w-3" />
-                            Marcar como lido
+                            Marcar como Resolvido
                           </button>
                         </div>
                       </div>

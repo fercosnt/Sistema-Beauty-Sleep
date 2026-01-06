@@ -27,7 +27,7 @@ As credenciais da API Biologix são fornecidas diretamente pela empresa Biologix
 **Nota:** 
 - O `userId` retornado na sessão é usado para Basic Auth
 - O `BIOLOGIX_PARTNER_ID` é usado na URL `/v2/partners/{partnerId}/exams`
-- No seu workflow n8n (`Exame Ronco.json`), o `centerID` é `4798042LW` - use este mesmo valor
+- No seu workflow n8n (`Exame Ronco.json`), use o mesmo `centerID` que está configurado lá
 
 ## Como Configurar
 
@@ -49,7 +49,7 @@ As Edge Functions do Supabase precisam das credenciais configuradas como **Secre
 #### Passo a Passo:
 
 1. Acesse o **Supabase Dashboard**: https://supabase.com/dashboard
-2. Selecione seu projeto: `qigbblypwkgflwnrrhzg`
+2. Selecione seu projeto no Supabase Dashboard
 3. Vá em **Edge Functions** → **Secrets**
 4. Adicione cada variável:
    - Clique em **"Add new secret"**
@@ -68,7 +68,7 @@ npx supabase login
 npx supabase secrets set BIOLOGIX_USERNAME=seu_username
 npx supabase secrets set BIOLOGIX_PASSWORD=sua_senha
 npx supabase secrets set BIOLOGIX_SOURCE=100
-npx supabase secrets set BIOLOGIX_PARTNER_ID=4798042LW
+npx supabase secrets set BIOLOGIX_PARTNER_ID=seu_partner_id_aqui
 ```
 
 ### 3. Verificar Secrets Configurados

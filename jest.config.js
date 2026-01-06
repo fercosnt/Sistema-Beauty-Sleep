@@ -14,7 +14,7 @@ const customJestConfig = {
   },
   // Only run Jest tests (unit tests), exclude Playwright tests
   testMatch: [
-    '**/__tests__/**/*.test.ts',
+    '**/__tests__/**/*.test.{ts,tsx}',
     '!**/__tests__/**/*.spec.ts',
     '!**/__tests__/integration/**',
     '!**/__tests__/e2e/**',

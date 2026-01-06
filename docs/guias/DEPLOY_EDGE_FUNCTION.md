@@ -16,7 +16,7 @@ A Edge Function precisa das credenciais configuradas como **Secrets** no Supabas
 
 1. **Acesse o Supabase Dashboard:**
    - URL: https://supabase.com/dashboard
-   - Projeto: `qigbblypwkgflwnrrhzg`
+   - Projeto: [seu-project-id]
 
 2. **Vá em Edge Functions → Secrets**
 
@@ -56,10 +56,10 @@ npx supabase login
 
 # Configurar secrets
 # ⚠️ IMPORTANTE: Não inclua aspas ao redor dos valores!
-npx supabase secrets set BIOLOGIX_USERNAME=l|DEMO|47349438
+npx supabase secrets set BIOLOGIX_USERNAME=seu_username_biologix
 npx supabase secrets set BIOLOGIX_PASSWORD=sua_senha_biologix_aqui
 npx supabase secrets set BIOLOGIX_SOURCE=100
-npx supabase secrets set BIOLOGIX_PARTNER_ID=4798042LW
+npx supabase secrets set BIOLOGIX_PARTNER_ID=seu_partner_id_aqui
 ```
 
 ## 🧪 Testar a Edge Function
@@ -78,7 +78,7 @@ npx supabase functions invoke sync-biologix
 
 ### Via HTTP:
 ```bash
-curl -X POST https://qigbblypwkgflwnrrhzg.supabase.co/functions/v1/sync-biologix \
+curl -X POST https://[seu-project-id].supabase.co/functions/v1/sync-biologix \
   -H "Authorization: Bearer [seu_anon_key]"
 ```
 

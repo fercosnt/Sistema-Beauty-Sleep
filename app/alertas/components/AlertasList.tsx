@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { RefreshCw, CheckSquare, Square } from 'lucide-react'
+import { RefreshCw, CheckSquare, Square, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import AlertasFilters, { AlertasFiltersState } from './AlertasFilters'
@@ -24,6 +24,7 @@ interface Alerta {
   paciente_id: string | null
   exame_id: string | null
   created_at: string
+  resolvido_em?: string | null
   pacientes?: PacienteInfo | null
 }
 
@@ -69,6 +70,7 @@ export default function AlertasList() {
           paciente_id,
           exame_id,
           created_at,
+          resolvido_em,
           pacientes(id, nome)
         `)
         .order('created_at', { ascending: false })
@@ -142,19 +144,18 @@ export default function AlertasList() {
   }
 
   const handleSelectAll = () => {
-    const pendentesIds = paginatedAlertas
-      .filter((a) => a.status === 'pendente')
-      .map((a) => a.id)
+    // Incluir todos os alertas (pendentes e resolvidos) na seleção
+    const todosIds = paginatedAlertas.map((a) => a.id)
     
-    if (pendentesIds.every((id) => selectedIds.has(id))) {
+    if (todosIds.every((id) => selectedIds.has(id))) {
       // Desmarcar todos
       const newSelected = new Set(selectedIds)
-      pendentesIds.forEach((id) => newSelected.delete(id))
+      todosIds.forEach((id) => newSelected.delete(id))
       setSelectedIds(newSelected)
     } else {
       // Marcar todos
       const newSelected = new Set(selectedIds)
-      pendentesIds.forEach((id) => newSelected.add(id))
+      todosIds.forEach((id) => newSelected.add(id))
       setSelectedIds(newSelected)
     }
   }
@@ -163,10 +164,23 @@ export default function AlertasList() {
   const handleMarkAsResolved = async (id: string) => {
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user: authUser } } = await supabase.auth.getUser()
 
-      if (!user) {
+      if (!authUser) {
         showError('Usuário não autenticado')
+        return
+      }
+
+      // Buscar o ID do usuário na tabela users usando o email
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', authUser.email)
+        .single()
+
+      if (userError || !userData) {
+        console.error('Erro ao buscar usuário:', userError)
+        showError('Erro ao identificar usuário')
         return
       }
 
@@ -174,7 +188,7 @@ export default function AlertasList() {
         .from('alertas')
         .update({
           status: 'resolvido',
-          resolvido_por: user.id,
+          resolvido_por: userData.id,
           resolvido_em: new Date().toISOString(),
         })
         .eq('id', id)
@@ -190,10 +204,111 @@ export default function AlertasList() {
           return newSet
         })
         fetchAlertas()
+        // Disparar evento para atualizar NotificationCenter
+        window.dispatchEvent(new CustomEvent('alerta-resolvido', { detail: { alertaId: id } }))
       }
     } catch (error) {
       console.error('Erro ao marcar alerta como resolvido:', error)
       showError('Erro ao marcar alerta como resolvido')
+    }
+  }
+
+  // Reabrir alerta (voltar de resolvido para pendente)
+  const handleReopen = async (id: string) => {
+    try {
+      const supabase = createClient()
+
+      const { error } = await supabase
+        .from('alertas')
+        .update({
+          status: 'pendente',
+          resolvido_por: null,
+          resolvido_em: null,
+        })
+        .eq('id', id)
+
+      if (error) {
+        console.error('Erro ao reabrir alerta:', error)
+        showError('Erro ao reabrir alerta')
+      } else {
+        showSuccess('Alerta reaberto com sucesso')
+        setSelectedIds((prev) => {
+          const newSet = new Set(prev)
+          newSet.delete(id)
+          return newSet
+        })
+        fetchAlertas()
+        // Disparar evento para atualizar NotificationCenter
+        window.dispatchEvent(new CustomEvent('alerta-reaberto', { detail: { alertaId: id } }))
+      }
+    } catch (error) {
+      console.error('Erro ao reabrir alerta:', error)
+      showError('Erro ao reabrir alerta')
+    }
+  }
+
+  // Deletar alerta
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja deletar este alerta? Esta ação não pode ser desfeita.')) {
+      return
+    }
+
+    try {
+      const supabase = createClient()
+
+      const { error } = await supabase
+        .from('alertas')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        console.error('Erro ao deletar alerta:', error)
+        showError('Erro ao deletar alerta')
+      } else {
+        showSuccess('Alerta deletado com sucesso')
+        setSelectedIds((prev) => {
+          const newSet = new Set(prev)
+          newSet.delete(id)
+          return newSet
+        })
+        fetchAlertas()
+      }
+    } catch (error) {
+      console.error('Erro ao deletar alerta:', error)
+      showError('Erro ao deletar alerta')
+    }
+  }
+
+  // Deletar selecionados
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) {
+      showError('Selecione pelo menos um alerta')
+      return
+    }
+
+    if (!confirm(`Tem certeza que deseja deletar ${selectedIds.size} alerta(s)? Esta ação não pode ser desfeita.`)) {
+      return
+    }
+
+    try {
+      const supabase = createClient()
+
+      const { error } = await supabase
+        .from('alertas')
+        .delete()
+        .in('id', Array.from(selectedIds))
+
+      if (error) {
+        console.error('Erro ao deletar alertas selecionados:', error)
+        showError('Erro ao deletar alertas selecionados')
+      } else {
+        showSuccess(`${selectedIds.size} alerta(s) deletado(s) com sucesso`)
+        setSelectedIds(new Set())
+        fetchAlertas()
+      }
+    } catch (error) {
+      console.error('Erro ao deletar alertas selecionados:', error)
+      showError('Erro ao deletar alertas selecionados')
     }
   }
 
@@ -206,10 +321,23 @@ export default function AlertasList() {
 
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user: authUser } } = await supabase.auth.getUser()
 
-      if (!user) {
+      if (!authUser) {
         showError('Usuário não autenticado')
+        return
+      }
+
+      // Buscar o ID do usuário na tabela users usando o email
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', authUser.email)
+        .single()
+
+      if (userError || !userData) {
+        console.error('Erro ao buscar usuário:', userError)
+        showError('Erro ao identificar usuário')
         return
       }
 
@@ -217,7 +345,7 @@ export default function AlertasList() {
         .from('alertas')
         .update({
           status: 'resolvido',
-          resolvido_por: user.id,
+          resolvido_por: userData.id,
           resolvido_em: new Date().toISOString(),
         })
         .in('id', Array.from(selectedIds))
@@ -227,8 +355,13 @@ export default function AlertasList() {
         showError('Erro ao resolver alertas selecionados')
       } else {
         showSuccess(`${selectedIds.size} alerta(s) marcado(s) como resolvido(s)`)
+        const resolvedIds = Array.from(selectedIds)
         setSelectedIds(new Set())
         fetchAlertas()
+        // Disparar evento para atualizar NotificationCenter para cada alerta resolvido
+        resolvedIds.forEach((alertaId) => {
+          window.dispatchEvent(new CustomEvent('alerta-resolvido', { detail: { alertaId } }))
+        })
       }
     } catch (error) {
       console.error('Erro ao resolver alertas selecionados:', error)
@@ -249,8 +382,8 @@ export default function AlertasList() {
     )
   }
 
-  const pendentesNaPagina = paginatedAlertas.filter((a) => a.status === 'pendente')
-  const todosSelecionados = pendentesNaPagina.length > 0 && pendentesNaPagina.every((a) => selectedIds.has(a.id))
+  const todosNaPagina = paginatedAlertas
+  const todosSelecionados = todosNaPagina.length > 0 && todosNaPagina.every((a) => selectedIds.has(a.id))
 
   return (
     <div className="space-y-6">
@@ -260,19 +393,29 @@ export default function AlertasList() {
       {/* Ações em lote */}
       {selectedIds.size > 0 && (
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">
+          <CardContent className="!p-4 !py-4">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-sm font-medium text-gray-700">
                 {selectedIds.size} alerta(s) selecionado(s)
               </span>
-              <Button
-                variant="primary"
-                onClick={handleResolveSelected}
-                className="flex items-center gap-2"
-              >
-                <CheckSquare className="h-4 w-4" />
-                Resolver Selecionados
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="primary"
+                  onClick={handleResolveSelected}
+                  className="flex items-center justify-center gap-2 shrink-0"
+                >
+                  <CheckSquare className="h-4 w-4" />
+                  Resolver Selecionados
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleDeleteSelected}
+                  className="flex items-center justify-center gap-2 shrink-0 text-error-700 hover:text-error-800 border-error-300 hover:border-error-400 bg-error-50 hover:bg-error-100"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Deletar Selecionados
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -285,17 +428,17 @@ export default function AlertasList() {
           <div className="flex items-center justify-between">
             <button
               onClick={handleSelectAll}
-              className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
+              className="flex items-center gap-2 text-sm font-medium text-white hover:text-primary-200 transition-colors"
               type="button"
             >
               {todosSelecionados ? (
-                <CheckSquare className="h-5 w-5 text-primary-600" />
+                <CheckSquare className="h-5 w-5 text-primary-300" />
               ) : (
-                <Square className="h-5 w-5 text-gray-400" />
+                <Square className="h-5 w-5 text-white/70" />
               )}
-              <span>Selecionar todos os pendentes</span>
+              <span className="text-white">Selecionar todos</span>
             </button>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm font-medium text-white">
               {filteredAlertas.length} {filteredAlertas.length === 1 ? 'alerta' : 'alertas'}
             </span>
           </div>
@@ -303,11 +446,13 @@ export default function AlertasList() {
 
         {/* Cards de alertas */}
         {filteredAlertas.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <p className="text-gray-500">Nenhum alerta encontrado</p>
-            </CardContent>
-          </Card>
+          <div className="flex justify-center w-full">
+            <Card className="w-full max-w-2xl">
+              <CardContent className="!p-0 flex items-center justify-center min-h-[150px]">
+                <p className="text-gray-500">Nenhum alerta encontrado</p>
+              </CardContent>
+            </Card>
+          </div>
         ) : (
           <>
             {paginatedAlertas.map((alerta) => (
@@ -317,6 +462,8 @@ export default function AlertasList() {
                 isSelected={selectedIds.has(alerta.id)}
                 onSelect={handleSelect}
                 onMarkAsResolved={handleMarkAsResolved}
+                onReopen={handleReopen}
+                onDelete={handleDelete}
               />
             ))}
 

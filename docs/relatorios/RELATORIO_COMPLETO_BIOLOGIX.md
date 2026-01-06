@@ -35,8 +35,8 @@ Realizei uma verificação completa da conexão com a API Biologix e identifique
 - **Total:** 268 pacientes
 - **Com `biologix_id`:** 267 pacientes (99.6%)
 - **Sem `biologix_id`:** 1 paciente (0.4%) ⚠️
-  - Nome: Juliana Kagan Reis
-  - CPF: 09218264788
+  - Nome: [Paciente Exemplo]
+  - CPF: [CPF fictício para exemplo]
   - Criado: 2025-11-28 (será atualizado na próxima sincronização)
 
 ### 3. Sincronização Diária
