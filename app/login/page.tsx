@@ -48,13 +48,13 @@ export default function LoginPage() {
     const checkUser = async () => {
       const supabase = createClient()
       
-      // Check if there's an authorization error in URL FIRST
-      // This prevents redirect loops when user is authenticated but not authorized
+      // Get error param first
       const errorParam = searchParams.get('error')
+      
+      // If there's an error, handle it and don't redirect
       if (errorParam === 'usuario_nao_autorizado' || errorParam === 'config') {
         // Force sign out if there's an authorization error
         await supabase.auth.signOut()
-        // Don't redirect - show error message instead
         return
       }
       
@@ -67,8 +67,6 @@ export default function LoginPage() {
         await supabase.auth.signOut()
         // Wait a bit to ensure sign out completes
         await new Promise(resolve => setTimeout(resolve, 200))
-        // Force refresh session state
-        await supabase.auth.getSession()
         // Remove params from URL
         const newUrl = new URL(window.location.href)
         newUrl.searchParams.delete('logout')
@@ -77,26 +75,24 @@ export default function LoginPage() {
         return
       }
       
-      // Check if user is already logged in (with fresh check)
-      // Only check AFTER handling errors and logout
-      const { data: { user }, error } = await supabase.auth.getUser()
-      
-      // Only redirect if user exists, no error, and no error params in URL
-      if (user && !error && !errorParam) {
-        // Double check: verify user exists in users table before redirecting
-        const { data: userData } = await supabase
-          .from('users')
-          .select('id, ativo')
-          .eq('email', user.email)
-          .single()
+      // Only check user if there's no error param
+      if (!errorParam) {
+        const { data: { user }, error } = await supabase.auth.getUser()
         
-        // Only redirect if user exists in users table and is active
-        if (userData && userData.ativo) {
-          // Use window.location instead of router to avoid client-side redirect loops
-          window.location.href = '/dashboard'
-        } else {
-          // User authenticated but not in users table - sign out
-          await supabase.auth.signOut()
+        // Only redirect if user exists and no error
+        if (user && !error) {
+          // Verify user exists in users table before redirecting
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id, ativo')
+            .eq('email', user.email)
+            .single()
+          
+          // Only redirect if user exists in users table and is active
+          if (userData && userData.ativo) {
+            // Use window.location for a full page reload to avoid loops
+            window.location.href = '/dashboard'
+          }
         }
       }
     }

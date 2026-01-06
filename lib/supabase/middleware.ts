@@ -70,7 +70,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   // If user is authenticated, fetch their role from the users table
-  if (user && user.email) {
+  // BUT: Skip this check if already on login page to avoid loops
+  if (user && user.email && !isLoginPage) {
     try {
       const { data: userData, error: userError } = await supabase
         .from('users')
@@ -81,10 +82,6 @@ export async function updateSession(request: NextRequest) {
       // Check if user exists in users table and is active
       if (userError || !userData || !userData.ativo) {
         // User not found in users table or inactive
-        // If already on login page, just allow it - don't redirect
-        if (isLoginPage) {
-          return supabaseResponse
-        }
         // Sign out the user to clear invalid session
         await supabase.auth.signOut()
         const url = request.nextUrl.clone()
@@ -110,7 +107,7 @@ export async function updateSession(request: NextRequest) {
       const requestHeaders = new Headers(request.headers)
       requestHeaders.set('x-user-role', userData.role)
       requestHeaders.set('x-user-email', user.email || '')
-
+      
       // Create new response with updated headers, preserving cookies
       const newResponse = NextResponse.next({
         request: {
