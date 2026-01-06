@@ -531,9 +531,9 @@ function PerfilPageContent() {
 export default function PerfilPage() {
   return (
     <Suspense fallback={
-      <ContentContainer>
-        <div className="text-white">Carregando...</div>
-      </ContentContainer>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-900">Carregando...</div>
+      </div>
     }>
       <PerfilPageContent />
     </Suspense>

@@ -8,6 +8,9 @@ export const metadata = {
   description: 'Visualize todas as ações realizadas no sistema',
 }
 
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
+
 export default async function LogsPage() {
   const userRole = await getUserRole()
   
