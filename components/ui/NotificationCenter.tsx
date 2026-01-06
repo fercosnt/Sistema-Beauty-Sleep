@@ -119,8 +119,9 @@ export default function NotificationCenter() {
     const interval = setInterval(fetchAlertas, 30000)
 
     // Escutar evento quando alerta é resolvido em outra página
-    const handleAlertaResolvido = (event: CustomEvent) => {
-      const { alertaId } = event.detail
+    const handleAlertaResolvido = (event: Event) => {
+      const customEvent = event as CustomEvent
+      const { alertaId } = customEvent.detail
       // Remover alerta da lista local se estiver presente
       setAlertas((prev) => {
         const alertaExiste = prev.some(a => a.id === alertaId)
@@ -136,8 +137,9 @@ export default function NotificationCenter() {
     }
 
     // Escutar evento quando alerta é reaberto em outra página
-    const handleAlertaReaberto = async (event: CustomEvent) => {
-      const { alertaId } = event.detail
+    const handleAlertaReaberto = async (event: Event) => {
+      const customEvent = event as CustomEvent
+      const { alertaId } = customEvent.detail
       
       // Buscar dados do alerta reaberto para adicionar à lista
       try {
@@ -206,13 +208,13 @@ export default function NotificationCenter() {
       fetchAlertas()
     }
 
-    window.addEventListener('alerta-resolvido', handleAlertaResolvido as EventListener)
-    window.addEventListener('alerta-reaberto', handleAlertaReaberto as EventListener)
+    window.addEventListener('alerta-resolvido', handleAlertaResolvido)
+    window.addEventListener('alerta-reaberto', handleAlertaReaberto)
 
     return () => {
       clearInterval(interval)
-      window.removeEventListener('alerta-resolvido', handleAlertaResolvido as EventListener)
-      window.removeEventListener('alerta-reaberto', handleAlertaReaberto as EventListener)
+      window.removeEventListener('alerta-resolvido', handleAlertaResolvido)
+      window.removeEventListener('alerta-reaberto', handleAlertaReaberto)
     }
   }, [])
 
