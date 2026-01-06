@@ -1,86 +1,106 @@
-# Documentação do Projeto
+# 📚 Documentação do Sistema Beauty Sleep
 
-Esta pasta contém toda a documentação do projeto organizada por categoria.
+Bem-vindo à documentação completa do Sistema Beauty Sleep.
 
-## 📁 Estrutura
+## 🗺️ Navegação Rápida
 
-### `/guias/`
-Guias de configuração, setup e uso do sistema:
-- Configuração de ambiente
-- Deploy e produção
-- Troubleshooting
-- Scripts disponíveis
+### 🚀 Para Começar
+- **[Índice Completo](INDICE_COMPLETO.md)** - Navegação por toda a documentação
+- **[Estrutura da Documentação](ESTRUTURA_DOCUMENTACAO.md)** - Como está organizada
 
-### `/relatorios/`
-Relatórios de verificação e análise:
-- Relatórios de verificação do sistema
-- Relatórios de integração Biologix
-- Resultados de testes
+### 📖 Guias Práticos
+- **[Guias de Setup](guias/setup/)** - Configuração inicial
+- **[Guias de Deploy](guias/deploy/)** - Deploy e publicação
+- **[Guias de Migrations](guias/migrations/)** - Aplicação de migrations
+- **[Troubleshooting](guias/troubleshooting/)** - Resolução de problemas
+- **[Índice Completo de Guias](guias/README.md)**
 
-### `/resumos/`
-Resumos de tarefas, correções e status:
-- Resumos de tasks completadas
-- Status de correções
-- Planos de suporte
+### 👥 Guias de Usuário
+- **[Guia do Administrador](guia-usuario/GUIA_ADMINISTRADOR.md)**
+- **[Guia da Equipe](guia-usuario/GUIA_EQUIPE_DENTISTAS.md)**
+- **[Guia da Recepção](guia-usuario/GUIA_RECEPCAO.md)**
+- **[FAQ](guia-usuario/FAQ.md)**
 
-### `/deploy/`
-Documentação específica de deploy:
-- Guias de deploy (Vercel, staging, produção)
-- Checklists
-- Configurações de ambiente
-- Monitoramento
+### 🧪 Validação e Testes
+- **[Validação Final Fase 2](validacao/VALIDACAO_FINAL_FASE2.md)**
+- **[Como Executar Validação](guias/COMO_EXECUTAR_VALIDACAO.md)**
+- **[Resultados de Testes](validacao/RESULTADOS_TESTES.md)**
 
-### `/bugs/`
-Documentação de bugs e correções:
-- Lista de bugs
-- Correções aplicadas
-- Status final
+### 🚢 Deploy
+- **[Checklist Pré-Deploy](deploy/CHECKLIST_PRE_DEPLOY.md)**
+- **[Guia de Deploy em Produção](deploy/GUIA_DEPLOY_PRODUCAO.md)**
+- **[Configurações de Ambiente](deploy/CONFIGURACOES_AMBIENTE.md)**
 
-### `/guia-usuario/`
-Guias para usuários finais:
-- Guia para Administradores
-- Guia para Equipe/Dentistas
-- Guia para Recepção
-- FAQ
+### 📊 Relatórios
+- **[Relatório Completo Biologix](relatorios/RELATORIO_COMPLETO_BIOLOGIX.md)**
+- **[Relatório de Verificação](relatorios/RELATORIO_VERIFICACAO_SISTEMA.md)**
 
-### `/handoff/`
-Documentação para handoff do projeto:
-- Templates de reunião
-- Checklist de entrega
+---
 
-### `/monitoramento/`
-Documentação de monitoramento:
-- Templates de monitoramento pós-deploy
-- Guias de acompanhamento
+## 🔍 Busca Rápida
 
-### `/treinamento/`
-Documentação de treinamento:
-- Templates de sessão de treinamento
-- Materiais de capacitação
+### Por Tarefa
 
-### `/usability-testing/`
-Documentação de testes de usabilidade:
-- Recrutamento de usuários
-- Agendamento de sessões
-- Templates de observação
-- Formulários de feedback
+**"Preciso configurar o ambiente"**
+→ [Guias de Setup](guias/setup/)
 
-### `/testes-antigos/`
-Documentação antiga de testes (arquivada):
-- Análises antigas
-- Correções de testes antigas
-- Problemas resolvidos
+**"Preciso fazer deploy"**
+→ [Guias de Deploy](guias/deploy/)
 
-## 📝 Arquivos Importantes
+**"Preciso aplicar uma migration"**
+→ [Guias de Migrations](guias/migrations/)
 
-- `SEGURANCA_AUTH.md` - Guia de segurança de autenticação
-- `README.md` (este arquivo) - Índice da documentação
+**"Estou com um erro"**
+→ [Troubleshooting](guias/troubleshooting/)
 
-## 🔍 Como Encontrar Documentação
+**"Preciso entender como usar"**
+→ [Guias de Usuário](guia-usuario/)
 
-- **Configuração inicial?** → `/guias/`
-- **Problemas de deploy?** → `/deploy/`
-- **Bugs e correções?** → `/bugs/`
-- **Guias para usuários?** → `/guia-usuario/`
-- **Testes antigos?** → `/testes-antigos/`
+---
 
+## 📁 Estrutura de Diretórios
+
+```
+docs/
+├── README.md                    # Este arquivo
+├── INDICE_COMPLETO.md          # Índice completo
+├── ESTRUTURA_DOCUMENTACAO.md   # Estrutura detalhada
+│
+├── guias/                       # Guias práticos organizados
+│   ├── README.md               # Índice de guias
+│   ├── setup/                  # Configuração
+│   ├── deploy/                 # Deploy
+│   ├── migrations/             # Migrations
+│   └── troubleshooting/        # Problemas
+│
+├── guia-usuario/               # Guias para usuários finais
+├── deploy/                     # Documentação de deploy
+├── validacao/                  # Validação e testes
+├── relatorios/                 # Relatórios técnicos
+├── resumos/                    # Resumos de tarefas
+└── arquivados/                 # Documentação antiga
+```
+
+---
+
+## 🔗 Links Relacionados
+
+- [Scripts do Sistema](../scripts/README.md)
+- [Scripts de Banco de Dados](../scripts/db/README.md)
+- [PRD Fase 2](../prd-beauty-sleep-fase2.md)
+- [Tasks Fase 2](../tasks-beauty-sleep-fase2.md)
+
+---
+
+## 📝 Contribuindo
+
+Ao adicionar nova documentação:
+
+1. Coloque na pasta apropriada
+2. Use nomes descritivos
+3. Atualize os índices relevantes
+4. Siga o padrão de formatação existente
+
+---
+
+**Última atualização:** 2025-01-XX
