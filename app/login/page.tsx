@@ -67,6 +67,14 @@ export default function LoginPage() {
         return
       }
       
+      // Check if there's an authorization error in URL
+      const errorParam = searchParams.get('error')
+      if (errorParam === 'usuario_nao_autorizado' || errorParam === 'config') {
+        // Don't redirect if there's an authorization error
+        // The error will be displayed to the user
+        return
+      }
+      
       // Check if user is already logged in (with fresh check)
       const { data: { user }, error } = await supabase.auth.getUser()
       
@@ -84,7 +92,15 @@ export default function LoginPage() {
     const messageParam = searchParams.get('message')
     if (errorParam) {
       // Traduzir mensagens de erro do Supabase para português
-      const translatedError = translateError(errorParam)
+      let translatedError = translateError(errorParam)
+      
+      // Traduzir erros específicos do sistema
+      if (errorParam === 'usuario_nao_autorizado') {
+        translatedError = 'Usuário não autorizado. Entre em contato com o administrador.'
+      } else if (errorParam === 'config') {
+        translatedError = 'Erro de configuração do servidor. Entre em contato com o suporte.'
+      }
+      
       setError(translatedError)
     }
     if (messageParam) setMessage(messageParam)

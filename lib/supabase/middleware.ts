@@ -73,10 +73,19 @@ export async function updateSession(request: NextRequest) {
 
       // Check if user exists in users table and is active
       if (userError || !userData || !userData.ativo) {
-        // User not found in users table or inactive - redirect to login
+        // User not found in users table or inactive
+        // If already on login page, allow it to show the error
+        // Otherwise, redirect to login with error
+        if (request.nextUrl.pathname.startsWith('/login')) {
+          // Already on login page, allow it to proceed
+          // The login page will handle showing the error message
+          return supabaseResponse
+        }
+        // Sign out the user to clear invalid session
+        await supabase.auth.signOut()
         const url = request.nextUrl.clone()
         url.pathname = '/login'
-        url.searchParams.set('error', 'Usuário não autorizado')
+        url.searchParams.set('error', 'usuario_nao_autorizado')
         return NextResponse.redirect(url)
       }
 
