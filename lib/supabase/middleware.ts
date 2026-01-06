@@ -8,8 +8,16 @@ export async function updateSession(request: NextRequest) {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing Supabase environment variables')
-    // Instead of returning 500, redirect to login with error message
-    // This prevents the entire app from breaking
+    // Check if already on login page with error=config to avoid redirect loop
+    const isLoginPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname.startsWith('/login/')
+    const hasConfigError = request.nextUrl.searchParams.get('error') === 'config'
+    
+    // If already on login with config error, allow it to proceed
+    if (isLoginPage && hasConfigError) {
+      return supabaseResponse
+    }
+    
+    // Otherwise, redirect to login with error message
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     url.searchParams.set('error', 'config')
@@ -55,18 +63,24 @@ export async function updateSession(request: NextRequest) {
   const isRootPage = request.nextUrl.pathname === '/'
   
   if (!user || authError) {
-    // If already on login, auth callback, or root page, allow it
+    // If already on login, auth callback, or root page, ALWAYS allow it - no redirects
     if (isLoginPage || isAuthCallback || isRootPage) {
       return supabaseResponse
     }
-    // Otherwise, redirect to login
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    // Only add session_expired if not already present
-    if (!url.searchParams.has('session_expired')) {
-      url.searchParams.set('session_expired', 'true')
+    // Only redirect if NOT already on login/auth/root
+    // Check if already redirecting to avoid loops
+    const currentPath = request.nextUrl.pathname
+    if (currentPath !== '/login') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      // Only add session_expired if not already present and not already redirecting
+      if (!url.searchParams.has('session_expired') && !url.searchParams.has('error')) {
+        url.searchParams.set('session_expired', 'true')
+      }
+      return NextResponse.redirect(url)
     }
-    return NextResponse.redirect(url)
+    // If already going to login, just allow it
+    return supabaseResponse
   }
 
   // If user is authenticated, fetch their role from the users table
