@@ -30,14 +30,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let userRole: string | null = null;
-  
-  try {
-    userRole = await getUserRole();
-  } catch (error) {
-    console.error('Error getting user role in layout:', error);
-    // Continue with null role - will show children without sidebar
-  }
+  const userRole = await getUserRole();
 
   return (
     <html lang="pt-BR" className={userRole === 'admin' ? 'theme-admin' : 'theme-equipe'}>
