@@ -49,13 +49,14 @@ export async function updateSession(request: NextRequest) {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
   // Protect routes - redirect to login if not authenticated
-  // Allow access to login and auth callback routes
-  const isLoginPage = request.nextUrl.pathname.startsWith('/login')
+  // Allow access to login, auth callback, and root page (which handles its own redirect)
+  const isLoginPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname.startsWith('/login/')
   const isAuthCallback = request.nextUrl.pathname.startsWith('/auth')
+  const isRootPage = request.nextUrl.pathname === '/'
   
   if (!user || authError) {
-    // If already on login or auth callback page, allow it
-    if (isLoginPage || isAuthCallback) {
+    // If already on login, auth callback, or root page, allow it
+    if (isLoginPage || isAuthCallback || isRootPage) {
       return supabaseResponse
     }
     // Otherwise, redirect to login
@@ -80,16 +81,9 @@ export async function updateSession(request: NextRequest) {
       // Check if user exists in users table and is active
       if (userError || !userData || !userData.ativo) {
         // User not found in users table or inactive
-        // If already on login page with error, allow it to proceed
-        if (isLoginPage && request.nextUrl.searchParams.has('error')) {
-          // Already on login page with error, allow it to proceed
-          return supabaseResponse
-        }
-        // If already on login page without error, add error param
+        // If already on login page, just allow it - don't redirect
         if (isLoginPage) {
-          const url = request.nextUrl.clone()
-          url.searchParams.set('error', 'usuario_nao_autorizado')
-          return NextResponse.redirect(url)
+          return supabaseResponse
         }
         // Sign out the user to clear invalid session
         await supabase.auth.signOut()

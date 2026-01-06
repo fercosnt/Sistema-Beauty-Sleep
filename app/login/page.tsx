@@ -92,7 +92,8 @@ export default function LoginPage() {
         
         // Only redirect if user exists in users table and is active
         if (userData && userData.ativo) {
-          router.push('/dashboard')
+          // Use window.location instead of router to avoid client-side redirect loops
+          window.location.href = '/dashboard'
         } else {
           // User authenticated but not in users table - sign out
           await supabase.auth.signOut()
