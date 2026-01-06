@@ -90,13 +90,19 @@ CREATE POLICY "Admin can delete alertas"
 -- ============================================
 -- 5. Create trigger to update updated_at
 -- ============================================
+-- NOTE: This function will be fixed in migration 019 to set search_path = public
+-- for security compliance. The fix is applied separately to avoid breaking existing
+-- deployments that may have already applied this migration.
 CREATE OR REPLACE FUNCTION update_alertas_updated_at()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
 BEGIN
-  NEW.updated_at = NOW();
+  NEW.updated_at := NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER trigger_update_alertas_updated_at
   BEFORE UPDATE ON alertas
