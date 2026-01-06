@@ -8,10 +8,12 @@ export async function updateSession(request: NextRequest) {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing Supabase environment variables')
-    return NextResponse.json(
-      { error: 'Server configuration error' },
-      { status: 500 }
-    )
+    // Instead of returning 500, redirect to login with error message
+    // This prevents the entire app from breaking
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.searchParams.set('error', 'config')
+    return NextResponse.redirect(url)
   }
 
   let supabaseResponse = NextResponse.next({
