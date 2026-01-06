@@ -2,13 +2,25 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // Check if environment variables are set
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Missing Supabase environment variables')
+    return NextResponse.json(
+      { error: 'Server configuration error' },
+      { status: 500 }
+    )
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -49,51 +61,57 @@ export async function updateSession(request: NextRequest) {
   }
 
   // If user is authenticated, fetch their role from the users table
-  if (user) {
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role, ativo')
-      .eq('email', user.email)
-      .single()
+  if (user && user.email) {
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('role, ativo')
+        .eq('email', user.email)
+        .single()
 
-    // Check if user exists in users table and is active
-    if (!userData || !userData.ativo) {
-      // User not found in users table or inactive - redirect to login
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      url.searchParams.set('error', 'Usuário não autorizado')
-      return NextResponse.redirect(url)
+      // Check if user exists in users table and is active
+      if (userError || !userData || !userData.ativo) {
+        // User not found in users table or inactive - redirect to login
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('error', 'Usuário não autorizado')
+        return NextResponse.redirect(url)
+      }
+
+      // Role-based access control: Admin-only routes
+      const adminOnlyRoutes = ['/usuarios', '/logs']
+      const isAdminRoute = adminOnlyRoutes.some(route => 
+        request.nextUrl.pathname.startsWith(route)
+      )
+
+      if (isAdminRoute && userData.role !== 'admin') {
+        // Non-admin trying to access admin route - redirect to dashboard
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
+      }
+
+      // Add user role to request headers for use in components
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set('x-user-role', userData.role)
+      requestHeaders.set('x-user-email', user.email || '')
+
+      // Create new response with updated headers, preserving cookies
+      const newResponse = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      })
+      // Copy cookies from original response
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        newResponse.cookies.set(cookie.name, cookie.value, cookie)
+      })
+      supabaseResponse = newResponse
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+      // On error, allow request to proceed but without role headers
+      // This prevents middleware from breaking the entire app
     }
-
-    // Role-based access control: Admin-only routes
-    const adminOnlyRoutes = ['/usuarios', '/logs']
-    const isAdminRoute = adminOnlyRoutes.some(route => 
-      request.nextUrl.pathname.startsWith(route)
-    )
-
-    if (isAdminRoute && userData.role !== 'admin') {
-      // Non-admin trying to access admin route - redirect to dashboard
-      const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
-      return NextResponse.redirect(url)
-    }
-
-    // Add user role to request headers for use in components
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('x-user-role', userData.role)
-    requestHeaders.set('x-user-email', user.email || '')
-
-    // Create new response with updated headers, preserving cookies
-    const newResponse = NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
-    // Copy cookies from original response
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      newResponse.cookies.set(cookie.name, cookie.value, cookie)
-    })
-    supabaseResponse = newResponse
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
