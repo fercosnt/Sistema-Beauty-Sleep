@@ -50,7 +50,7 @@ Antes de configurar os secrets, certifique-se de que você tem:
 2. **Execute o script:**
 
    ```bash
-   npx tsx scripts/setup-cron-secrets.ts
+   npx tsx scripts/utils/setup-cron-secrets.ts
    ```
 
    O script irá:
@@ -66,10 +66,10 @@ Se você já fez login no Supabase CLI:
 npx supabase login
 
 # Executar SQL diretamente
-npx supabase db execute --file scripts/setup-cron-secrets.sql
+npx supabase db execute --file scripts/db/manutencao/setup-cron-secrets.sql
 ```
 
-**Nota:** Você precisará editar `scripts/setup-cron-secrets.sql` e substituir `[YOUR_PROJECT_URL]` e `[YOUR_ANON_KEY]` pelos valores reais antes de executar.
+**Nota:** Você precisará editar `scripts/db/manutencao/setup-cron-secrets.sql` e substituir `[YOUR_PROJECT_URL]` e `[YOUR_ANON_KEY]` pelos valores reais antes de executar.
 
 ## ✅ Verificação
 

@@ -10,10 +10,11 @@ scripts/
 │   ├── migrations/  # Aplicação de migrations
 │   ├── verificacao/ # Verificações de estrutura
 │   ├── debug/       # Scripts temporários de debug
-│   ├── testes/      # Scripts de teste
+│   ├── testes/      # Scripts de teste SQL
 │   └── manutencao/  # Manutenção rotineira
 ├── test/            # Scripts de teste TypeScript/JavaScript
 ├── deploy/          # Scripts de deploy
+├── utils/           # Scripts utilitários
 └── data/            # Dados e CSVs
 ```
 
@@ -78,35 +79,15 @@ Scripts para preparar e fazer deploy.
 
 ---
 
-## 🔄 Scripts de Sincronização
+## 🔧 Scripts Utilitários (`utils/`)
 
-Scripts relacionados à sincronização com Biologix.
+Ver **[scripts/utils/README.md](utils/README.md)** para documentação completa.
 
-- `invoke-sync-biologix.ts` - Invocar sincronização manualmente
-- `migrate-from-airtable.ts` - Migrar dados do Airtable
-- `monitor-sync-logs.ts` - Monitorar logs de sincronização
-- `monitor-cron-execution.ts` - Monitorar execução de cron jobs
-
----
-
-## 👥 Scripts de Usuários
-
-Scripts para gerenciar usuários.
-
-- `create-test-users.ts` - Criar usuários de teste
-- `delete-test-users.ts` - Deletar usuários de teste
-- `fix-test-user-id.ts` - Corrigir ID de usuário de teste
-
----
-
-## ⚙️ Scripts de Configuração
-
-Scripts para configurar o ambiente.
-
-- `setup-cron-secrets.ts` - Configurar secrets para cron jobs
-- `apply-cron-secrets.ts` - Aplicar secrets de cron
-- `apply-cron-secrets-mcp.ts` - Aplicar secrets via MCP
-- `test-env-loading.js` - Testar carregamento de variáveis de ambiente
+Scripts auxiliares para operações diversas:
+- Sincronização (invoke-sync, migrate, monitor)
+- Usuários (create, delete, fix)
+- Configuração (setup, apply)
+- Utilitários diversos
 
 ---
 
@@ -117,16 +98,6 @@ Diretório com dados e CSVs.
 - `data/airtable/` - Dados exportados do Airtable
 - `data/invalid/` - Dados inválidos encontrados
 - `data/validation/` - Relatórios de validação
-
----
-
-## 🛠️ Scripts Utilitários
-
-Scripts auxiliares diversos.
-
-- `organizar-documentacao.ps1` - Organizar documentação
-- `sync-migrations.ps1` - Sincronizar migrations
-- `send-daily-update.ts` - Enviar atualização diária
 
 ---
 
@@ -161,7 +132,7 @@ Execute no **Supabase SQL Editor**:
 ## 🔍 Busca Rápida
 
 **Preciso testar alertas:**
-→ `test-alertas-*.ts`
+→ `scripts/test/test-alertas-*.ts`
 
 **Preciso verificar o banco:**
 → `scripts/db/verificacao/`
@@ -170,7 +141,10 @@ Execute no **Supabase SQL Editor**:
 → `scripts/deploy/`
 
 **Preciso sincronizar dados:**
-→ `invoke-sync-biologix.ts` ou `migrate-from-airtable.ts`
+→ `scripts/utils/invoke-sync-biologix.ts` ou `scripts/utils/migrate-from-airtable.ts`
+
+**Preciso scripts utilitários:**
+→ `scripts/utils/`
 
 ---
 

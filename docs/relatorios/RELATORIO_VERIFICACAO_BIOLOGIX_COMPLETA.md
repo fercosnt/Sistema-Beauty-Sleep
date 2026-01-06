@@ -179,7 +179,7 @@ LIMIT 1;
 Foi criado um script de verificação completa:
 
 ```bash
-tsx scripts/test-biologix-sync-complete.ts
+tsx scripts/test/test-biologix-sync-complete.ts
 ```
 
 Este script verifica:

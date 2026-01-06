@@ -112,7 +112,7 @@ Testes automatizados foram executados para validar as funcionalidades implementa
 
 ```bash
 # Executar testes automatizados
-npx tsx scripts/test-fase2-components.ts
+npx tsx scripts/test/test-fase2-components.ts
 ```
 
 **Resultado esperado:**

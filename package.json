@@ -15,10 +15,10 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:complete": "playwright test --grep e2e",
     "test:e2e:flow": "playwright test e2e/complete-flow",
-    "monitor:sync": "tsx scripts/monitor-sync-logs.ts",
-    "monitor": "tsx scripts/monitor-sync-logs.ts",
-    "deploy:check": "tsx scripts/check-deploy-readiness.ts",
-    "deploy:prepare": "tsx scripts/prepare-production-deploy.ts"
+    "monitor:sync": "tsx scripts/utils/monitor-sync-logs.ts",
+    "monitor": "tsx scripts/utils/monitor-sync-logs.ts",
+    "deploy:check": "tsx scripts/deploy/check-deploy-readiness.ts",
+    "deploy:prepare": "tsx scripts/deploy/prepare-production-deploy.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

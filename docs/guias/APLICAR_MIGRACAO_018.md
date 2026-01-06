@@ -55,7 +55,7 @@ Se ambos retornarem resultados, a migração foi aplicada com sucesso! ✅
 Após aplicar a migração, você pode testar executando:
 
 ```powershell
-npx tsx scripts/test-cleanup-alertas.ts
+npx tsx scripts/test/test-cleanup-alertas.ts
 ```
 
 Ou testar diretamente no SQL Editor:

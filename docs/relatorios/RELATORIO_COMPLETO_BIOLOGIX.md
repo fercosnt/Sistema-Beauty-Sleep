@@ -130,7 +130,7 @@ if (!pacienteByCpf.biologix_id) {
 ### Arquivos Criados
 1. ✅ `docs/DIAGNOSTICO_CONEXAO_BIOLOGIX.md` - Diagnóstico completo
 2. ✅ `docs/RESUMO_CORRECOES_BIOLOGIX.md` - Resumo das correções
-3. ✅ `scripts/test-biologix-connection.ts` - Script de teste (opcional)
+3. ✅ `scripts/test/test-biologix-connection.ts` - Script de teste (opcional)
 4. ✅ `RELATORIO_COMPLETO_BIOLOGIX.md` - Este relatório
 
 ---
@@ -229,7 +229,7 @@ curl -X POST https://[PROJECT_REF].supabase.co/functions/v1/sync-biologix \
 
 ### Opção 3: Via Script TypeScript
 ```bash
-tsx scripts/test-biologix-connection.ts
+tsx scripts/test/test-biologix-connection.ts
 ```
 
 ---

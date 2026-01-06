@@ -95,7 +95,7 @@ curl -X POST \
 ```bash
 npm run monitor
 # ou
-npx tsx scripts/monitor-sync-logs.ts
+npx tsx scripts/utils/monitor-sync-logs.ts
 ```
 
 Este script mostra:

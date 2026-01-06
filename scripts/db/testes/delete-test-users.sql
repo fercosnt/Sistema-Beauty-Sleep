@@ -150,7 +150,7 @@ WHERE ativo = false
 -- 3. Clique nos 3 pontos (...) → Delete user
 --
 -- OPÇÃO 2: Via API Admin (Programático)
--- Use o script TypeScript em scripts/delete-test-users.ts
+-- Use o script TypeScript em scripts/test/delete-test-users.ts
 --
 -- OPÇÃO 3: Via SQL (Apenas se tiver permissões service_role)
 -- Descomente a PARTE 2 acima e execute

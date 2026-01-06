@@ -283,7 +283,7 @@ ORDER BY created_at DESC;
 - [ ] Verificar responsividade em mobile
 
 **Como testar:**
-1. Criar alguns alertas de teste (usar script `scripts/criar-alerta-teste.ts`)
+1. Criar alguns alertas de teste (usar script `scripts/test/criar-alerta-teste.ts`)
 2. Acessar qualquer página do sistema
 3. Verificar se ícone de notificação aparece no header
 4. Clicar no ícone e verificar dropdown
@@ -459,12 +459,12 @@ Implementação completa do sistema de alertas e notificações (Fase 2)
 
 ### Script para criar alertas de teste
 ```bash
-npx tsx scripts/criar-alerta-teste.ts
+npx tsx scripts/test/criar-alerta-teste.ts
 ```
 
 ### Script para verificar sistema
 ```bash
-npx tsx scripts/verify-system.ts
+npx tsx scripts/test/verify-system.ts
 ```
 
 ### Query SQL para verificar alertas

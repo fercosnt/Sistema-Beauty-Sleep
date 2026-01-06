@@ -10,7 +10,9 @@ docs/guias/
 ├── deploy/             # Deploy e publicação
 ├── migrations/         # Aplicação de migrations
 ├── troubleshooting/    # Resolução de problemas
-└── [outros]           # Guias gerais
+├── desenvolvimento/    # Desenvolvimento e código
+├── testes/            # Testes e validação
+└── manutencao/        # Manutenção e monitoramento
 ```
 
 ---
@@ -75,24 +77,29 @@ Guias para resolver problemas comuns.
 
 ---
 
-## 📖 Guias Gerais
+## 💻 Desenvolvimento (`desenvolvimento/`)
 
-Guias que não se encaixam nas categorias acima.
+Guias para desenvolvimento e manutenção de código.
 
-### Desenvolvimento
-- **[GUIA_EXECUTAR_NPM.md](GUIA_EXECUTAR_NPM.md)** - Como executar comandos npm
-- **[GUIA_MIGRACAO_AIRTABLE.md](GUIA_MIGRACAO_AIRTABLE.md)** - Migrar dados do Airtable
-- **[GUIA_ATUALIZAR_MODAL_NOVO_PACIENTE.md](GUIA_ATUALIZAR_MODAL_NOVO_PACIENTE.md)** - Atualizar modal de novo paciente
+- **[GUIA_EXECUTAR_NPM.md](desenvolvimento/GUIA_EXECUTAR_NPM.md)** - Como executar comandos npm
+- **[GUIA_MIGRACAO_AIRTABLE.md](desenvolvimento/GUIA_MIGRACAO_AIRTABLE.md)** - Migrar dados do Airtable
+- **[GUIA_ATUALIZAR_MODAL_NOVO_PACIENTE.md](desenvolvimento/GUIA_ATUALIZAR_MODAL_NOVO_PACIENTE.md)** - Atualizar modal de novo paciente
 
-### Testes e Validação
-- **[COMO_EXECUTAR_VALIDACAO.md](COMO_EXECUTAR_VALIDACAO.md)** - Como executar validação
-- **[GUIA_TESTE_PROTECAO_ROTAS.md](GUIA_TESTE_PROTECAO_ROTAS.md)** - Testar proteção de rotas
-- **[GUIA_TESTES_USABILIDADE.md](GUIA_TESTES_USABILIDADE.md)** - Testes de usabilidade
+## 🧪 Testes (`testes/`)
 
-### Monitoramento e Manutenção
-- **[GUIA_MONITORAMENTO.md](GUIA_MONITORAMENTO.md)** - Monitorar o sistema
-- **[SCRIPTS_DISPONIVEIS.md](SCRIPTS_DISPONIVEIS.md)** - Lista de scripts disponíveis
-- **[LIMPEZA_ARQUIVOS_LOG.md](LIMPEZA_ARQUIVOS_LOG.md)** - Limpar arquivos de log
+Guias para testes e validação.
+
+- **[COMO_EXECUTAR_VALIDACAO.md](testes/COMO_EXECUTAR_VALIDACAO.md)** - Como executar validação
+- **[GUIA_TESTE_PROTECAO_ROTAS.md](testes/GUIA_TESTE_PROTECAO_ROTAS.md)** - Testar proteção de rotas
+- **[GUIA_TESTES_USABILIDADE.md](testes/GUIA_TESTES_USABILIDADE.md)** - Testes de usabilidade
+
+## 🔧 Manutenção (`manutencao/`)
+
+Guias para manutenção e monitoramento.
+
+- **[GUIA_MONITORAMENTO.md](manutencao/GUIA_MONITORAMENTO.md)** - Monitorar o sistema
+- **[SCRIPTS_DISPONIVEIS.md](manutencao/SCRIPTS_DISPONIVEIS.md)** - Lista de scripts disponíveis
+- **[LIMPEZA_ARQUIVOS_LOG.md](manutencao/LIMPEZA_ARQUIVOS_LOG.md)** - Limpar arquivos de log
 
 ---
 
@@ -111,6 +118,15 @@ Guias que não se encaixam nas categorias acima.
 
 **Estou com um problema:**
 → Veja [Troubleshooting](#-troubleshooting-troubleshooting)
+
+**Preciso desenvolver/alterar código:**
+→ Veja [Desenvolvimento](#-desenvolvimento-desenvolvimento)
+
+**Preciso testar/validar:**
+→ Veja [Testes](#-testes-testes)
+
+**Preciso fazer manutenção:**
+→ Veja [Manutenção](#-manutencao-manutencao)
 
 ---
 

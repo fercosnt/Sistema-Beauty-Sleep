@@ -252,13 +252,13 @@ async function main() {
   // Próximos passos
   console.log('\n📝 PRÓXIMOS PASSOS PARA TESTES MANUAIS:')
   console.log('\n1. Criar alertas de teste:')
-  console.log('   npx tsx scripts/criar-alerta-teste.ts')
+  console.log('   npx tsx scripts/test/criar-alerta-teste.ts')
   console.log('\n2. Testar alertas críticos:')
-  console.log('   npx tsx scripts/test-alertas-criticos.ts')
+  console.log('   npx tsx scripts/test/test-alertas-criticos.ts')
   console.log('\n3. Testar alertas de manutenção:')
-  console.log('   npx tsx scripts/test-alertas-manutencao.ts')
+  console.log('   npx tsx scripts/test/test-alertas-manutencao.ts')
   console.log('\n4. Testar todos os alertas:')
-  console.log('   npx tsx scripts/test-todos-alertas.ts')
+  console.log('   npx tsx scripts/test/test-todos-alertas.ts')
   console.log('\n5. Acessar /alertas no navegador para testar UI')
   console.log('\n6. Verificar centro de notificações no header')
   

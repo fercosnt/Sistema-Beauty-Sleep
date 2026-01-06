@@ -13,7 +13,7 @@ ERROR: cross-database references are not implemented: extensions.net.http_post
 
 **Execute este script SQL no Supabase:**
 1. Abra: https://supabase.com/dashboard/project/qigbblypwkgflwnrrhzg/sql/new
-2. Copie e cole o conteúdo de `scripts/fix-cron-job.sql`
+2. Copie e cole o conteúdo de `scripts/db/debug/fix-cron-job.sql`
 3. Execute o script
 
 Ou copie e cole diretamente:
@@ -73,7 +73,7 @@ $$;
 Execute o script de diagnóstico:
 
 ```bash
-npx tsx scripts/diagnostico-sync-exames.ts
+npx tsx scripts/test/diagnostico-sync-exames.ts
 ```
 
 Este script fornecerá comandos SQL para verificar cada componente do sistema.
@@ -133,7 +133,7 @@ WHERE name IN ('project_url', 'anon_key');
 **Se faltar algum secret**, execute:
 
 ```bash
-npx tsx scripts/setup-cron-secrets.ts
+npx tsx scripts/utils/setup-cron-secrets.ts
 ```
 
 Ou configure manualmente:
@@ -186,7 +186,7 @@ LIMIT 5;
 
 **Sintoma:** Status `failed` com mensagem: `ERROR: cross-database references are not implemented: extensions.net.http_post`
 
-**Solução:** Execute o script `scripts/fix-cron-job.sql` no SQL Editor do Supabase.
+**Solução:** Execute o script `scripts/db/debug/fix-cron-job.sql` no SQL Editor do Supabase.
 
 Este é o erro mais comum e ocorre quando o `pg_net` foi movido para o schema `extensions`, mas o `pg_cron` não consegue acessar funções de outros schemas diretamente.
 
@@ -208,7 +208,7 @@ SELECT cron.alter_job(
 
 **Solução:**
 ```bash
-npx tsx scripts/setup-cron-secrets.ts
+npx tsx scripts/utils/setup-cron-secrets.ts
 ```
 
 ### Problema 3: Secrets da Biologix Não Configurados

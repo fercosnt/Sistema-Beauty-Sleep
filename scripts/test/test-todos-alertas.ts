@@ -40,19 +40,19 @@ async function main() {
   // 1. Testar alertas críticos
   resultados.push({
     nome: 'Alertas Críticos',
-    sucesso: await executarScript('scripts/test-alertas-criticos.ts', 'Testando Alertas Críticos (via sync)')
+    sucesso: await executarScript('scripts/test/test-alertas-criticos.ts', 'Testando Alertas Críticos (via sync)')
   })
 
   // 2. Testar alertas de manutenção
   resultados.push({
     nome: 'Alertas de Manutenção',
-    sucesso: await executarScript('scripts/test-alertas-manutencao.ts', 'Testando Alertas de Manutenção (via cron)')
+    sucesso: await executarScript('scripts/test/test-alertas-manutencao.ts', 'Testando Alertas de Manutenção (via cron)')
   })
 
   // 3. Criar alertas de teste gerais
   resultados.push({
     nome: 'Alertas de Teste Gerais',
-    sucesso: await executarScript('scripts/criar-alerta-teste.ts', 'Criando Alertas de Teste Gerais')
+    sucesso: await executarScript('scripts/test/criar-alerta-teste.ts', 'Criando Alertas de Teste Gerais')
   })
 
   // Resumo final

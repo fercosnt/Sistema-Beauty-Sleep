@@ -18,7 +18,7 @@ npx tsx scripts/nome-do-script.ts
 Verifica a conexão completa com Biologix e status do sistema.
 
 ```powershell
-npx tsx scripts/test-biologix-sync-complete.ts
+npx tsx scripts/test/test-biologix-sync-complete.ts
 ```
 
 **O que faz:**
@@ -33,7 +33,7 @@ npx tsx scripts/test-biologix-sync-complete.ts
 Testa a conexão com a API Biologix.
 
 ```powershell
-npx tsx scripts/test-biologix-connection.ts
+npx tsx scripts/test/test-biologix-connection.ts
 ```
 
 ---
@@ -47,7 +47,7 @@ Scripts alternativos para testar a API Biologix (JavaScript, PowerShell, Shell).
 Verifica o sistema completo (migrations, RLS, triggers, etc).
 
 ```powershell
-npx tsx scripts/verify-system.ts
+npx tsx scripts/test/verify-system.ts
 ```
 
 ---
@@ -58,7 +58,7 @@ npx tsx scripts/verify-system.ts
 Migra dados do Airtable para o Supabase.
 
 ```powershell
-npx tsx scripts/migrate-from-airtable.ts --env=production
+npx tsx scripts/utils/migrate-from-airtable.ts --env=production
 ```
 
 **Opções:**
@@ -71,7 +71,7 @@ npx tsx scripts/migrate-from-airtable.ts --env=production
 Valida a migração após importar dados.
 
 ```powershell
-npx tsx scripts/validate-migration.ts
+npx tsx scripts/test/validate-migration.ts
 ```
 
 ---
@@ -80,7 +80,7 @@ npx tsx scripts/validate-migration.ts
 Valida a migração de sessões.
 
 ```powershell
-npx tsx scripts/validate-sessions-migration.ts
+npx tsx scripts/test/validate-sessions-migration.ts
 ```
 
 ---
@@ -91,7 +91,7 @@ npx tsx scripts/validate-sessions-migration.ts
 Configura os secrets do cron job no Supabase Vault.
 
 ```powershell
-npx tsx scripts/setup-cron-secrets.ts
+npx tsx scripts/utils/setup-cron-secrets.ts
 ```
 
 **Requer:**
@@ -104,7 +104,7 @@ npx tsx scripts/setup-cron-secrets.ts
 Aplica secrets do cron job (versões diferentes do script).
 
 ```powershell
-npx tsx scripts/apply-cron-secrets.ts
+npx tsx scripts/utils/apply-cron-secrets.ts
 ```
 
 ---
@@ -115,7 +115,7 @@ npx tsx scripts/apply-cron-secrets.ts
 Gera mensagem de atualização diária da migração.
 
 ```powershell
-npx tsx scripts/send-daily-update.ts
+npx tsx scripts/utils/send-daily-update.ts
 ```
 
 ---
@@ -124,7 +124,7 @@ npx tsx scripts/send-daily-update.ts
 Remove usuários de teste (para limpeza).
 
 ```powershell
-npx tsx scripts/delete-test-users.ts
+npx tsx scripts/test/delete-test-users.ts
 ```
 
 **⚠️ Cuidado:** Este script remove dados. Use apenas em desenvolvimento/testes.
@@ -137,7 +137,7 @@ npx tsx scripts/delete-test-users.ts
 Testa se as variáveis de ambiente estão sendo carregadas corretamente.
 
 ```powershell
-node scripts/test-env-loading.js
+node scripts/test/test-env-loading.js
 ```
 
 ---
@@ -148,27 +148,27 @@ node scripts/test-env-loading.js
 
 ```powershell
 # Verificar conexão Biologix completa
-npx tsx scripts/test-biologix-sync-complete.ts
+npx tsx scripts/test/test-biologix-sync-complete.ts
 
 # Verificar sistema completo
-npx tsx scripts/verify-system.ts
+npx tsx scripts/test/verify-system.ts
 ```
 
 ### Migrar Dados
 
 ```powershell
 # Migrar do Airtable
-npx tsx scripts/migrate-from-airtable.ts --env=production
+npx tsx scripts/utils/migrate-from-airtable.ts --env=production
 
 # Validar migração
-npx tsx scripts/validate-migration.ts
+npx tsx scripts/test/validate-migration.ts
 ```
 
 ### Configurar Cron Job
 
 ```powershell
 # Configurar secrets do cron
-npx tsx scripts/setup-cron-secrets.ts
+npx tsx scripts/utils/setup-cron-secrets.ts
 ```
 
 ---

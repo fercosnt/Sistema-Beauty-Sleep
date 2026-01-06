@@ -22,7 +22,7 @@
 
 **Como foi testado:**
 ```bash
-npx tsx scripts/test-alertas-criticos.ts
+npx tsx scripts/test/test-alertas-criticos.ts
 ```
 
 **Conclusão:** A função `sync-biologix` está criando alertas críticos corretamente quando encontra condições críticas nos exames.
@@ -44,7 +44,7 @@ npx tsx scripts/test-alertas-criticos.ts
 
 **Como foi testado:**
 ```bash
-npx tsx scripts/test-alertas-manutencao.ts
+npx tsx scripts/test/test-alertas-manutencao.ts
 ```
 
 **Conclusão:** A função `check-alerts` está funcionando corretamente. Ela verificará e criará alertas quando houver pacientes nas condições especificadas.
@@ -75,8 +75,8 @@ npx tsx scripts/test-alertas-manutencao.ts
 
 **Scripts executados:**
 ```bash
-npx tsx scripts/criar-alerta-teste.ts
-npx tsx scripts/test-alertas-criticos.ts
+npx tsx scripts/test/criar-alerta-teste.ts
+npx tsx scripts/test/test-alertas-criticos.ts
 ```
 
 ---
@@ -264,16 +264,16 @@ npx tsx scripts/test-alertas-criticos.ts
 
 ### Validação
 ```bash
-npx tsx scripts/test-validacao-final.ts        # Validação básica
-npx tsx scripts/test-validacao-completa.ts       # Validação completa
+npx tsx scripts/test/test-validacao-final.ts        # Validação básica
+npx tsx scripts/test/test-validacao-completa.ts       # Validação completa
 ```
 
 ### Testes de Alertas
 ```bash
-npx tsx scripts/criar-alerta-teste.ts            # Criar alertas de teste gerais
-npx tsx scripts/test-alertas-criticos.ts         # Testar alertas críticos
-npx tsx scripts/test-alertas-manutencao.ts       # Testar alertas de manutenção
-npx tsx scripts/test-todos-alertas.ts            # Executar todos os testes
+npx tsx scripts/test/criar-alerta-teste.ts            # Criar alertas de teste gerais
+npx tsx scripts/test/test-alertas-criticos.ts         # Testar alertas críticos
+npx tsx scripts/test/test-alertas-manutencao.ts       # Testar alertas de manutenção
+npx tsx scripts/test/test-todos-alertas.ts            # Executar todos os testes
 ```
 
 ---

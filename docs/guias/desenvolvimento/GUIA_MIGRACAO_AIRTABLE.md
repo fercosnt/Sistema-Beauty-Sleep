@@ -79,13 +79,13 @@ Antes de executar a migração, verifique:
 ### Em Staging (Recomendado primeiro)
 
 ```bash
-npx tsx scripts/migrate-from-airtable.ts --env=staging
+npx tsx scripts/utils/migrate-from-airtable.ts --env=staging
 ```
 
 ### Em Produção (Após validação)
 
 ```bash
-npx tsx scripts/migrate-from-airtable.ts --env=production
+npx tsx scripts/utils/migrate-from-airtable.ts --env=production
 ```
 
 ## 📊 O que o Script Faz
@@ -123,7 +123,7 @@ npx tsx scripts/migrate-from-airtable.ts --env=production
 Após executar o script, execute o script de validação:
 
 ```bash
-npx tsx scripts/validate-migration.ts --env=staging
+npx tsx scripts/test/validate-migration.ts --env=staging
 ```
 
 Isso verificará:

@@ -68,6 +68,6 @@ cat .env.local
 Após configurar o `.env.local`, execute novamente:
 
 ```bash
-npx tsx scripts/migrate-from-airtable.ts --env=staging
+npx tsx scripts/utils/migrate-from-airtable.ts --env=staging
 ```
 

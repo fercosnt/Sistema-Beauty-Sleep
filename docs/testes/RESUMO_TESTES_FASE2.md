@@ -125,10 +125,10 @@
 npm test
 
 # Testes de funcionalidade Fase 2
-npx tsx scripts/test-fase2-components.ts
+npx tsx scripts/test/test-fase2-components.ts
 
 # Teste completo (validação de arquivos e código)
-npx tsx scripts/test-fase2-completo.ts
+npx tsx scripts/test/test-fase2-completo.ts
 ```
 
 ---

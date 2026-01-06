@@ -17,7 +17,7 @@ npm run monitor:sync
 ### Opção 2: Execução Direta
 
 ```powershell
-npx tsx scripts/monitor-sync-logs.ts
+npx tsx scripts/utils/monitor-sync-logs.ts
 ```
 
 ---
@@ -161,9 +161,9 @@ npx tsx scripts/monitor-sync-logs.ts
 
 ## 🔗 Links Relacionados
 
-- **Script de verificação completa:** `npx tsx scripts/test-biologix-sync-complete.ts`
-- **Teste de conexão:** `npx tsx scripts/test-biologix-connection.ts`
-- **Verificação do sistema:** `npx tsx scripts/verify-system.ts`
+- **Script de verificação completa:** `npx tsx scripts/test/test-biologix-sync-complete.ts`
+- **Teste de conexão:** `npx tsx scripts/test/test-biologix-connection.ts`
+- **Verificação do sistema:** `npx tsx scripts/test/verify-system.ts`
 
 ---
 

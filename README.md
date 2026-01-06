@@ -120,23 +120,23 @@ Acesse [http://localhost:3000](http://localhost:3000)
 
 ### Configuração
 
-- [`CONFIGURAR_ENV_LOCAL.md`](./CONFIGURAR_ENV_LOCAL.md) - Como configurar o arquivo `.env.local`
-- [`CONFIGURACAO_BIOLOGIX.md`](./CONFIGURACAO_BIOLOGIX.md) - Configuração da API Biologix
-- [`SETUP_CRON_SECRETS.md`](./SETUP_CRON_SECRETS.md) - Configuração dos secrets do cron job
+- [`CONFIGURAR_ENV_LOCAL.md`](./docs/guias/setup/CONFIGURAR_ENV_LOCAL.md) - Como configurar o arquivo `.env.local`
+- [`CONFIGURACAO_BIOLOGIX.md`](./docs/guias/setup/CONFIGURACAO_BIOLOGIX.md) - Configuração da API Biologix
+- [`SETUP_CRON_SECRETS.md`](./docs/guias/deploy/SETUP_CRON_SECRETS.md) - Configuração dos secrets do cron job
 
 ### Deploy e Operação
 
-- [`DEPLOY_EDGE_FUNCTION.md`](./DEPLOY_EDGE_FUNCTION.md) - Deploy da Edge Function de sincronização
-- [`CRON_JOB_MONITORAMENTO.md`](./CRON_JOB_MONITORAMENTO.md) - Monitoramento do cron job
-- [`TROUBLESHOOTING_EDGE_FUNCTION.md`](./TROUBLESHOOTING_EDGE_FUNCTION.md) - Solução de problemas
+- [`DEPLOY_EDGE_FUNCTION.md`](./docs/guias/deploy/DEPLOY_EDGE_FUNCTION.md) - Deploy da Edge Function de sincronização
+- [`CRON_JOB_MONITORAMENTO.md`](./docs/guias/deploy/CRON_JOB_MONITORAMENTO.md) - Monitoramento do cron job
+- [`TROUBLESHOOTING_EDGE_FUNCTION.md`](./docs/guias/troubleshooting/TROUBLESHOOTING_EDGE_FUNCTION.md) - Solução de problemas
 
 ### Migração
 
-- [`GUIA_MIGRACAO_AIRTABLE.md`](./GUIA_MIGRACAO_AIRTABLE.md) - Guia de migração do Airtable
+- [`GUIA_MIGRACAO_AIRTABLE.md`](./docs/guias/desenvolvimento/GUIA_MIGRACAO_AIRTABLE.md) - Guia de migração do Airtable
 
 ### Scripts de Teste
 
-- [`scripts/README_TESTE_API.md`](./scripts/README_TESTE_API.md) - Scripts para testar a API Biologix
+- [`scripts/test/README_TESTE_API.md`](./scripts/test/README_TESTE_API.md) - Scripts para testar a API Biologix
 
 ## 🧪 Scripts Disponíveis
 
@@ -173,19 +173,19 @@ npx playwright test --ui
 
 ```bash
 # Node.js
-node scripts/test-biologix-api.js
+node scripts/test/test-biologix-api.js
 
 # PowerShell (Windows)
-powershell -ExecutionPolicy Bypass -File .\scripts\test-biologix-api.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\utils\test-biologix-api.ps1
 
 # Bash (Linux/Mac)
-bash scripts/test-biologix-api.sh
+bash scripts/utils/test-biologix-api.sh
 ```
 
 ### Validação de Variáveis
 
 ```bash
-node scripts/test-env-loading.js
+node scripts/test/test-env-loading.js
 ```
 
 ## 🏗️ Estrutura do Projeto

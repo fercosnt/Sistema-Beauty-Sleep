@@ -38,7 +38,7 @@ SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
 No terminal, na raiz do projeto, execute:
 
 ```powershell
-npx tsx scripts/test-validacao-final.ts
+npx tsx scripts/test/test-validacao-final.ts
 ```
 
 ## ✅ O que o script faz:

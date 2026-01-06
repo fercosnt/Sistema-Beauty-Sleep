@@ -88,7 +88,7 @@ async function main() {
   console.log('   WHERE name IN (\'project_url\', \'anon_key\');');
   console.log('');
   console.log('   ⚠️  Se faltar algum secret, execute:');
-  console.log('   npx tsx scripts/setup-cron-secrets.ts');
+  console.log('   npx tsx scripts/utils/setup-cron-secrets.ts');
   console.log('');
   console.log('   Ou configure manualmente:');
   console.log('   SELECT vault.create_secret(\'project_url\', \'https://seu-projeto.supabase.co\');');
