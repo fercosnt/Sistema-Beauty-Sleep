@@ -118,3 +118,19 @@ scripts/*-remover-*.sql
 # docs/relatorios/RESULTADO_FINAL_SUCESSO.md
 # docs/relatorios/RELATORIO_COMPLETO_BIOLOGIX.md
 
+# Relatórios de segurança e fragilidades do sistema (não subir para GitHub)
+docs/SEGURANCA_VAZAMENTOS_RELATORIO.md
+docs/SEGURANCA_ACAO_IMEDIATA.md
+docs/SEGURANCA_REVISAO_COMPLETA.md
+docs/SEGURANCA_RESUMO_EXECUTIVO.md
+
+# Relatórios de bugs e problemas do sistema (não subir para GitHub)
+docs/bugs/BUGS_POST_LAUNCH.md
+docs/bugs/CORRECOES_BUGS_CRITICOS.md
+docs/bugs/CORRECOES_APLICADAS.md
+docs/bugs/LISTA_TAREFAS_BUGS.md
+docs/bugs/REEXECUCAO_TESTES.md
+docs/bugs/RESUMO_CORRECOES_COMPLETO.md
+docs/bugs/REVISAO_BUGS_TESTES.md
+docs/bugs/STATUS_FINAL_BUGS.md
+
