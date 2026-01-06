@@ -106,16 +106,7 @@ function LoginPageContent() {
       if (errorParam === 'usuario_nao_autorizado') {
         translatedError = 'Usuário não autorizado. Entre em contato com o administrador.'
       } else if (errorParam === 'config') {
-        // Only show config error if env vars are actually missing in production
-        const hasEnvVars = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        if (hasEnvVars) {
-          // If env vars exist, it's a real config error
-          translatedError = 'Erro de configuração do servidor. Entre em contato com o suporte.'
-        } else {
-          // During build or when env vars are missing, don't show error
-          // The page will work fine once env vars are configured in Vercel
-          return // Don't set error
-        }
+        translatedError = 'Erro de configuração do servidor. Entre em contato com o suporte.'
       }
       
       setError(translatedError)
