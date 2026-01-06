@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { login, resetPassword } from './actions'
 import { createClient } from '@/lib/supabase/client'
@@ -35,7 +35,7 @@ function translateError(error: string): string {
   return error
 }
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
@@ -48,40 +48,33 @@ export default function LoginPage() {
     const checkUser = async () => {
       const supabase = createClient()
       
-      // Get error param first
+      // Get all URL params
       const errorParam = searchParams.get('error')
-      
-      // If there's an error, handle it and don't redirect
-      if (errorParam === 'usuario_nao_autorizado' || errorParam === 'config') {
-        // Force sign out if there's an authorization error
-        await supabase.auth.signOut()
-        return
-      }
-      
-      // If logout parameter is present, force sign out first
       const logoutParam = searchParams.get('logout')
       const sessionExpired = searchParams.get('session_expired')
       
-      if (logoutParam === 'true' || sessionExpired === 'true') {
-        // Ensure complete sign out
+      // If there's ANY error or session param, handle it and DON'T redirect
+      if (errorParam || logoutParam === 'true' || sessionExpired === 'true') {
+        // Force sign out to clear any session
         await supabase.auth.signOut()
-        // Wait a bit to ensure sign out completes
-        await new Promise(resolve => setTimeout(resolve, 200))
-        // Remove params from URL
-        const newUrl = new URL(window.location.href)
-        newUrl.searchParams.delete('logout')
-        newUrl.searchParams.delete('session_expired')
-        window.history.replaceState({}, '', newUrl.toString())
-        return
+        
+        // If session_expired or logout, clean up URL after a delay
+        if (sessionExpired === 'true' || logoutParam === 'true') {
+          await new Promise(resolve => setTimeout(resolve, 300))
+          const newUrl = new URL(window.location.href)
+          newUrl.searchParams.delete('logout')
+          newUrl.searchParams.delete('session_expired')
+          window.history.replaceState({}, '', newUrl.toString())
+        }
+        return // CRITICAL: Don't check user or redirect if there's any error/session param
       }
       
-      // Only check user if there's no error param
-      if (!errorParam) {
-        const { data: { user }, error } = await supabase.auth.getUser()
-        
-        // Only redirect if user exists and no error
-        if (user && !error) {
-          // Verify user exists in users table before redirecting
+      // Only check user if there are NO error/session params
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      // Only redirect if user exists, no error, and verified in users table
+      if (user && !error) {
+        try {
           const { data: userData } = await supabase
             .from('users')
             .select('id, ativo')
@@ -90,9 +83,12 @@ export default function LoginPage() {
           
           // Only redirect if user exists in users table and is active
           if (userData && userData.ativo) {
-            // Use window.location for a full page reload to avoid loops
+            // Use window.location for a full page reload
             window.location.href = '/dashboard'
           }
+        } catch (err) {
+          // If error checking users table, don't redirect
+          console.error('Error checking user:', err)
         }
       }
     }
@@ -373,5 +369,22 @@ export default function LoginPage() {
       </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div 
+        className="min-h-screen bg-gradient-to-br from-accent via-primary to-accent flex items-center justify-center"
+        style={{
+          background: 'linear-gradient(135deg, #35bfad 0%, #00109e 50%, #35bfad 100%)'
+        }}
+      >
+        <div className="text-white">Carregando...</div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   )
 }

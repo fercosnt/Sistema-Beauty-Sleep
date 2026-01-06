@@ -1,6 +1,9 @@
 import PacientesTable from './components/PacientesTable'
 import ContentContainer from '@/components/ui/ContentContainer'
 
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
+
 export default function PacientesPage() {
   return (
     <ContentContainer>

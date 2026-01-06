@@ -1,6 +1,9 @@
 import AlertasList from './components/AlertasList'
 import ContentContainer from '@/components/ui/ContentContainer'
 
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
+
 export default function AlertasPage() {
   return (
     <ContentContainer>

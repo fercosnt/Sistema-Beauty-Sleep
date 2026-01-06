@@ -8,6 +8,9 @@ import { showSuccess, showError } from '@/components/ui/Toast'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import ContentContainer from '@/components/ui/ContentContainer'
+
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
 import {
   Table,
   TableBody,

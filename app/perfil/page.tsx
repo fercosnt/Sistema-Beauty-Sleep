@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -11,7 +11,10 @@ import { showSuccess, showError } from '@/components/ui/Toast'
 import ContentContainer from '@/components/ui/ContentContainer'
 import { Lock, User, Mail, Shield, RefreshCw } from 'lucide-react'
 
-export default function PerfilPage() {
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
+
+function PerfilPageContent() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -522,6 +525,18 @@ export default function PerfilPage() {
         </div>
       </div>
     </ContentContainer>
+  )
+}
+
+export default function PerfilPage() {
+  return (
+    <Suspense fallback={
+      <ContentContainer>
+        <div className="text-white">Carregando...</div>
+      </ContentContainer>
+    }>
+      <PerfilPageContent />
+    </Suspense>
   )
 }
 

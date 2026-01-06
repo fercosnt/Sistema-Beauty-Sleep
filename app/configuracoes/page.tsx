@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { startTour } from '@/components/OnboardingTour'
@@ -11,7 +11,10 @@ import { Button } from '@/components/ui/Button'
 import { Label } from '@/components/ui/Label'
 import ContentContainer from '@/components/ui/ContentContainer'
 
-export default function ConfiguracoesPage() {
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
+
+function ConfiguracoesPageContent() {
   const [user, setUser] = useState<any>(null)
   const [userData, setUserData] = useState<any>(null)
   const router = useRouter()
@@ -153,6 +156,18 @@ export default function ConfiguracoesPage() {
         showSaveButton={false}
       />
     </ContentContainer>
+  )
+}
+
+export default function ConfiguracoesPage() {
+  return (
+    <Suspense fallback={
+      <ContentContainer>
+        <div className="text-white">Carregando...</div>
+      </ContentContainer>
+    }>
+      <ConfiguracoesPageContent />
+    </Suspense>
   )
 }
 

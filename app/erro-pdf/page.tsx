@@ -1,11 +1,12 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { FileX, ArrowLeft, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 
-export default function ErroPDFPage() {
+function ErroPDFPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -75,6 +76,18 @@ export default function ErroPDFPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function ErroPDFPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-900">Carregando...</div>
+      </div>
+    }>
+      <ErroPDFPageContent />
+    </Suspense>
   )
 }
 

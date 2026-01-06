@@ -3,6 +3,9 @@ import { redirect } from 'next/navigation'
 import UsuariosTable from './components/UsuariosTable'
 import ContentContainer from '@/components/ui/ContentContainer'
 
+// Force dynamic rendering to avoid prerendering issues with ContentContainer
+export const dynamic = 'force-dynamic'
+
 export default async function UsuariosPage() {
   const userRole = await getUserRole()
   

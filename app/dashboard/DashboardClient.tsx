@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { OnboardingTour } from '@/components/OnboardingTour'
@@ -10,7 +10,7 @@ interface DashboardClientProps {
   userEmail: string | null
 }
 
-export default function DashboardClient({ userRole, userEmail }: DashboardClientProps) {
+function DashboardClientContent({ userRole, userEmail }: DashboardClientProps) {
   const [tourCompleted, setTourCompleted] = useState(true)
   const [userId, setUserId] = useState<string | undefined>()
   const searchParams = useSearchParams()
@@ -46,6 +46,14 @@ export default function DashboardClient({ userRole, userEmail }: DashboardClient
       tourCompleted={effectiveTourCompleted}
       userId={userId}
     />
+  )
+}
+
+export default function DashboardClient({ userRole, userEmail }: DashboardClientProps) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardClientContent userRole={userRole} userEmail={userEmail} />
+    </Suspense>
   )
 }
 
