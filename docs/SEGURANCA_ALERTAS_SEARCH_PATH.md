@@ -10,7 +10,7 @@ Function `public.update_alertas_updated_at` has a role mutable search_path
 
 **Severidade:** Média  
 **Categoria:** Security  
-**Status:** ✅ **CORRIGIDO**
+**Status:** ✅ **CORRIGIDO E APLICADO**
 
 ---
 
@@ -144,8 +144,8 @@ LIMIT 1;
 - [x] Problema identificado
 - [x] Migration criada
 - [x] Documentação criada
-- [ ] Migration aplicada (pendente)
-- [ ] Aviso resolvido (após aplicar migration)
+- [x] Migration aplicada ✅
+- [x] Aviso resolvido ✅
 
 ---
 
