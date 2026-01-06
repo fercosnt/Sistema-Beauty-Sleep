@@ -2,6 +2,11 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // Initialize response early so it can be used in early returns
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
+
   // Check if environment variables are set
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -23,10 +28,6 @@ export async function updateSession(request: NextRequest) {
     url.searchParams.set('error', 'config')
     return NextResponse.redirect(url)
   }
-
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
 
   const supabase = createServerClient(
     supabaseUrl,
