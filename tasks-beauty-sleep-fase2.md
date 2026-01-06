@@ -179,7 +179,10 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
   - [x] 8.6 Criar policy para admin e equipe poderem ver alertas
   - [x] 8.7 Criar policy para admin e equipe poderem atualizar alertas
   - [ ] 8.8 Aplicar migration no Supabase Dashboard (SQL Editor)
+    > **Guia criado:** `docs/guias/APLICAR_MIGRATION_014_ALERTAS.md`
+    > **Script de verificação:** `scripts/verificar-tabela-alertas.sql`
   - [ ] 8.9 Verificar tabela criada corretamente
+    > **Script disponível:** `scripts/verificar-tabela-alertas.sql`
 
 - [x] **9.0 Implementar geração de alertas críticos no Sync Biologix**
   - [x] 9.1 Criar `supabase/functions/sync-biologix/alertas.ts` com funções de criação de alertas
@@ -205,7 +208,10 @@ Atualize o arquivo após completar cada sub-tarefa, não apenas após completar 
   - [x] 10.10 Evitar duplicação de alertas (verificar se já existe alerta pendente)
   - [x] 10.11 Configurar cron job para executar às 8h BRT (11h UTC)
   - [ ] 10.12 Deploy da Edge Function
+    > **Guia criado:** `docs/guias/DEPLOY_CHECK_ALERTS_FUNCTION.md`
+    > **Comando:** `npx supabase functions deploy check-alerts`
   - [ ] 10.13 Testar execução manual da function
+    > **Ver guia:** `docs/guias/DEPLOY_CHECK_ALERTS_FUNCTION.md` (seção "Testar a função manualmente")
 
 - [x] **11.0 Implementar Centro de Notificações no Header**
   - [x] 11.1 Criar componente `NotificationBadge.tsx` com contador
