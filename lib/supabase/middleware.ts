@@ -50,15 +50,21 @@ export async function updateSession(request: NextRequest) {
 
   // Protect routes - redirect to login if not authenticated
   // Allow access to login and auth callback routes
-  if (
-    (!user || authError) &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
+  const isLoginPage = request.nextUrl.pathname.startsWith('/login')
+  const isAuthCallback = request.nextUrl.pathname.startsWith('/auth')
+  
+  if (!user || authError) {
+    // If already on login or auth callback page, allow it
+    if (isLoginPage || isAuthCallback) {
+      return supabaseResponse
+    }
+    // Otherwise, redirect to login
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    // Clear any cached session data by adding a cache-busting param
-    url.searchParams.set('session_expired', 'true')
+    // Only add session_expired if not already present
+    if (!url.searchParams.has('session_expired')) {
+      url.searchParams.set('session_expired', 'true')
+    }
     return NextResponse.redirect(url)
   }
 
@@ -74,12 +80,16 @@ export async function updateSession(request: NextRequest) {
       // Check if user exists in users table and is active
       if (userError || !userData || !userData.ativo) {
         // User not found in users table or inactive
-        // If already on login page, allow it to show the error
-        // Otherwise, redirect to login with error
-        if (request.nextUrl.pathname.startsWith('/login')) {
-          // Already on login page, allow it to proceed
-          // The login page will handle showing the error message
+        // If already on login page with error, allow it to proceed
+        if (isLoginPage && request.nextUrl.searchParams.has('error')) {
+          // Already on login page with error, allow it to proceed
           return supabaseResponse
+        }
+        // If already on login page without error, add error param
+        if (isLoginPage) {
+          const url = request.nextUrl.clone()
+          url.searchParams.set('error', 'usuario_nao_autorizado')
+          return NextResponse.redirect(url)
         }
         // Sign out the user to clear invalid session
         await supabase.auth.signOut()

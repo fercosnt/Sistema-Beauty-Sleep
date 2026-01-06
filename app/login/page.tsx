@@ -48,6 +48,16 @@ export default function LoginPage() {
     const checkUser = async () => {
       const supabase = createClient()
       
+      // Check if there's an authorization error in URL FIRST
+      // This prevents redirect loops when user is authenticated but not authorized
+      const errorParam = searchParams.get('error')
+      if (errorParam === 'usuario_nao_autorizado' || errorParam === 'config') {
+        // Force sign out if there's an authorization error
+        await supabase.auth.signOut()
+        // Don't redirect - show error message instead
+        return
+      }
+      
       // If logout parameter is present, force sign out first
       const logoutParam = searchParams.get('logout')
       const sessionExpired = searchParams.get('session_expired')
@@ -56,7 +66,7 @@ export default function LoginPage() {
         // Ensure complete sign out
         await supabase.auth.signOut()
         // Wait a bit to ensure sign out completes
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise(resolve => setTimeout(resolve, 200))
         // Force refresh session state
         await supabase.auth.getSession()
         // Remove params from URL
@@ -67,21 +77,26 @@ export default function LoginPage() {
         return
       }
       
-      // Check if there's an authorization error in URL
-      const errorParam = searchParams.get('error')
-      if (errorParam === 'usuario_nao_autorizado' || errorParam === 'config') {
-        // Don't redirect if there's an authorization error
-        // The error will be displayed to the user
-        return
-      }
-      
       // Check if user is already logged in (with fresh check)
+      // Only check AFTER handling errors and logout
       const { data: { user }, error } = await supabase.auth.getUser()
       
-      // Only redirect if user exists and no error
-      if (user && !error) {
-        router.push('/dashboard')
-        router.refresh() // Force page refresh to clear any cached state
+      // Only redirect if user exists, no error, and no error params in URL
+      if (user && !error && !errorParam) {
+        // Double check: verify user exists in users table before redirecting
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, ativo')
+          .eq('email', user.email)
+          .single()
+        
+        // Only redirect if user exists in users table and is active
+        if (userData && userData.ativo) {
+          router.push('/dashboard')
+        } else {
+          // User authenticated but not in users table - sign out
+          await supabase.auth.signOut()
+        }
       }
     }
     
