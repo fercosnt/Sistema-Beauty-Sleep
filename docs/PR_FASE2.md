@@ -160,6 +160,14 @@ O cron job para `check-alerts` deve estar configurado para executar às 8h BRT (
 
 Nenhum breaking change. Todas as mudanças são aditivas.
 
+## ⚠️ Avisos de Build
+
+Durante o build no Vercel, podem aparecer avisos sobre APIs do Node.js no Edge Runtime relacionados ao Supabase. **Estes são avisos conhecidos e não afetam a funcionalidade.**
+
+**Status:** ✅ Build concluído com sucesso  
+**Impacto:** Nenhum - Apenas avisos informativos  
+**Documentação:** `docs/deploy/AVISOS_BUILD_VERCEL.md`
+
 ---
 
 ## 🎉 Conclusão
