@@ -2,15 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "regions": ["gru1"],
-  "ignore": [
-    "Design novo/**",
-    "Design/**",
-    "meu-projeto-admin/**",
-    "docs origem/**",
-    "conversa antiga chat.md",
-    "docs/SEGURANCA_*.md",
-    "docs/bugs/**"
-  ]
+  "regions": ["gru1"]
 }
 
