@@ -1,5 +1,22 @@
 # Ignorar pastas com projetos separados que não devem ser processados no build
-Design novo/
+# NOTA: Design novo/src/ NÃO deve ser ignorado pois componentes são usados via aliases
+# Apenas ignorar arquivos de configuração e documentação, mas manter src/
+Design novo/.eslintrc.cjs
+Design novo/.gitignore
+Design novo/.npmignore
+Design novo/.prettierrc
+Design novo/.storybook/
+Design novo/CHANGELOG.md
+Design novo/CONTRIBUTING.md
+Design novo/LICENSE
+Design novo/README.md
+Design novo/docs/
+Design novo/templates/
+Design novo/package.json
+Design novo/package-lock.json
+Design novo/tailwind.config.ts
+Design novo/vite.config.ts
+Design novo/tsconfig.json
 Design/
 meu-projeto-admin/
 docs origem/
@@ -24,8 +41,3 @@ scripts/*-remover-*.sql
 # Ignorar arquivos de teste grandes
 test-results/
 playwright-report/
-
-# Ignorar arquivos de design system que não são usados no build principal
-Design novo/templates/
-Design novo/docs/
-
