@@ -38,6 +38,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.66.1",
     "recharts": "^3.5.0",
+    "sharp": "^0.34.5",
     "shepherd.js": "^14.5.1",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.1.13"

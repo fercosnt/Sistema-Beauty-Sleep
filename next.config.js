@@ -18,43 +18,36 @@ const nextConfig = {
   },
   // Ignorar pastas de design/storybook e outros projetos durante o build
   webpack: (config, { isServer }) => {
-    // Configurar path aliases para Design System
+    // NOTA: Aliases @beautysmile/* removidos para evitar problemas com espaços no nome da pasta "Design novo"
+    // no ambiente Linux do Vercel. Se necessário no futuro, renomear pasta para "Design-novo" ou "DesignNovo"
     const path = require('path')
-    const designNovoPath = path.resolve(__dirname, './Design novo/src')
     
+    // Manter apenas aliases @/ que apontam para a raiz do projeto (já configurados no tsconfig.json)
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@beautysmile/design-system': path.resolve(__dirname, './Design novo/src/index.ts'),
-      '@beautysmile/components': path.resolve(__dirname, './Design novo/src/components/index.ts'),
-      '@beautysmile/tokens': path.resolve(__dirname, './Design novo/src/tokens/index.ts'),
-      '@beautysmile/utils': path.resolve(__dirname, './Design novo/src/utils'),
-      '@beautysmile/templates': path.resolve(__dirname, './Design novo/src/templates'),
-      // Resolver @/ dentro de Design novo para apontar para Design novo/src
-      '@/utils': path.resolve(__dirname, './Design novo/src/utils'),
-      '@/components': path.resolve(__dirname, './Design novo/src/components'),
-      '@/templates': path.resolve(__dirname, './Design novo/src/templates'),
-      '@/assets': path.resolve(__dirname, './Design novo/src/assets'),
+      // Aliases @beautysmile/* comentados - não estão sendo usados no código principal
+      // '@beautysmile/design-system': path.resolve(__dirname, './Design novo/src/index.ts'),
+      // '@beautysmile/components': path.resolve(__dirname, './Design novo/src/components/index.ts'),
+      // '@beautysmile/tokens': path.resolve(__dirname, './Design novo/src/tokens/index.ts'),
+      // '@beautysmile/utils': path.resolve(__dirname, './Design novo/src/utils'),
+      // '@beautysmile/templates': path.resolve(__dirname, './Design novo/src/templates'),
+      // '@/utils': path.resolve(__dirname, './Design novo/src/utils'),
+      // '@/components': path.resolve(__dirname, './Design novo/src/components'),
+      // '@/templates': path.resolve(__dirname, './Design novo/src/templates'),
+      // '@/assets': path.resolve(__dirname, './Design novo/src/assets'),
     }
 
-    // Ignore background images that cause build errors
-    config.module.rules.push({
-      test: /\.(png|jpg|jpeg|gif)$/,
-      include: /Design novo\/src\/assets\/backgrounds/,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/images/[name][ext]',
-      },
-    })
-
+    // Ignorar pastas que não devem ser processadas no build
+    // NOTA: "Design novo" removido do processamento para evitar problemas com espaços no nome no Vercel
     config.module.rules.push({
       test: /\.(ts|tsx)$/,
       exclude: [
         /node_modules/,
         /Design\//, // Ignorar pasta Design antiga (Storybook)
+        /Design novo\//, // Ignorar pasta Design novo (projeto separado, não usado no build principal)
         /meu-projeto-admin\//, // Ignorar pasta meu-projeto-admin (projeto Vite separado)
         /supabase\/functions\//, // Ignorar Edge Functions do Supabase
         /\.stories\.(ts|tsx)$/, // Ignorar arquivos .stories
-        // NÃO excluir "Design novo" - precisamos compilar esses arquivos
       ],
     })
     return config
