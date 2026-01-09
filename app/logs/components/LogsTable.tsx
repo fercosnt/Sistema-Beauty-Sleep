@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import {
   Table,
@@ -423,22 +424,24 @@ export default function LogsTable() {
               {/* Filtro por Data Início */}
               <div>
                 <Label htmlFor="dataInicio">Data Início</Label>
-                <Input
+                <DateInput
                   id="dataInicio"
-                  type="date"
                   value={filters.dataInicio}
-                  onChange={(e) => setFilters({ ...filters, dataInicio: e.target.value })}
+                  onChange={(value) => setFilters({ ...filters, dataInicio: value })}
+                  displayFormat="DD/MM/YYYY"
+                  placeholder="DD/MM/AAAA"
                 />
               </div>
 
               {/* Filtro por Data Fim */}
               <div>
                 <Label htmlFor="dataFim">Data Fim</Label>
-                <Input
+                <DateInput
                   id="dataFim"
-                  type="date"
                   value={filters.dataFim}
-                  onChange={(e) => setFilters({ ...filters, dataFim: e.target.value })}
+                  onChange={(value) => setFilters({ ...filters, dataFim: value })}
+                  displayFormat="DD/MM/YYYY"
+                  placeholder="DD/MM/AAAA"
                 />
               </div>
             </div>

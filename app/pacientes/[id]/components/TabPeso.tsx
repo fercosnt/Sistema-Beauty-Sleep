@@ -74,6 +74,14 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
     }
   }
 
+  // Helper function to format DATE type (YYYY-MM-DD) as local date to avoid timezone issues
+  const formatDateLocal = (dateString: string) => {
+    // Fix timezone issue: parse date as local date, not UTC
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day) // month is 0-indexed
+    return date.toLocaleDateString('pt-BR')
+  }
+
   // Função para reduzir dados quando há muitos pontos
   const reduzirDados = <T,>(dados: T[], maxPontos: number = 30): T[] => {
     if (dados.length <= maxPontos) {
@@ -106,15 +114,20 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
   }
 
   // Preparar dados para gráficos
-  const chartDataCompleto = exames.map((exame) => ({
-    data: new Date(exame.data_exame).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-    }),
-    dataFull: exame.data_exame,
-    peso: exame.peso_kg,
-    imc: exame.imc,
-  }))
+  const chartDataCompleto = exames.map((exame) => {
+    // Fix timezone issue: parse date as local date, not UTC
+    const [year, month, day] = exame.data_exame.split('-').map(Number)
+    const dataExame = new Date(year, month - 1, day) // month is 0-indexed
+    return {
+      data: dataExame.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+      }),
+      dataFull: exame.data_exame,
+      peso: exame.peso_kg,
+      imc: exame.imc,
+    }
+  })
 
   // Filtrar e reduzir dados de peso separadamente
   const chartDataPesoCompleto = chartDataCompleto.filter((d) => d.peso !== null && d.peso !== undefined)
@@ -323,7 +336,7 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
                         {pesoInicial.toFixed(1)} kg
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {new Date(exames[0].data_exame).toLocaleDateString('pt-BR')}
+                        {formatDateLocal(exames[0].data_exame)}
                       </p>
                     </div>
                     <div className="bg-primary-50 rounded-lg p-3">
@@ -332,7 +345,7 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
                         {pesoAtual.toFixed(1)} kg
                       </p>
                       <p className="text-xs text-primary-600 mt-1">
-                        {new Date(exames[exames.length - 1].data_exame).toLocaleDateString('pt-BR')}
+                        {formatDateLocal(exames[exames.length - 1].data_exame)}
                       </p>
                     </div>
                   </div>
@@ -384,7 +397,7 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
                         {categorizarIMC(imcInicial)}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {new Date(exames[0].data_exame).toLocaleDateString('pt-BR')}
+                        {formatDateLocal(exames[0].data_exame)}
                       </p>
                     </div>
                     <div className="bg-primary-50 rounded-lg p-3">
@@ -396,7 +409,7 @@ export default function TabPeso({ pacienteId }: TabPesoProps) {
                         {categorizarIMC(imcAtual)}
                       </p>
                       <p className="text-xs text-primary-600 mt-1">
-                        {new Date(exames[exames.length - 1].data_exame).toLocaleDateString('pt-BR')}
+                        {formatDateLocal(exames[exames.length - 1].data_exame)}
                       </p>
                     </div>
                   </div>

@@ -184,7 +184,9 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
   // Preparar dados para gráficos
   const prepareChartData = () => {
     return exames.map((exame) => {
-      const dataExame = new Date(exame.data_exame)
+      // Fix timezone issue: parse date as local date, not UTC
+      const [year, month, day] = exame.data_exame.split('-').map(Number)
+      const dataExame = new Date(year, month - 1, day) // month is 0-indexed
       const dataFormatada = dataExame.toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
@@ -242,7 +244,9 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
 
   // Preparar marcadores de sessões (formato de data para corresponder ao XAxis)
   const sessionMarkers = sessoes.map((sessao) => {
-    const dataSessao = new Date(sessao.data_sessao)
+    // Fix timezone issue: parse date as local date, not UTC
+    const [year, month, day] = sessao.data_sessao.split('-').map(Number)
+    const dataSessao = new Date(year, month - 1, day) // month is 0-indexed
     return dataSessao.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -494,7 +498,9 @@ export default function TabEvolucao({ pacienteId }: TabEvolucaoProps) {
                 {sessionMarkers.map((markerDate, index) => {
                   // Verificar se há um ponto de dados próximo a esta data de sessão
                   // (dentro do range de dados do gráfico)
-                  const markerTimestamp = new Date(sessoes[index].data_sessao).getTime()
+                  // Fix timezone issue: parse date as local date, not UTC
+                  const [year, month, day] = sessoes[index].data_sessao.split('-').map(Number)
+                  const markerTimestamp = new Date(year, month - 1, day).getTime() // month is 0-indexed
                   const chartStart = filteredChartData[0]?.dataTimestamp || 0
                   const chartEnd = filteredChartData[filteredChartData.length - 1]?.dataTimestamp || 0
                   

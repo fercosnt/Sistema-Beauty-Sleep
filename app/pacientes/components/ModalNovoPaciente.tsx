@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { X } from 'lucide-react'
 import { showSuccess, showError } from '@/components/ui/Toast'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import { cn } from '@/utils/cn'
 
@@ -50,6 +50,8 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
   const [idPacienteValidating, setIdPacienteValidating] = useState(false)
   const [idPacienteExists, setIdPacienteExists] = useState(false)
   const [existingPacienteById, setExistingPacienteById] = useState<{ id: string; nome: string } | null>(null)
+  const [semBiologix, setSemBiologix] = useState(false)
+  const [buscandoBiologix, setBuscandoBiologix] = useState(false)
 
   useEffect(() => {
     if (!isOpen) {
@@ -71,6 +73,8 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       setExistingPaciente(null)
       setIdPacienteExists(false)
       setExistingPacienteById(null)
+      setSemBiologix(false)
+      setBuscandoBiologix(false)
     }
   }, [isOpen])
 
@@ -201,6 +205,62 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     }
   }
 
+  const buscarPacientePorCPF = async (cpf: string) => {
+    const cpfLimpo = cpf.replace(/\D/g, '')
+    if (cpfLimpo.length !== 11) {
+      return null
+    }
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pacientes')
+        .select('id, nome, biologix_id')
+        .eq('cpf', cpfLimpo)
+        .maybeSingle()
+
+      if (error) {
+        if (error.code !== 'PGRST116') {
+          console.error('Erro ao buscar paciente por CPF:', error)
+        }
+        return null
+      }
+
+      return data || null
+    } catch (error) {
+      console.error('Erro inesperado ao buscar paciente por CPF:', error)
+      return null
+    }
+  }
+
+  const buscarPacientePorTelefone = async (telefone: string) => {
+    const telefoneLimpo = telefone.replace(/\D/g, '')
+    if (telefoneLimpo.length < 10) {
+      return null
+    }
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('pacientes')
+        .select('id, nome, biologix_id')
+        .eq('telefone', telefoneLimpo)
+        .maybeSingle()
+
+      if (error) {
+        if (error.code !== 'PGRST116') {
+          console.error('Erro ao buscar paciente por telefone:', error)
+        }
+        return null
+      }
+
+      return data || null
+    } catch (error) {
+      console.error('Erro inesperado ao buscar paciente por telefone:', error)
+      return null
+    }
+  }
+
   const handleCPFBlur = async () => {
     const cpfLimpo = formData.cpf.replace(/\D/g, '')
     if (cpfLimpo.length === 0) {
@@ -241,11 +301,36 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       setErrors({ ...errors, cpf: undefined })
     }
 
+    // Se não tem ID do Paciente preenchido, buscar automaticamente
+    if (!formData.idPaciente.trim() && !semBiologix) {
+      // Primeiro tentar buscar por CPF
+      const pacienteEncontrado = await buscarPacientePorCPF(formData.cpf)
+      if (pacienteEncontrado && pacienteEncontrado.biologix_id) {
+        setFormData({ ...formData, idPaciente: pacienteEncontrado.biologix_id })
+        showSuccess(`ID do Paciente encontrado automaticamente: ${pacienteEncontrado.biologix_id}`)
+      } else if (formData.telefone && formData.telefone.replace(/\D/g, '').length >= 10) {
+        // Se não encontrou por CPF, tentar por telefone
+        const pacientePorTelefone = await buscarPacientePorTelefone(formData.telefone)
+        if (pacientePorTelefone && pacientePorTelefone.biologix_id) {
+          setFormData({ ...formData, idPaciente: pacientePorTelefone.biologix_id })
+          showSuccess(`ID do Paciente encontrado automaticamente pelo telefone: ${pacientePorTelefone.biologix_id}`)
+        }
+      }
+    }
+
     setCpfValidating(false)
   }
 
   const handleIdPacienteBlur = async () => {
     const idPaciente = formData.idPaciente.trim()
+    
+    // Se está marcado como "sem Biologix", não validar
+    if (semBiologix) {
+      setErrors({ ...errors, idPaciente: undefined })
+      setIdPacienteExists(false)
+      setExistingPacienteById(null)
+      return
+    }
     
     if (!idPaciente) {
       setErrors({ ...errors, idPaciente: 'ID do Paciente é obrigatório' })
@@ -269,6 +354,48 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     }
 
     setIdPacienteValidating(false)
+  }
+
+  const handleBuscarBiologix = async () => {
+    const cpfLimpo = formData.cpf.replace(/\D/g, '')
+    
+    if (cpfLimpo.length !== 11) {
+      showError('Por favor, preencha um CPF válido antes de buscar na API Biologix')
+      return
+    }
+
+    setBuscandoBiologix(true)
+    
+    try {
+      // Chamar API route para buscar na API Biologix
+      const response = await fetch('/api/biologix/buscar-paciente', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cpf: cpfLimpo }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.biologixId) {
+        setFormData({ ...formData, idPaciente: data.biologixId })
+        setSemBiologix(false)
+        showSuccess(`Paciente encontrado na API Biologix! ID: ${data.biologixId}`)
+      } else {
+        // Paciente não encontrado na API Biologix
+        setSemBiologix(true)
+        setFormData({ ...formData, idPaciente: '' })
+        showError('Paciente não encontrado na API Biologix. Você pode criar sem ID do Paciente.')
+      }
+    } catch (error) {
+      console.error('Erro ao buscar na API Biologix:', error)
+      showError('Erro ao buscar na API Biologix. Você pode criar sem ID do Paciente.')
+      setSemBiologix(true)
+      setFormData({ ...formData, idPaciente: '' })
+    } finally {
+      setBuscandoBiologix(false)
+    }
   }
 
   const validateDate = (dateString: string): boolean => {
@@ -302,8 +429,8 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
     // Validação básica
     const newErrors: Partial<Record<keyof FormData, string>> = {}
 
-    // ID do Paciente é OBRIGATÓRIO (chave única)
-    if (!formData.idPaciente || formData.idPaciente.trim() === '') {
+    // ID do Paciente é OBRIGATÓRIO apenas se não estiver marcado como "sem Biologix"
+    if (!semBiologix && (!formData.idPaciente || formData.idPaciente.trim() === '')) {
       newErrors.idPaciente = 'ID do Paciente é obrigatório'
     }
 
@@ -343,7 +470,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       newErrors.dataNascimento = 'Data de nascimento inválida. Verifique se não é uma data futura ou muito antiga.'
     }
 
-    if (formData.status === 'ativo' && formData.sessoesCompradas < 0) {
+    if (formData.sessoesCompradas < 0) {
       newErrors.sessoesCompradas = 'Sessões compradas deve ser um número positivo'
     }
 
@@ -382,10 +509,14 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
       const cpfLimpo = formData.cpf ? formData.cpf.replace(/\D/g, '') : ''
 
       const pacienteData: any = {
-        biologix_id: formData.idPaciente.trim(), // Chave única
         nome: formData.nome.trim(),
         status: formData.status,
-        sessoes_compradas: formData.status === 'ativo' ? formData.sessoesCompradas : 0,
+        sessoes_compradas: formData.sessoesCompradas || 0,
+      }
+
+      // Adicionar biologix_id apenas se não estiver marcado como "sem Biologix" e tiver valor
+      if (!semBiologix && formData.idPaciente && formData.idPaciente.trim()) {
+        pacienteData.biologix_id = formData.idPaciente.trim()
       }
 
       // CPF é obrigatório se não houver documento estrangeiro
@@ -435,15 +566,31 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
         pacienteData.genero = formData.genero
       }
 
-      // Usar UPSERT com biologix_id como chave única
-      const { data, error } = await supabase
-        .from('pacientes')
-        .upsert(pacienteData, {
-          onConflict: 'biologix_id',
-          ignoreDuplicates: false
-        })
-        .select()
-        .single()
+      // Usar INSERT ou UPSERT dependendo se tem biologix_id
+      let data, error
+      
+      if (pacienteData.biologix_id) {
+        // Se tem biologix_id, usar UPSERT com onConflict
+        const result = await supabase
+          .from('pacientes')
+          .upsert(pacienteData, {
+            onConflict: 'biologix_id',
+            ignoreDuplicates: false
+          })
+          .select()
+          .single()
+        data = result.data
+        error = result.error
+      } else {
+        // Se não tem biologix_id, usar INSERT simples
+        const result = await supabase
+          .from('pacientes')
+          .insert(pacienteData)
+          .select()
+          .single()
+        data = result.data
+        error = result.error
+      }
 
       if (error) {
         console.error('Erro ao criar/atualizar paciente:', error)
@@ -475,50 +622,85 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
-        <Card className="shadow-xl">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Novo Paciente</CardTitle>
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="w-full max-w-2xl max-h-[90vh] flex flex-col bg-white rounded-lg border border-gray-200 shadow-xl">
+        {/* Header fixo */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+          <h2 className="text-xl font-semibold text-gray-900">Novo Paciente</h2>
           <button
             onClick={onClose}
-                className="text-gray-500 hover:text-gray-900 transition-colors"
+            className="text-gray-500 hover:text-gray-900 transition-colors p-1 rounded-md hover:bg-gray-100"
             disabled={isSubmitting}
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
         </div>
-          </CardHeader>
 
-          <CardContent>
+        {/* Conteúdo com scroll */}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
         {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ID do Paciente - OBRIGATÓRIO (chave única) */}
+          {/* ID do Paciente - OBRIGATÓRIO apenas se não estiver marcado como "sem Biologix" */}
           <div className="space-y-2">
-            <Label htmlFor="idPaciente">
-              ID do Paciente <span className="text-error-600">*</span>
-              <span className="text-xs text-gray-500 ml-2 font-normal">(Identificador único do Biologix)</span>
-            </Label>
-            <Input
-              id="idPaciente"
-              type="text"
-              value={formData.idPaciente}
-              onChange={(e) => {
-                setFormData({ ...formData, idPaciente: e.target.value.trim() })
-                if (errors.idPaciente) {
-                  setErrors({ ...errors, idPaciente: undefined })
-                }
-                if (idPacienteExists) {
-                  setIdPacienteExists(false)
-                  setExistingPacienteById(null)
-                }
-              }}
-              onBlur={handleIdPacienteBlur}
-              placeholder="PAC-1234567890"
-              className={cn(errors.idPaciente && 'border-error-600 focus:ring-error-600')}
-              disabled={isSubmitting || idPacienteValidating}
-            />
+            <div className="flex items-center justify-between">
+              <Label htmlFor="idPaciente">
+                ID do Paciente {!semBiologix && <span className="text-error-600">*</span>}
+                <span className="text-xs text-gray-500 ml-2 font-normal">(Identificador único do Biologix)</span>
+              </Label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={semBiologix}
+                  onChange={(e) => {
+                    setSemBiologix(e.target.checked)
+                    if (e.target.checked) {
+                      setFormData({ ...formData, idPaciente: '' })
+                      setErrors({ ...errors, idPaciente: undefined })
+                      setIdPacienteExists(false)
+                      setExistingPacienteById(null)
+                    }
+                  }}
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  disabled={isSubmitting}
+                />
+                <span className="text-sm text-gray-700">Paciente sem Biologix</span>
+              </label>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                id="idPaciente"
+                type="text"
+                value={formData.idPaciente}
+                onChange={(e) => {
+                  setFormData({ ...formData, idPaciente: e.target.value.trim() })
+                  if (errors.idPaciente) {
+                    setErrors({ ...errors, idPaciente: undefined })
+                  }
+                  if (idPacienteExists) {
+                    setIdPacienteExists(false)
+                    setExistingPacienteById(null)
+                  }
+                  if (e.target.value.trim()) {
+                    setSemBiologix(false)
+                  }
+                }}
+                onBlur={handleIdPacienteBlur}
+                placeholder="PAC-1234567890"
+                className={cn(errors.idPaciente && 'border-error-600 focus:ring-error-600', 'flex-1')}
+                disabled={isSubmitting || idPacienteValidating || semBiologix}
+              />
+              {!semBiologix && formData.cpf && formData.cpf.replace(/\D/g, '').length === 11 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBuscarBiologix}
+                  disabled={isSubmitting || buscandoBiologix}
+                  className="whitespace-nowrap"
+                >
+                  {buscandoBiologix ? 'Buscando...' : 'Buscar na API Biologix'}
+                </Button>
+              )}
+            </div>
             {idPacienteValidating && <p className="mt-1 text-sm text-gray-600 flex items-center gap-2">
               <span className="animate-spin">⏳</span> Verificando ID do Paciente...
             </p>}
@@ -535,6 +717,11 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
                 </p>
               </div>
             )}
+            {semBiologix && (
+              <p className="text-sm text-gray-600 mt-1">
+                Este paciente não possui ID do Biologix. O cadastro será criado sem esse identificador.
+              </p>
+            )}
           </div>
 
           {/* CPF e Documento Estrangeiro - OBRIGATÓRIO (um ou outro) */}
@@ -542,7 +729,6 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
             <div className="space-y-2">
               <Label htmlFor="cpf">
                 CPF <span className="text-error-600">*</span>
-                <span className="text-xs text-gray-500 ml-2 font-normal">(ou Documento Estrangeiro)</span>
               </Label>
               <Input
                 id="cpf"
@@ -655,6 +841,29 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
                   const formatted = formatTelefone(e.target.value)
                   setFormData({ ...formData, telefone: formatted })
                 }}
+                onBlur={async () => {
+                  // Se não tem ID do Paciente preenchido e não está marcado como "sem Biologix", buscar automaticamente
+                  if (!formData.idPaciente.trim() && !semBiologix && formData.telefone) {
+                    const telefoneLimpo = formData.telefone.replace(/\D/g, '')
+                    if (telefoneLimpo.length >= 10) {
+                      // Primeiro tentar por CPF se tiver
+                      if (formData.cpf && formData.cpf.replace(/\D/g, '').length === 11) {
+                        const pacientePorCpf = await buscarPacientePorCPF(formData.cpf)
+                        if (pacientePorCpf && pacientePorCpf.biologix_id) {
+                          setFormData({ ...formData, idPaciente: pacientePorCpf.biologix_id })
+                          showSuccess(`ID do Paciente encontrado automaticamente: ${pacientePorCpf.biologix_id}`)
+                          return
+                        }
+                      }
+                      // Se não encontrou por CPF, buscar por telefone
+                      const pacientePorTelefone = await buscarPacientePorTelefone(formData.telefone)
+                      if (pacientePorTelefone && pacientePorTelefone.biologix_id) {
+                        setFormData({ ...formData, idPaciente: pacientePorTelefone.biologix_id })
+                        showSuccess(`ID do Paciente encontrado automaticamente pelo telefone: ${pacientePorTelefone.biologix_id}`)
+                      }
+                    }
+                  }
+                }}
                 placeholder="(00) 00000-0000"
                 disabled={isSubmitting}
               />
@@ -665,18 +874,17 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="dataNascimento">Data de Nascimento</Label>
-              <Input
+              <DateInput
                 id="dataNascimento"
-                type="date"
                 value={formData.dataNascimento}
-                onChange={(e) => {
-                  setFormData({ ...formData, dataNascimento: e.target.value })
+                onChange={(value) => {
+                  setFormData({ ...formData, dataNascimento: value })
                   if (errors.dataNascimento) {
                     setErrors({ ...errors, dataNascimento: undefined })
                   }
                 }}
-                max={new Date().toISOString().split('T')[0]} // Não permite datas futuras
-                min="1900-01-01" // Não permite datas muito antigas
+                displayFormat="DD/MM/YYYY"
+                placeholder="DD/MM/AAAA"
                 className={cn(errors.dataNascimento && 'border-error-600 focus:ring-error-600')}
                 disabled={isSubmitting}
               />
@@ -689,7 +897,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
                 id="genero"
                 value={formData.genero}
                 onChange={(e) => setFormData({ ...formData, genero: e.target.value as 'M' | 'F' | 'Outro' | '' })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={isSubmitting}
               >
                 <option value="">Selecione...</option>
@@ -716,7 +924,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
                   className="text-primary-600 focus:ring-primary-500"
                   disabled={isSubmitting}
                 />
-                <span className="text-sm text-black">Lead</span>
+                <span className="text-sm text-gray-900">Lead</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -728,36 +936,34 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
                   className="text-primary-600 focus:ring-primary-500"
                   disabled={isSubmitting}
                 />
-                <span className="text-sm text-black">Paciente</span>
+                <span className="text-sm text-gray-900">Paciente</span>
               </label>
             </div>
           </div>
 
-          {/* Sessões Compradas (apenas se status = ativo) */}
-          {formData.status === 'ativo' && (
-            <div className="space-y-2">
-              <Label htmlFor="sessoesCompradas">Sessões Compradas</Label>
-              <Input
-                id="sessoesCompradas"
-                type="number"
-                min="0"
-                value={formData.sessoesCompradas || ''}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0
-                  setFormData({ ...formData, sessoesCompradas: value })
-                  if (errors.sessoesCompradas) {
-                    setErrors({ ...errors, sessoesCompradas: undefined })
-                  }
-                }}
-                placeholder="0"
-                className={cn(errors.sessoesCompradas && 'border-error-600 focus:ring-error-600')}
-                disabled={isSubmitting}
-              />
-              {errors.sessoesCompradas && (
-                <p className="text-sm text-error-600">{errors.sessoesCompradas}</p>
-              )}
-            </div>
-          )}
+          {/* Sessões Compradas */}
+          <div className="space-y-2">
+            <Label htmlFor="sessoesCompradas">Sessões Compradas</Label>
+            <Input
+              id="sessoesCompradas"
+              type="number"
+              min="0"
+              value={formData.sessoesCompradas || ''}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0
+                setFormData({ ...formData, sessoesCompradas: value })
+                if (errors.sessoesCompradas) {
+                  setErrors({ ...errors, sessoesCompradas: undefined })
+                }
+              }}
+              placeholder="0"
+              className={cn(errors.sessoesCompradas && 'border-error-600 focus:ring-error-600')}
+              disabled={isSubmitting}
+            />
+            {errors.sessoesCompradas && (
+              <p className="text-sm text-error-600">{errors.sessoesCompradas}</p>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex items-center justify-between pt-6 border-t">
@@ -785,8 +991,7 @@ export default function ModalNovoPaciente({ isOpen, onClose, onSuccess }: ModalN
             </div>
           </div>
         </form>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   )

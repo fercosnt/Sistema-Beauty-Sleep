@@ -4,6 +4,27 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar variáveis de ambiente antes de continuar
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      console.error('NEXT_PUBLIC_SUPABASE_URL não está configurada')
+      return NextResponse.json(
+        { 
+          error: 'Configuração do servidor incompleta. NEXT_PUBLIC_SUPABASE_URL não está definida. Verifique seu arquivo .env.local' 
+        },
+        { status: 500 }
+      )
+    }
+
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('SUPABASE_SERVICE_ROLE_KEY não está configurada')
+      return NextResponse.json(
+        { 
+          error: 'Configuração do servidor incompleta. SUPABASE_SERVICE_ROLE_KEY não está definida. Verifique seu arquivo .env.local e certifique-se de usar a Service Role Key (não a Anon Key).' 
+        },
+        { status: 500 }
+      )
+    }
+
     const supabase = await createClient()
     
     // Verificar se o usuário é admin
@@ -33,7 +54,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Criar usuário no Supabase Auth usando Admin API
-    const supabaseAdmin = createAdminClient()
+    let supabaseAdmin
+    try {
+      supabaseAdmin = createAdminClient()
+    } catch (error: any) {
+      console.error('Erro ao criar cliente admin:', error)
+      return NextResponse.json(
+        { 
+          error: `Erro de configuração: ${error.message}. Verifique as variáveis de ambiente no arquivo .env.local` 
+        },
+        { status: 500 }
+      )
+    }
     
     // Criar usuário no Auth (com ou sem senha)
     const createUserOptions: any = {
@@ -53,8 +85,25 @@ export async function POST(request: NextRequest) {
 
     if (authError) {
       console.error('Erro ao criar usuário no Auth:', authError)
+      
+      // Mensagens de erro mais específicas
+      let errorMessage = authError.message
+      
+      if (authError.message.includes('Failed to fetch') || authError.message.includes('network')) {
+        errorMessage = `Erro de conexão com o Supabase. Verifique: 
+        1. Se NEXT_PUBLIC_SUPABASE_URL está correta no .env.local
+        2. Se SUPABASE_SERVICE_ROLE_KEY está correta (use a Service Role Key, não a Anon Key)
+        3. Se há problemas de rede/firewall bloqueando a conexão
+        4. Se o projeto Supabase está ativo e acessível`
+      } else if (authError.message.includes('Invalid API key') || authError.message.includes('JWT')) {
+        errorMessage = `Chave de API inválida. Verifique se SUPABASE_SERVICE_ROLE_KEY está correta no .env.local. 
+        Você pode encontrar a Service Role Key no Supabase Dashboard → Settings → API.`
+      } else if (authError.message.includes('already registered')) {
+        errorMessage = `Este email já está cadastrado no sistema.`
+      }
+      
       return NextResponse.json(
-        { error: `Erro ao criar usuário: ${authError.message}` },
+        { error: `Erro ao criar usuário: ${errorMessage}` },
         { status: 500 }
       )
     }

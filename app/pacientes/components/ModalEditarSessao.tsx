@@ -6,6 +6,7 @@ import { Calendar, Tag as TagIcon, AlertTriangle, History } from 'lucide-react'
 import { showSuccess, showError } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import { Textarea } from '@/components/ui/Textarea'
 import {
@@ -174,8 +175,18 @@ export default function ModalEditarSessao({ isOpen, onClose, sessao, onSuccess }
       }).filter(Boolean)
 
       // Preparar dados para update - manter user_id original
+      // Fix timezone issue: ensure date is sent as "YYYY-MM-DD" string without timezone conversion
+      const dataSessaoString = dataSessao.trim()
+      
+      // Validate date format
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dataSessaoString)) {
+        setErrors({ ...errors, dataSessao: 'Formato de data inválido' })
+        setIsSubmitting(false)
+        return
+      }
+      
       const updateData: any = {
-        data_sessao: dataSessao,
+        data_sessao: dataSessaoString, // Send as string "YYYY-MM-DD" - PostgreSQL DATE type doesn't have timezone
         protocolo: protocoloNames.length > 0 ? protocoloNames : null,
         contador_pulsos_inicial: contadorInicial as number,
         contador_pulsos_final: contadorFinal as number,
@@ -267,19 +278,20 @@ export default function ModalEditarSessao({ isOpen, onClose, sessao, onSuccess }
               Data da Sessão <span className="text-danger-600">*</span>
             </Label>
             <div className="relative mt-1">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
+              <DateInput
                 id="dataSessao"
-                type="date"
                 value={dataSessao}
-                onChange={(e) => {
-                  setDataSessao(e.target.value)
+                onChange={(value) => {
+                  setDataSessao(value)
                   setErrors((prev) => {
                     const { dataSessao: _, ...rest } = prev
                     return rest
                   })
                 }}
                 className={`pl-10 ${errors.dataSessao ? 'border-danger-500' : ''}`}
+                displayFormat="DD/MM/YYYY"
+                placeholder="DD/MM/AAAA"
                 required
                 disabled={isSubmitting}
               />

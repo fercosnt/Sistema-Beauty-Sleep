@@ -6,6 +6,7 @@ import { History, User, Calendar, ArrowRight, UserPlus, CheckCircle, XCircle, Ba
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import { AlertCircle } from 'lucide-react'
 
@@ -412,21 +413,23 @@ export default function TabHistoricoStatus({ pacienteId }: TabHistoricoStatusPro
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
                     <Label htmlFor="dataInicio" className="text-xs">De</Label>
-                    <Input
+                    <DateInput
                       id="dataInicio"
-                      type="date"
                       value={filtroDataInicio}
-                      onChange={(e) => setFiltroDataInicio(e.target.value)}
+                      onChange={(value) => setFiltroDataInicio(value)}
+                      displayFormat="DD/MM/YYYY"
+                      placeholder="DD/MM/AAAA"
                       className="text-sm"
                     />
                   </div>
                   <div>
                     <Label htmlFor="dataFim" className="text-xs">Até</Label>
-                    <Input
+                    <DateInput
                       id="dataFim"
-                      type="date"
                       value={filtroDataFim}
-                      onChange={(e) => setFiltroDataFim(e.target.value)}
+                      onChange={(value) => setFiltroDataFim(value)}
+                      displayFormat="DD/MM/YYYY"
+                      placeholder="DD/MM/AAAA"
                       className="text-sm"
                     />
                   </div>

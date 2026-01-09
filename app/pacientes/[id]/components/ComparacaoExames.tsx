@@ -82,13 +82,19 @@ export default function ComparacaoExames({ exames }: ComparacaoExamesProps) {
                     <th className="text-right py-3 px-4 font-semibold text-gray-900">
                       Primeiro Exame
                       <div className="text-xs font-normal text-gray-500 mt-1">
-                        {new Date(primeiro.data_exame).toLocaleDateString('pt-BR')}
+                        {(() => {
+                          const [year, month, day] = primeiro.data_exame.split('-').map(Number)
+                          return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
+                        })()}
                       </div>
                     </th>
                     <th className="text-right py-3 px-4 font-semibold text-gray-900">
                       Último Exame
                       <div className="text-xs font-normal text-gray-500 mt-1">
-                        {new Date(ultimo.data_exame).toLocaleDateString('pt-BR')}
+                        {(() => {
+                          const [year, month, day] = ultimo.data_exame.split('-').map(Number)
+                          return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
+                        })()}
                       </div>
                     </th>
                     <th className="text-right py-3 px-4 font-semibold text-gray-900">Variação</th>
@@ -153,13 +159,19 @@ export default function ComparacaoExames({ exames }: ComparacaoExamesProps) {
                     <th className="text-right py-3 px-4 font-semibold text-gray-900">
                       Pior Exame
                       <div className="text-xs font-normal text-gray-500 mt-1">
-                        {new Date(pior.data_exame).toLocaleDateString('pt-BR')}
+                        {(() => {
+                          const [year, month, day] = pior.data_exame.split('-').map(Number)
+                          return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
+                        })()}
                       </div>
                     </th>
                     <th className="text-right py-3 px-4 font-semibold text-gray-900">
                       Melhor Exame
                       <div className="text-xs font-normal text-gray-500 mt-1">
-                        {new Date(melhor.data_exame).toLocaleDateString('pt-BR')}
+                        {(() => {
+                          const [year, month, day] = melhor.data_exame.split('-').map(Number)
+                          return new Date(year, month - 1, day).toLocaleDateString('pt-BR')
+                        })()}
                       </div>
                     </th>
                     <th className="text-right py-3 px-4 font-semibold text-gray-900">Variação</th>

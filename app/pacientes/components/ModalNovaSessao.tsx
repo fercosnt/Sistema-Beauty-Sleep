@@ -6,6 +6,7 @@ import { Calendar, Tag, Hash, FileText } from 'lucide-react'
 import { showSuccess, showError } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import { Textarea } from '@/components/ui/Textarea'
 import {
@@ -162,10 +163,22 @@ export default function ModalNovaSessao({
       }).filter(Boolean)
 
       // Prepare data for insertion
+      // Fix timezone issue: ensure date is sent as "YYYY-MM-DD" string without timezone conversion
+      // Input type="date" returns "YYYY-MM-DD" in local timezone
+      // We need to ensure it's treated as a DATE (not TIMESTAMP) to avoid timezone conversion
+      const dataSessaoString = formData.data_sessao // Format: "YYYY-MM-DD"
+      
+      // Validate date format
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dataSessaoString)) {
+        showError('Formato de data inválido')
+        setIsSubmitting(false)
+        return
+      }
+      
       const sessaoData: any = {
         paciente_id: pacienteId,
         user_id: userId,
-        data_sessao: formData.data_sessao,
+        data_sessao: dataSessaoString, // Send as string "YYYY-MM-DD" - PostgreSQL DATE type doesn't have timezone
         contador_pulsos_inicial: contadorInicial,
         contador_pulsos_final: contadorFinal,
         observacoes: formData.observacoes.trim() || null,
@@ -248,13 +261,14 @@ export default function ModalNovaSessao({
               Data da Sessão <span className="text-danger-600">*</span>
             </Label>
             <div className="relative mt-1">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
+              <DateInput
                 id="data_sessao"
-                type="date"
                 value={formData.data_sessao}
-                onChange={(e) => setFormData({ ...formData, data_sessao: e.target.value })}
+                onChange={(value) => setFormData({ ...formData, data_sessao: value })}
                 className="pl-10"
+                displayFormat="DD/MM/YYYY"
+                placeholder="DD/MM/AAAA"
                 required
                 disabled={isSubmitting}
               />

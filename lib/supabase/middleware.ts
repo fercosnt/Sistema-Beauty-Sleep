@@ -34,6 +34,35 @@ export async function updateSession(request: NextRequest) {
   // IMPORTANT: Don't remove getUser() - it refreshes the auth token
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
+  // Handle refresh token errors - these are expected when cookies are invalid/expired
+  const isRefreshTokenError = authError?.code === 'refresh_token_not_found' || 
+                              authError?.message?.includes('Invalid Refresh Token') ||
+                              authError?.message?.includes('Refresh Token Not Found')
+
+  // If refresh token is invalid and we're not on login/auth routes, clear cookies and redirect
+  if (isRefreshTokenError && 
+      !request.nextUrl.pathname.startsWith('/login') && 
+      !request.nextUrl.pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.searchParams.set('session_expired', 'true')
+    
+    // Clear auth cookies
+    const response = NextResponse.redirect(url)
+    response.cookies.delete('sb-access-token')
+    response.cookies.delete('sb-refresh-token')
+    response.cookies.delete('sb-provider-token')
+    
+    // Clear all Supabase auth cookies (they use patterns like sb-*-auth-token)
+    request.cookies.getAll().forEach((cookie) => {
+      if (cookie.name.includes('sb-') && cookie.name.includes('auth-token')) {
+        response.cookies.delete(cookie.name)
+      }
+    })
+    
+    return response
+  }
+
   // Protect routes - redirect to login if not authenticated
   // Allow access to login and auth callback routes
   if (

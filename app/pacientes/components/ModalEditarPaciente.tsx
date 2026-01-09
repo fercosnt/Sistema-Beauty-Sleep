@@ -6,6 +6,7 @@ import { User, Mail, Phone, Calendar } from 'lucide-react'
 import { showSuccess, showError } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import {
   Dialog,
@@ -233,12 +234,13 @@ export default function ModalEditarPaciente({
           <div>
             <Label htmlFor="data_nascimento">Data de Nascimento</Label>
             <div className="relative mt-1">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
+              <DateInput
                 id="data_nascimento"
-                type="date"
                 value={formData.data_nascimento}
-                onChange={(e) => setFormData({ ...formData, data_nascimento: e.target.value })}
+                onChange={(value) => setFormData({ ...formData, data_nascimento: value })}
+                displayFormat="DD/MM/YYYY"
+                placeholder="DD/MM/AAAA"
                 className="pl-10"
                 disabled={isSubmitting}
               />

@@ -121,7 +121,10 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
       const data = await response.json()
 
       if (!response.ok) {
-        showError(data.error || 'Erro ao criar usuário')
+        // Mensagem de erro mais detalhada
+        const errorMsg = data.error || 'Erro ao criar usuário'
+        console.error('Erro da API:', errorMsg)
+        showError(errorMsg)
         return
       }
 
@@ -153,9 +156,19 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
 
       onSuccess?.()
       onClose()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro inesperado ao criar usuário:', error)
-      showError('Erro inesperado ao criar usuário')
+      
+      // Mensagens de erro mais específicas
+      let errorMessage = 'Erro inesperado ao criar usuário'
+      
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('network')) {
+        errorMessage = 'Erro de conexão. Verifique sua conexão com a internet e se o servidor está rodando.'
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      showError(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

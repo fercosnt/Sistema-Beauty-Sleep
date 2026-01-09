@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table'
 import { Input } from '@/components/ui/Input'
+import { DateInput } from '@/components/ui/DateInput'
 import { Label } from '@/components/ui/Label'
 import { showError } from '@/components/ui/Toast'
 import ModalDetalhesExame from '../../components/ModalDetalhesExame'
@@ -105,7 +106,11 @@ export default function TabExames({ pacienteId }: TabExamesProps) {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR')
+    // Fix timezone issue: parse date as local date, not UTC
+    // dateString is in format "YYYY-MM-DD" from PostgreSQL DATE type
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day) // month is 0-indexed in JavaScript
+    return date.toLocaleDateString('pt-BR')
   }
 
   const getTipoLabel = (tipo: number | null) => {
@@ -248,12 +253,13 @@ export default function TabExames({ pacienteId }: TabExamesProps) {
                   Data Início
                 </Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10 pointer-events-none" />
+                  <DateInput
                     id="filtro_data_inicio"
-                    type="date"
                     value={filtroDataInicio}
-                    onChange={(e) => setFiltroDataInicio(e.target.value)}
+                    onChange={(value) => setFiltroDataInicio(value)}
+                    displayFormat="DD/MM/YYYY"
+                    placeholder="DD/MM/AAAA"
                     className="pl-10"
                   />
                 </div>
@@ -265,12 +271,13 @@ export default function TabExames({ pacienteId }: TabExamesProps) {
                   Data Fim
                 </Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10 pointer-events-none" />
+                  <DateInput
                     id="filtro_data_fim"
-                    type="date"
                     value={filtroDataFim}
-                    onChange={(e) => setFiltroDataFim(e.target.value)}
+                    onChange={(value) => setFiltroDataFim(value)}
+                    displayFormat="DD/MM/YYYY"
+                    placeholder="DD/MM/AAAA"
                     className="pl-10"
                   />
                 </div>

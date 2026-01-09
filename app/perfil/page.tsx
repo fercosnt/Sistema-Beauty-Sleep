@@ -51,6 +51,31 @@ export default function PerfilPage() {
     return roleMap[role || ''] || role || 'N/A'
   }
 
+  // Translate password error messages to friendly Portuguese
+  const translatePasswordError = (errorMessage: string): string => {
+    // Check if it's a password requirements error
+    if (errorMessage.includes('Password should contain at least one character') || 
+        errorMessage.includes('abcdefghijklmnopqrstuvwxyz')) {
+      return 'A senha deve conter pelo menos uma letra minúscula, uma letra maiúscula, um número e um caractere especial (!@#$%^&*...)'
+    }
+    
+    // Check for other common password errors
+    if (errorMessage.includes('Password should be at least')) {
+      return 'A senha deve ter pelo menos 6 caracteres'
+    }
+    
+    if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('Invalid credentials')) {
+      return 'Credenciais inválidas'
+    }
+    
+    if (errorMessage.includes('same as the old password')) {
+      return 'A nova senha deve ser diferente da senha atual'
+    }
+    
+    // Default: return original message if no translation found
+    return errorMessage
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -196,7 +221,8 @@ export default function PerfilPage() {
       
       if (updateError) {
         console.error('Erro ao atualizar senha:', updateError)
-        showError('Erro ao alterar senha: ' + updateError.message)
+        const friendlyMessage = translatePasswordError(updateError.message)
+        showError('Erro ao alterar senha: ' + friendlyMessage)
         setIsChangingPassword(false)
         return
       }

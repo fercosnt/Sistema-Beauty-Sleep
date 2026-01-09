@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { X, Filter, Calendar, Tag, Sliders } from 'lucide-react'
+import { DateInput } from '@/components/ui/DateInput'
 
 export interface FiltrosAvancadosState {
   status: string[]
@@ -259,19 +260,21 @@ export default function FiltrosAvancados({ filtros, onFiltrosChange }: FiltrosAv
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Data Inicial</label>
-                <input
-                  type="date"
+                <DateInput
                   value={filtros.dataInicio}
-                  onChange={(e) => handleDataChange('inicio', e.target.value)}
+                  onChange={(value) => handleDataChange('inicio', value)}
+                  displayFormat="DD/MM/YYYY"
+                  placeholder="DD/MM/AAAA"
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Data Final</label>
-                <input
-                  type="date"
+                <DateInput
                   value={filtros.dataFim}
-                  onChange={(e) => handleDataChange('fim', e.target.value)}
+                  onChange={(value) => handleDataChange('fim', value)}
+                  displayFormat="DD/MM/YYYY"
+                  placeholder="DD/MM/AAAA"
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>

@@ -20,7 +20,10 @@ Não há usuários cadastrados no sistema. Você precisa criar um usuário de te
    - **Email**: `admin@beautysmile.com` (ou qualquer email válido)
    - **Password**: Escolha uma senha (ex: `admin123`)
    - **Auto Confirm User**: ✅ Marque esta opção (para não precisar confirmar email)
+   - **Send invite email**: ❌ **NÃO marque** esta opção (evita erro se SMTP não estiver configurado)
 4. Clique em **Create User** (ou **Criar Usuário**)
+
+**💡 Dica:** Se você receber erro "Failed to fetch" ou "Error sending invite email", certifique-se de que **"Send invite email" está DESMARCADO**. Você não precisa enviar email para criar o usuário - apenas defina a senha manualmente.
 
 ### Passo 3: Inserir na Tabela `users`
 
@@ -90,6 +93,20 @@ Após criar o usuário:
 ---
 
 ## 🐛 Problemas Comuns
+
+### Erro: "Failed to fetch (api.supabase.com)" ou "Failed to invite user"
+
+**Causa:** Tentativa de enviar email de convite sem SMTP configurado
+
+**Solução:**
+1. Ao criar o usuário, **NÃO marque** a opção "Send invite email"
+2. Marque **"Auto Confirm User"** ✅
+3. Defina uma senha manualmente
+4. Clique em "Create User"
+
+**Alternativa:** Se você realmente precisa enviar emails, configure o SMTP primeiro (veja [Guia de Configuração SMTP](CONFIGURAR_SMTP_SUPABASE.md))
+
+---
 
 ### Erro: "Invalid login credentials"
 - Verifique se o email e senha estão corretos

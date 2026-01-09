@@ -100,8 +100,17 @@ export default function ResumoTratamento({
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
-    const date = new Date(dateString)
-    return date.toLocaleDateString('pt-BR')
+    // Fix timezone issue: if date is in "YYYY-MM-DD" format (DATE type), parse as local
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      // DATE type - parse as local date to avoid timezone conversion
+      const [year, month, day] = dateString.split('-').map(Number)
+      const date = new Date(year, month - 1, day) // month is 0-indexed
+      return date.toLocaleDateString('pt-BR')
+    } else {
+      // TIMESTAMP type - use normal parsing
+      const date = new Date(dateString)
+      return date.toLocaleDateString('pt-BR')
+    }
   }
 
   const isManutencaoAtrasada = () => {

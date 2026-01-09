@@ -190,7 +190,17 @@ export default function ModalDetalhesExame({
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
+    // Fix timezone issue: if date is in "YYYY-MM-DD" format (DATE type), parse as local
+    let date: Date
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      // DATE type - parse as local date to avoid timezone conversion
+      const [year, month, day] = dateString.split('-').map(Number)
+      date = new Date(year, month - 1, day) // month is 0-indexed
+    } else {
+      // TIMESTAMP type - use normal parsing
+      date = new Date(dateString)
+    }
+    return date.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
