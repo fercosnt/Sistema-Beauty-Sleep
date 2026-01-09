@@ -2,6 +2,28 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // Detectar tokens de recovery ou invite na URL e redirecionar para callback ou signup
+  const url = request.nextUrl.clone()
+  const token = url.searchParams.get('token')
+  const type = url.searchParams.get('type')
+  const code = url.searchParams.get('code')
+  const tokenHash = url.searchParams.get('token_hash')
+  
+  // Se for invite, redirecionar para signup
+  if ((type === 'invite' || type === 'signup' || tokenHash) && (url.pathname === '/' || url.pathname === '/login')) {
+    const signupUrl = new URL('/auth/signup', url.origin)
+    if (code) signupUrl.searchParams.set('code', code)
+    if (type) signupUrl.searchParams.set('type', type)
+    if (tokenHash) signupUrl.searchParams.set('token_hash', tokenHash)
+    return NextResponse.redirect(signupUrl)
+  }
+  
+  // Se tiver token de recovery na raiz ou login, redirecionar para callback
+  if (token && type === 'recovery' && (url.pathname === '/' || url.pathname === '/login')) {
+    url.pathname = '/auth/callback'
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })

@@ -48,6 +48,107 @@ export default function LoginPage() {
     const checkUser = async () => {
       const supabase = createClient()
       
+      // Verificar se há parâmetros de invite na query string
+      const typeParam = searchParams.get('type')
+      const codeParam = searchParams.get('code')
+      const tokenHashParam = searchParams.get('token_hash')
+      
+      // Se for invite na query string, redirecionar para signup
+      if ((typeParam === 'invite' || typeParam === 'signup') || tokenHashParam) {
+        // Redirecionar para signup com os parâmetros
+        const signupUrl = new URL('/auth/signup', window.location.origin)
+        if (codeParam) signupUrl.searchParams.set('code', codeParam)
+        if (typeParam) signupUrl.searchParams.set('type', typeParam)
+        if (tokenHashParam) signupUrl.searchParams.set('token_hash', tokenHashParam)
+        router.push(signupUrl.toString())
+        return
+      }
+      
+      // Verificar se há tokens de recovery ou invite no hash (#)
+      const hash = window.location.hash
+      if (hash) {
+        const hashParams = new URLSearchParams(hash.substring(1)) // Remove o #
+        const type = hashParams.get('type')
+        const accessToken = hashParams.get('access_token')
+        const error = hashParams.get('error')
+        const errorCode = hashParams.get('error_code')
+        
+        // Se for invite, redirecionar para página de signup
+        if (type === 'invite' || type === 'signup') {
+          // Limpar hash da URL
+          window.history.replaceState({}, '', window.location.pathname + window.location.search)
+          
+          if (accessToken) {
+            // Tem token válido, processar e redirecionar para signup
+            try {
+              const refreshToken = hashParams.get('refresh_token')
+              
+              const { error: sessionError } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken || '',
+              })
+              
+              if (!sessionError) {
+                // Redirecionar para signup com sessão válida
+                router.push('/auth/signup')
+                return
+              } else {
+                // Se houver erro na sessão, redirecionar mesmo assim para signup
+                // que tentará processar o token novamente
+                router.push('/auth/signup')
+                return
+              }
+            } catch (err) {
+              console.error('Erro ao processar tokens de invite:', err)
+              // Redirecionar para signup mesmo com erro
+              router.push('/auth/signup')
+              return
+            }
+          } else {
+            // Sem token, mas é invite - redirecionar para signup
+            router.push('/auth/signup')
+            return
+          }
+        }
+        
+        // Se for recovery (mesmo com erro), tentar processar
+        if (type === 'recovery') {
+          if (accessToken) {
+            // Tem token válido, processar
+            try {
+              const refreshToken = hashParams.get('refresh_token')
+              
+              const { error: sessionError } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken || '',
+              })
+              
+              if (!sessionError) {
+                // Limpar hash e redirecionar para reset-password
+                window.history.replaceState({}, '', window.location.pathname + window.location.search)
+                router.push('/auth/reset-password')
+                return
+              }
+            } catch (err) {
+              console.error('Erro ao processar tokens de recovery:', err)
+            }
+          }
+          
+          // Se houver erro, mostrar mensagem e redirecionar para reset-password mesmo assim
+          // para que o usuário veja a mensagem de erro na página correta
+          if (error) {
+            const errorMsg = errorCode === 'otp_expired' 
+              ? 'Link expirado. Solicite um novo link de recuperação de senha.'
+              : 'Link inválido. Solicite um novo link de recuperação de senha.'
+            
+            // Limpar hash e redirecionar para reset-password com mensagem de erro
+            window.history.replaceState({}, '', window.location.pathname + window.location.search)
+            router.push(`/auth/reset-password?error=${encodeURIComponent(errorMsg)}`)
+            return
+          }
+        }
+      }
+      
       // If logout parameter is present, force sign out first
       const logoutParam = searchParams.get('logout')
       const sessionExpired = searchParams.get('session_expired')

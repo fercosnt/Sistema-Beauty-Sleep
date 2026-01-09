@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, Copy, Check, Info } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -38,6 +38,10 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
   const [autoGeneratePassword, setAutoGeneratePassword] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string | undefined>>({})
+  const [showResetLinkModal, setShowResetLinkModal] = useState(false)
+  const [resetLink, setResetLink] = useState<string | null>(null)
+  const [resetLinkEmail, setResetLinkEmail] = useState<string>('')
+  const [linkCopied, setLinkCopied] = useState(false)
 
   const generatePassword = () => {
     // Gerar senha aleatória de 12 caracteres
@@ -128,20 +132,41 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
         return
       }
 
+      // Usar a mensagem retornada pela API (pode ser "criado" ou "atualizado")
+      const successMsg = data.message || (data.userAlreadyExists ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso!')
+      
       if (data.emailSent) {
-        showSuccess('Usuário criado com sucesso! Email de convite enviado. Verifique a caixa de entrada.')
+        showSuccess(`${successMsg} Email de convite enviado. Verifique a caixa de entrada.`)
       } else {
-        showSuccess('Usuário criado com sucesso!')
+        showSuccess(successMsg)
+        
+        // Mostrar avisos e informações sobre email
         if (data.warning) {
           setTimeout(() => {
-            showError(data.warning)
+            if (data.warning?.includes('já estava registrado')) {
+              // Caso especial: usuário já existia - mostrar como info, não erro
+              showInfo(data.warning)
+            } else if (data.isLocalEnv && data.inbucketUrl) {
+              // Ambiente local - mostrar link para Inbucket
+              showInfo(`Email pode não ter sido enviado. Verifique o Inbucket em ${data.inbucketUrl} para ver os emails capturados.`)
+            } else {
+              // Ambiente remoto - mostrar aviso sobre SMTP
+              showInfo(data.warning)
+            }
           }, 2000)
         }
+        
+        // Mostrar link de reset em um modal
         if (data.resetLink) {
-          console.log('Link de reset manual (copie e envie ao usuário):', data.resetLink)
+          setResetLink(data.resetLink)
+          setResetLinkEmail(email)
           setTimeout(() => {
-            showInfo(`Link de reset gerado. Verifique o console do navegador (F12) para copiar o link manual.`)
-          }, 3000)
+            setShowResetLinkModal(true)
+          }, 2500)
+          
+          // Também logar no console
+          console.log('🔗 Link de reset de senha (copie e envie ao usuário):', data.resetLink)
+          console.log('📧 Email do usuário:', email)
         }
       }
 
@@ -345,6 +370,91 @@ export default function ModalNovoUsuario({ isOpen, onClose, onSuccess }: ModalNo
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {/* Modal para exibir link de reset de senha */}
+      <Dialog open={showResetLinkModal} onOpenChange={setShowResetLinkModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary-600" />
+              Link de Reset de Senha Gerado
+            </DialogTitle>
+            <DialogDescription>
+              O email não foi enviado automaticamente. Copie o link abaixo e envie manualmente ao usuário.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-gray-700">Email do usuário:</Label>
+              <p className="text-sm text-gray-900 font-mono bg-gray-50 p-2 rounded border">
+                {resetLinkEmail}
+              </p>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                Link de reset de senha:
+              </Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={resetLink || ''}
+                  readOnly
+                  className="font-mono text-xs bg-gray-50"
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    if (resetLink && navigator.clipboard) {
+                      try {
+                        await navigator.clipboard.writeText(resetLink)
+                        setLinkCopied(true)
+                        setTimeout(() => setLinkCopied(false), 2000)
+                        showSuccess('Link copiado para a área de transferência!')
+                      } catch (err) {
+                        showError('Erro ao copiar link')
+                      }
+                    }
+                  }}
+                  className="flex-shrink-0"
+                >
+                  {linkCopied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-1" />
+                      Copiado!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-1" />
+                      Copiar
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Importante:</strong> Para enviar emails automaticamente no futuro, configure o SMTP no Supabase Dashboard:
+              </p>
+              <ul className="text-sm text-yellow-700 mt-2 ml-4 list-disc space-y-1">
+                <li>Vá para Settings → Auth → SMTP Settings</li>
+                <li>Configure seu servidor SMTP (SendGrid, AWS SES, Gmail, etc.)</li>
+                <li>Ou use o Inbucket local (http://localhost:54324) para desenvolvimento</li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" onClick={() => setShowResetLinkModal(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   )
 }
