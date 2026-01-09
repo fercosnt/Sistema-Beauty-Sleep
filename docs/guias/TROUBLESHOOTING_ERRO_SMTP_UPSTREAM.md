@@ -2,6 +2,10 @@
 
 Este guia ajuda a resolver o erro **"upstream"** ou **"connection failed"** ao configurar SMTP no Supabase.
 
+## ⚠️ AVISO DE SEGURANÇA
+
+**NUNCA** commite credenciais SMTP reais no Git. Este arquivo contém apenas exemplos genéricos e placeholders. Sempre use variáveis de ambiente ou secrets do Supabase para armazenar credenciais reais.
+
 ---
 
 ## 🐛 Erro Comum
@@ -49,7 +53,7 @@ Antes de começar, verifique:
 Host: smtp.sendgrid.net
 Port: 587
 Username: apikey  ← Literalmente a palavra "apikey"
-Password: SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  ← Sua API Key completa
+Password: [SUA_API_KEY_SENDGRID_COMPLETA]  ← Sua API Key completa (começa com SG.)
 Sender email: seu-email@seu-dominio.com
 Sender name: Beauty Sleep
 ```
@@ -274,7 +278,7 @@ SMTP Provider Settings:
   Port: 587
   Minimum interval per user: 60 seconds
   Username: apikey
-  Password: SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  Password: [SUA_API_KEY_SENDGRID_COMPLETA]
 ```
 
 ### Office 365

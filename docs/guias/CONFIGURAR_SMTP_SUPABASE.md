@@ -2,6 +2,10 @@
 
 Este guia explica como configurar o envio de emails no Supabase para que os emails de convite e reset de senha sejam enviados automaticamente.
 
+## ⚠️ AVISO DE SEGURANÇA
+
+**NUNCA** commite credenciais SMTP reais no Git. Este arquivo contém apenas exemplos genéricos e placeholders. Sempre use variáveis de ambiente ou secrets do Supabase para armazenar credenciais reais.
+
 ---
 
 ## 📋 Pré-requisitos
@@ -68,7 +72,7 @@ Você precisa escolher um provedor SMTP. Abaixo estão as opções mais comuns:
    - **Host:** `smtp.sendgrid.net`
    - **Port:** `587` (recomendado) ou `465` (SSL)
    - **Username:** `apikey` (literalmente a palavra "apikey")
-   - **Password:** Cole a API Key que você copiou do SendGrid
+   - **Password:** Cole a API Key completa que você copiou do SendGrid (começa com `SG.` e tem aproximadamente 70 caracteres)
 
 4. **Verificar domínio (opcional mas recomendado):**
    - No SendGrid, vá em **Settings** > **Sender Authentication**
@@ -389,7 +393,7 @@ Se você usar outro provedor (Zoho, etc.), consulte a documentação deles para:
 **Solução:**
 - **SendGrid:** 
   - Username deve ser literalmente `apikey` (não seu email)
-  - Password deve ser sua API Key completa (começa com `SG.`)
+  - Password deve ser sua API Key completa do SendGrid (obtida no dashboard)
 - **AWS SES:**
   - Use as credenciais SMTP específicas (não suas credenciais AWS normais)
   - Obtenha em: AWS Console → SES → SMTP Settings → Create SMTP credentials
@@ -480,7 +484,7 @@ SMTP Provider Settings:
   Port: 587
   Minimum interval per user: 60 seconds
   Username: apikey
-  Password: SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  Password: [SUA_API_KEY_SENDGRID_COMPLETA]
 ```
 
 ---
