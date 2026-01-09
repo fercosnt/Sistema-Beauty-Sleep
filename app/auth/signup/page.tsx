@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [email, setEmail] = useState<string>('')
+  const [emailFromToken, setEmailFromToken] = useState<string>('') // Email vindo do token (não editável)
   const [isValidatingToken, setIsValidatingToken] = useState(true)
 
   // Verificar token do convite na URL
@@ -24,14 +25,21 @@ export default function SignupPage() {
       const tokenHash = searchParams.get('token_hash')
       const type = searchParams.get('type')
 
+      console.log('[signup] Parâmetros da URL:', { code: code ? 'presente' : 'ausente', tokenHash: tokenHash ? 'presente' : 'ausente', type })
+
       // Fluxo principal: Se tiver code, trocar por sessão (Supabase já processou o token_hash)
       if (code) {
+        console.log('[signup] Processando code...')
         const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
         if (!exchangeError && data?.user) {
-          setEmail(data.user.email || '')
+          const userEmail = data.user.email || ''
+          console.log('[signup] Code processado com sucesso, email:', userEmail)
+          setEmail(userEmail)
+          setEmailFromToken(userEmail) // Marcar como email do token (não editável)
           setIsValidatingToken(false)
           return
         } else if (exchangeError) {
+          console.error('[signup] Erro ao processar code:', exchangeError)
           setError('Erro ao processar convite: ' + exchangeError.message)
           setIsValidatingToken(false)
           return
@@ -41,15 +49,20 @@ export default function SignupPage() {
       // Se tiver token_hash diretamente (sem code), o Supabase ainda não processou
       // Isso pode acontecer se o usuário acessar o link diretamente
       if (tokenHash && type === 'invite' && !code) {
+        console.log('[signup] Token_hash encontrado, verificando sessão...')
         // Verificar se já temos uma sessão válida
-        const { data: { user } } = await supabase.auth.getUser()
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
         
-        if (user) {
-          setEmail(user.email || '')
+        if (user && !userError) {
+          const userEmail = user.email || ''
+          console.log('[signup] Sessão encontrada, email:', userEmail)
+          setEmail(userEmail)
+          setEmailFromToken(userEmail) // Marcar como email do token (não editável)
           setIsValidatingToken(false)
           return
         }
 
+        console.log('[signup] Sem sessão, redirecionando para callback...')
         // Se não tiver sessão, redirecionar para callback que processará o token_hash
         // O callback redirecionará de volta para signup com code
         const callbackUrl = `/auth/callback?token_hash=${tokenHash}&type=invite`
@@ -58,25 +71,39 @@ export default function SignupPage() {
       }
 
       // Verificar se já temos uma sessão válida (usuário já autenticado)
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        setEmail(session.user.email || '')
+      console.log('[signup] Verificando sessão existente...')
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      if (session?.user && !sessionError) {
+        const userEmail = session.user.email || ''
+        console.log('[signup] Sessão encontrada, email:', userEmail)
+        setEmail(userEmail)
+        setEmailFromToken(userEmail) // Marcar como email do token (não editável)
         setIsValidatingToken(false)
         return
       }
+      
+      console.log('[signup] Nenhum token ou sessão encontrada. Permitindo cadastro manual.')
 
       // Se não tiver token válido, verificar se há email na URL
       const emailParam = searchParams.get('email')
       if (emailParam) {
         setEmail(emailParam)
+        setEmailFromToken(emailParam) // Se veio por parâmetro, também não é editável
       }
 
       // Verificar se há erro na URL
       const errorParam = searchParams.get('error')
       if (errorParam) {
-        setError(decodeURIComponent(errorParam))
+        const errorMessage = decodeURIComponent(errorParam)
+        // Só mostrar erro se for um erro específico, não erro genérico
+        if (!errorMessage.includes('inválido') && !errorMessage.includes('expirado')) {
+          setError(errorMessage)
+        }
       }
 
+      // Se não tiver code, token_hash, nem sessão, não bloquear - pode ser acesso direto
+      // O usuário pode tentar fazer cadastro mesmo assim
+      // Não mostrar erro aqui - deixar o usuário tentar fazer o cadastro
       setIsValidatingToken(false)
     }
 
@@ -163,13 +190,40 @@ export default function SignupPage() {
         }, 2000)
       }
     } else {
-      // Tentar fazer signup (caso o token não tenha sido processado ainda)
+      // Não temos sessão - tentar diferentes abordagens
+      const code = searchParams.get('code')
       const tokenHash = searchParams.get('token_hash')
       
+      // Se tiver code mas não criou sessão, tentar novamente
+      if (code) {
+        const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        
+        if (!exchangeError && exchangeData?.user) {
+          // Agora temos sessão, atualizar senha
+          const { error: updateError } = await supabase.auth.updateUser({
+            password: password,
+          })
+
+          if (updateError) {
+            const friendlyMessage = translatePasswordError(updateError.message)
+            setError(friendlyMessage)
+            setIsLoading(false)
+          } else {
+            setSuccess(true)
+            setTimeout(() => {
+              router.push('/dashboard')
+            }, 2000)
+          }
+          return
+        } else if (exchangeError) {
+          setError('Erro ao processar código de convite: ' + exchangeError.message)
+          setIsLoading(false)
+          return
+        }
+      }
+      
+      // Se tiver token_hash, tentar fazer signup com o email e senha
       if (tokenHash) {
-        // Se tiver token_hash, tentar verificar o convite
-        // O Supabase processa automaticamente quando acessamos a URL com token_hash
-        // Vamos tentar fazer o signup com o email e senha
         const { data, error: signupError } = await supabase.auth.signUp({
           email: formEmail,
           password: password,
@@ -189,8 +243,47 @@ export default function SignupPage() {
           }, 2000)
         }
       } else {
-        setError('Link de convite inválido ou expirado. Solicite um novo convite.')
-        setIsLoading(false)
+        // Sem code nem token_hash - pode ser que o usuário esteja acessando diretamente
+        // Tentar fazer signup normal (pode funcionar se o usuário foi criado mas não tem senha)
+        const { data, error: signupError } = await supabase.auth.signUp({
+          email: formEmail,
+          password: password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          }
+        })
+
+        if (signupError) {
+          // Se der erro de "already registered", tentar fazer login e depois atualizar senha
+          if (signupError.message.includes('already registered') || 
+              signupError.message.includes('already been registered')) {
+            // Tentar fazer sign in para ver se consegue autenticar
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+              email: formEmail,
+              password: password,
+            })
+            
+            if (!signInError && signInData?.user) {
+              // Login funcionou, redirecionar
+              setSuccess(true)
+              setTimeout(() => {
+                router.push('/dashboard')
+              }, 2000)
+            } else {
+              setError('Este email já está cadastrado, mas a senha informada está incorreta. Use a opção "Esqueci minha senha" para redefinir.')
+              setIsLoading(false)
+            }
+          } else {
+            const friendlyMessage = translatePasswordError(signupError.message)
+            setError(friendlyMessage)
+            setIsLoading(false)
+          }
+        } else if (data?.user) {
+          setSuccess(true)
+          setTimeout(() => {
+            router.push('/dashboard')
+          }, 2000)
+        }
       }
     }
   }
@@ -266,7 +359,7 @@ export default function SignupPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="seu@email.com"
                         required
-                        disabled={isLoading || !!email}
+                        disabled={isLoading || !!emailFromToken}
                         className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-10"
                       />
                     </div>
