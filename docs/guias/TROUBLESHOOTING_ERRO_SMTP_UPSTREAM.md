@@ -77,7 +77,7 @@ Sender name: Beauty Sleep
 ```
 Host: email-smtp.us-east-1.amazonaws.com  ← Use sua região
 Port: 587
-Username: AKIAIOSFODNN7EXAMPLE  ← Credenciais SMTP específicas
+Username: [SEU_USERNAME_SMTP_AWS]  ← Credenciais SMTP específicas
 Password: [SUA_SENHA_SMTP_AWS]  ← Senha SMTP
 Sender email: seu-email@seu-dominio.com
 Sender name: Beauty Sleep
