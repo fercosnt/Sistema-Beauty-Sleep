@@ -201,10 +201,14 @@ export default function SignupPage() {
           
           if (confirmResponse.ok && confirmData.success) {
             console.log('[signup] Email confirmado com sucesso via API')
-            // Aguardar um pouco para a confirmação ser processada
-            await new Promise(resolve => setTimeout(resolve, 500))
+            // Aguardar mais tempo para garantir que a confirmação foi processada
+            await new Promise(resolve => setTimeout(resolve, 1000))
             // Atualizar a sessão para refletir a confirmação
             await supabase.auth.refreshSession()
+            
+            // Verificar novamente se está confirmado
+            const { data: { user: recheckUser } } = await supabase.auth.getUser()
+            console.log('[signup] Email confirmado após refresh?', recheckUser?.email_confirmed_at ? 'Sim' : 'Não')
           } else {
             console.warn('[signup] Erro ao confirmar email via API:', confirmData.error)
             // Continuar mesmo assim - vamos tentar atualizar a senha
