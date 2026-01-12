@@ -169,6 +169,13 @@ export default function LoginPage() {
       }
       
       // Check if user is already logged in (with fresh check)
+      // MAS: não redirecionar se houver erro na URL (significa que o login falhou)
+      const errorParam = searchParams.get('error')
+      if (errorParam) {
+        // Se houver erro, não verificar usuário logado (evita loop)
+        return
+      }
+      
       const { data: { user }, error } = await supabase.auth.getUser()
       
       // Only redirect if user exists and no error
@@ -223,14 +230,20 @@ export default function LoginPage() {
     
     try {
       await login(formData)
+      // Se o login for bem-sucedido, o redirect vai acontecer
+      // Não resetar isLoading aqui porque a página vai ser redirecionada
     } catch (err: any) {
       console.error('[login] Erro ao processar login:', err)
       setError(err.message || 'Erro ao fazer login. Tente novamente.')
-      setIsLoading(false)
+      setIsLoading(false) // IMPORTANTE: resetar loading em caso de erro
     }
     
-    // Não definir setIsLoading(false) aqui porque o redirect vai acontecer
-    // Se não houver redirect, o erro será mostrado via URL params no useEffect
+    // Se chegou aqui sem redirect, significa que houve erro
+    // O erro será mostrado via URL params no useEffect, mas garantimos que isLoading está false
+    // Adicionar um timeout de segurança para garantir que isLoading seja resetado
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 3000) // Timeout de segurança de 3 segundos
   }
 
   const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {

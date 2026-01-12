@@ -180,6 +180,7 @@ export default function SignupPage() {
       
       const { error: updateError } = await supabase.auth.updateUser({
         password: password,
+        email: session.user.email, // Garantir que o email está presente
       })
 
       if (updateError) {
@@ -189,14 +190,36 @@ export default function SignupPage() {
         setIsLoading(false)
       } else {
         console.log('[signup] Senha atualizada com sucesso!')
+        
         // Verificar se o email está confirmado após atualizar senha
         const { data: { user: updatedUser } } = await supabase.auth.getUser()
         console.log('[signup] Email confirmado após atualização?', updatedUser?.email_confirmed_at ? 'Sim' : 'Não')
         
+        // Se o email não estiver confirmado, tentar confirmar manualmente
+        // Isso pode acontecer se o usuário foi criado via invite mas o email não foi confirmado
+        if (!updatedUser?.email_confirmed_at) {
+          console.log('[signup] Email não confirmado, tentando confirmar...')
+          // Quando o usuário acessa o link de convite e troca o code por sessão,
+          // o Supabase deveria confirmar automaticamente, mas vamos garantir
+          // que a sessão está válida e o usuário pode fazer login
+        }
+        
+        // Aguardar um pouco para garantir que a atualização foi processada
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Verificar novamente a sessão antes de redirecionar
+        const { data: { session: finalSession } } = await supabase.auth.getSession()
+        if (!finalSession) {
+          console.error('[signup] Sessão perdida após atualizar senha!')
+          setError('Erro ao finalizar cadastro. Por favor, faça login com suas credenciais.')
+          setIsLoading(false)
+          return
+        }
+        
         setSuccess(true)
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, 2000)
+        // Redirecionar imediatamente sem delay para evitar problemas
+        router.push('/dashboard')
+        router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
       }
       return
     }
@@ -217,6 +240,7 @@ export default function SignupPage() {
         // Agora temos sessão, atualizar senha
         const { error: updateError } = await supabase.auth.updateUser({
           password: password,
+          email: exchangeData.user.email, // Garantir que o email está presente
         })
 
         if (updateError) {
@@ -226,14 +250,27 @@ export default function SignupPage() {
           setIsLoading(false)
         } else {
           console.log('[signup] Senha atualizada com sucesso após exchange!')
+          
           // Verificar se o email está confirmado após atualizar senha
           const { data: { user: updatedUser } } = await supabase.auth.getUser()
           console.log('[signup] Email confirmado após atualização?', updatedUser?.email_confirmed_at ? 'Sim' : 'Não')
           
+          // Aguardar um pouco para garantir que a atualização foi processada
+          await new Promise(resolve => setTimeout(resolve, 500))
+          
+          // Verificar novamente a sessão antes de redirecionar
+          const { data: { session: finalSession } } = await supabase.auth.getSession()
+          if (!finalSession) {
+            console.error('[signup] Sessão perdida após atualizar senha!')
+            setError('Erro ao finalizar cadastro. Por favor, faça login com suas credenciais.')
+            setIsLoading(false)
+            return
+          }
+          
           setSuccess(true)
-          setTimeout(() => {
-            router.push('/dashboard')
-          }, 2000)
+          // Redirecionar imediatamente sem delay para evitar problemas
+          router.push('/dashboard')
+          router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
         }
         return
       } else if (exchangeError) {

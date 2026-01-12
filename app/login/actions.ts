@@ -20,12 +20,25 @@ export async function login(formData: FormData) {
     console.error('[login] Erro no login:', error.message)
     // Normalizar email para evitar problemas de case sensitivity
     const normalizedEmail = data.email?.toLowerCase().trim()
-    redirect(`/login?error=${encodeURIComponent(error.message)}&email=${encodeURIComponent(normalizedEmail || '')}`)
+    
+    // Verificar se o erro é relacionado a email não confirmado
+    if (error.message.includes('email not confirmed') || error.message.includes('Email not confirmed')) {
+      redirect(`/login?error=${encodeURIComponent('Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.')}&email=${encodeURIComponent(normalizedEmail || '')}`)
+    } else {
+      redirect(`/login?error=${encodeURIComponent(error.message)}&email=${encodeURIComponent(normalizedEmail || '')}`)
+    }
   }
 
   if (!signInData?.user) {
     console.error('[login] Login retornou sem usuário')
     redirect('/login?error=' + encodeURIComponent('Erro ao fazer login. Tente novamente.'))
+  }
+
+  // Verificar se o email está confirmado
+  if (!signInData.user.email_confirmed_at) {
+    console.warn('[login] Usuário logado mas email não confirmado:', signInData.user.email)
+    // Mesmo assim, permitir login se a sessão foi criada
+    // O usuário pode precisar confirmar o email depois
   }
 
   console.log('[login] Login bem-sucedido para:', signInData.user.email)
