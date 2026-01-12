@@ -124,7 +124,7 @@ export default function PerfilPage() {
     if (!flow) return
 
     import('@/components/OnboardingTour').then(({ startPerfilTour }) => {
-      startPerfilTour(userData.role as 'admin' | 'equipe' | 'recepcao')
+      startPerfilTour(userData.role as 'admin' | 'equipe' | 'recepcao', flow)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, userData?.role])
@@ -376,7 +376,7 @@ export default function PerfilPage() {
         {/* Configuration Sections */}
         <div className="space-y-6">
         {/* Informações Pessoais */}
-        <Card>
+        <Card data-tour="perfil-dados">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary-600" />
@@ -436,7 +436,7 @@ export default function PerfilPage() {
         </Card>
 
         {/* Alterar Senha */}
-        <Card>
+        <Card data-tour="perfil-senha">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-primary-600" />

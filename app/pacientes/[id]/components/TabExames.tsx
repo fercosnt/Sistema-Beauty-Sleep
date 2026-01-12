@@ -212,7 +212,7 @@ export default function TabExames({ pacienteId }: TabExamesProps) {
 
   return (
     <>
-      <Card>
+      <Card data-tour="paciente-exames">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Exames</CardTitle>

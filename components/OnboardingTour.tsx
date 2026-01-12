@@ -110,14 +110,17 @@ export function startTour(role: 'admin' | 'equipe' | 'recepcao') {
 }
 
 // Tour da página Perfil (admin/equipe)
-export function startPerfilTour(role: 'admin' | 'equipe' | 'recepcao') {
+export function startPerfilTour(
+  role: 'admin' | 'equipe' | 'recepcao',
+  flow: 'admin' | 'equipe',
+) {
   if (Shepherd.activeTour) {
     Shepherd.activeTour.cancel()
   }
   const steps: ShepherdStepOptions[] = [
     {
       id: 'perfil-header',
-      text: 'Aqui você vê suas informações de perfil, role e status de acesso.',
+      text: 'Aqui você vê suas informações de perfil, role e status de acesso. Você pode atualizar seu nome e alterar sua senha.',
       title: 'Seu Perfil',
       attachTo: {
         element: 'main',
@@ -125,9 +128,56 @@ export function startPerfilTour(role: 'admin' | 'equipe' | 'recepcao') {
       },
       buttons: [
         {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'perfil-dados',
+      text: 'Atualize seu nome e email aqui. O email é usado para login e notificações.',
+      title: 'Dados Pessoais',
+      attachTo: {
+        element: '[data-tour="perfil-dados"]',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'perfil-senha',
+      text: 'Altere sua senha aqui quando necessário. A senha deve ter pelo menos 6 caracteres e conter letras maiúsculas, minúsculas, números e caracteres especiais.',
+      title: 'Alterar Senha',
+      attachTo: {
+        element: '[data-tour="perfil-senha"]',
+        on: 'top',
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
           text: 'Concluir',
           action: function (this: any) {
-            return this.complete()
+            this.complete()
+            // Tour completo - não navega mais
           },
         },
       ],
@@ -215,7 +265,7 @@ export function startConfigTour(
           text: 'Próximo',
           action: function (this: any) {
             this.complete()
-            window.location.href = `/perfil?tourFlow=${flow}`
+            window.location.href = `/configuracoes?tourFlow=${flow}`
           },
         },
       ],
@@ -279,7 +329,7 @@ export function startLogsTour(role: 'admin') {
           text: 'Próximo',
           action: function (this: any) {
             this.complete()
-            window.location.href = '/configuracoes?tourFlow=admin'
+            window.location.href = '/usuarios?tourFlow=admin'
           },
         },
       ],
@@ -787,6 +837,49 @@ export function startPacienteDetailTour(
       attachTo: {
         element: '[data-tour="paciente-dashboards"]',
         on: 'top',
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'paciente-exames',
+      text: 'Na aba "Exames", você vê todos os exames sincronizados do Biologix. Use os filtros para buscar por tipo (Ronco/Sono) ou período. Clique em "Ver Detalhes" para ver informações completas do exame, incluindo IDO, score de ronco e outros dados. Você também pode baixar o PDF do relatório quando disponível.',
+      title: 'Detalhes dos Exames',
+      attachTo: {
+        element: '[data-tour="paciente-exames"]',
+        on: 'top',
+      },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          // Garantir que a aba de exames está ativa
+          const examesTab = document.querySelector('button[data-tab="exames"]')
+          if (examesTab) {
+            (examesTab as HTMLElement).click()
+          }
+          setTimeout(() => {
+            const checkElement = () => {
+              const element = document.querySelector('[data-tour="paciente-exames"]')
+              if (element) {
+                resolve(undefined)
+              } else {
+                setTimeout(checkElement, 100)
+              }
+            }
+            checkElement()
+          }, 300)
+        })
       },
       buttons: [
         {
