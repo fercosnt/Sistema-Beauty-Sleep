@@ -47,9 +47,12 @@ async function testSMTP(email: string) {
   try {
     // Passo 1: Verificar se o email já existe
     console.log('1️⃣ Verificando se o email já existe...')
-    const { data: existingUser } = await supabaseAdmin.auth.admin.getUserByEmail(email)
+    const { data: usersList } = await supabaseAdmin.auth.admin.listUsers()
+    const existingUser = usersList?.users?.find(u => 
+      u.email && u.email.toLowerCase().trim() === email.toLowerCase().trim()
+    )
     
-    if (existingUser?.user) {
+    if (existingUser) {
       console.log('⚠️  Email já existe. Vamos deletar para criar um novo teste...')
       await supabaseAdmin.auth.admin.deleteUser(existingUser.user.id)
       console.log('✅ Usuário antigo removido\n')
