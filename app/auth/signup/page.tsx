@@ -564,9 +564,42 @@ export default function SignupPage() {
 
     // Sem sessão, code ou token_hash válido
     // Se o email foi preenchido automaticamente (veio de token), significa que deveria ter sessão
+    // Mas pode ser que o link de convite não tenha sido processado ainda
     if (emailFromToken) {
       console.error('[signup] Email veio de token mas não há sessão válida')
-      setError('Link de convite inválido ou expirado. Por favor, solicite um novo convite ou use o link do email novamente.')
+      console.log('[signup] Tentando processar link de convite novamente...')
+      
+      // Tentar verificar se há tokens no hash que não foram processados
+      const hash = window.location.hash
+      if (hash) {
+        const hashParams = new URLSearchParams(hash.substring(1))
+        const hashAccessToken = hashParams.get('access_token')
+        const hashRefreshToken = hashParams.get('refresh_token')
+        const hashType = hashParams.get('type')
+        
+        if (hashAccessToken && (hashType === 'invite' || hashType === 'signup')) {
+          console.log('[signup] Encontrado access_token no hash, criando sessão...')
+          try {
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token: hashAccessToken,
+              refresh_token: hashRefreshToken || '',
+            })
+            
+            if (!sessionError) {
+              // Limpar hash e tentar novamente
+              window.history.replaceState({}, '', window.location.pathname + window.location.search)
+              // Recarregar a página para processar novamente
+              window.location.reload()
+              return
+            }
+          } catch (hashError) {
+            console.error('[signup] Erro ao processar hash:', hashError)
+          }
+        }
+      }
+      
+      // Se não conseguiu processar, mostrar erro mas permitir que o usuário tente usar "Esqueci minha senha"
+      setError('Link de convite inválido ou expirado. Use "Esqueci minha senha" para redefinir sua senha ou solicite um novo convite.')
       setIsLoading(false)
       return
     }
