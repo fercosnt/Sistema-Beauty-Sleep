@@ -80,7 +80,7 @@ async function testInvitePassword(email: string) {
     }
 
     // 2. Testar login com senha de teste
-    const testPassword = 'Henri331!@#'
+    let testPassword = 'Henri331!@#'
     console.log(`\n🔑 Testando login com senha: ${testPassword}`)
     
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -132,8 +132,6 @@ async function testInvitePassword(email: string) {
         } else {
           console.log(`   ✅ Senha atualizada via Admin API`)
         }
-
-        console.log(`   ✅ Senha atualizada via Admin API`)
         
         // Aguardar um pouco
         await new Promise(resolve => setTimeout(resolve, 2000))
