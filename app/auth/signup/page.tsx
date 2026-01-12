@@ -175,116 +175,123 @@ export default function SignupPage() {
     
     if (session?.user) {
       // Usuário já está autenticado via convite, apenas atualizar senha
+      console.log('[signup] Usuário tem sessão, atualizando senha...')
+      console.log('[signup] Email confirmado?', session.user.email_confirmed_at ? 'Sim' : 'Não')
+      
       const { error: updateError } = await supabase.auth.updateUser({
         password: password,
       })
 
       if (updateError) {
+        console.error('[signup] Erro ao atualizar senha:', updateError)
         const friendlyMessage = translatePasswordError(updateError.message)
         setError(friendlyMessage)
         setIsLoading(false)
       } else {
+        console.log('[signup] Senha atualizada com sucesso!')
+        // Verificar se o email está confirmado após atualizar senha
+        const { data: { user: updatedUser } } = await supabase.auth.getUser()
+        console.log('[signup] Email confirmado após atualização?', updatedUser?.email_confirmed_at ? 'Sim' : 'Não')
+        
         setSuccess(true)
         setTimeout(() => {
           router.push('/dashboard')
         }, 2000)
       }
-    } else {
-      // Não temos sessão - tentar diferentes abordagens
-      const code = searchParams.get('code')
-      const tokenHash = searchParams.get('token_hash')
-      
-      // Se tiver code mas não criou sessão, tentar novamente
-      if (code) {
-        const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-        
-        if (!exchangeError && exchangeData?.user) {
-          // Agora temos sessão, atualizar senha
-          const { error: updateError } = await supabase.auth.updateUser({
-            password: password,
-          })
+      return
+    }
 
-          if (updateError) {
-            const friendlyMessage = translatePasswordError(updateError.message)
-            setError(friendlyMessage)
-            setIsLoading(false)
-          } else {
-            setSuccess(true)
-            setTimeout(() => {
-              router.push('/dashboard')
-            }, 2000)
-          }
-          return
-        } else if (exchangeError) {
-          setError('Erro ao processar código de convite: ' + exchangeError.message)
-          setIsLoading(false)
-          return
-        }
-      }
+    // Não temos sessão - tentar obter sessão via code ou token_hash
+    const code = searchParams.get('code')
+    const tokenHash = searchParams.get('token_hash')
+    
+    // Se tiver code, tentar trocar por sessão
+    if (code) {
+      console.log('[signup] Tentando trocar code por sessão...')
+      const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
       
-      // Se tiver token_hash, tentar fazer signup com o email e senha
-      if (tokenHash) {
-        const { data, error: signupError } = await supabase.auth.signUp({
-          email: formEmail,
+      if (!exchangeError && exchangeData?.user) {
+        console.log('[signup] Sessão obtida via code, atualizando senha...')
+        console.log('[signup] Email confirmado?', exchangeData.user.email_confirmed_at ? 'Sim' : 'Não')
+        
+        // Agora temos sessão, atualizar senha
+        const { error: updateError } = await supabase.auth.updateUser({
           password: password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          }
         })
 
-        if (signupError) {
-          const friendlyMessage = translatePasswordError(signupError.message)
+        if (updateError) {
+          console.error('[signup] Erro ao atualizar senha após exchange:', updateError)
+          const friendlyMessage = translatePasswordError(updateError.message)
           setError(friendlyMessage)
           setIsLoading(false)
-        } else if (data?.user) {
+        } else {
+          console.log('[signup] Senha atualizada com sucesso após exchange!')
+          // Verificar se o email está confirmado após atualizar senha
+          const { data: { user: updatedUser } } = await supabase.auth.getUser()
+          console.log('[signup] Email confirmado após atualização?', updatedUser?.email_confirmed_at ? 'Sim' : 'Não')
+          
           setSuccess(true)
           setTimeout(() => {
             router.push('/dashboard')
           }, 2000)
         }
-      } else {
-        // Sem code nem token_hash - pode ser que o usuário esteja acessando diretamente
-        // Tentar fazer signup normal (pode funcionar se o usuário foi criado mas não tem senha)
-        const { data, error: signupError } = await supabase.auth.signUp({
-          email: formEmail,
-          password: password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          }
-        })
-
-        if (signupError) {
-          // Se der erro de "already registered", tentar fazer login e depois atualizar senha
-          if (signupError.message.includes('already registered') || 
-              signupError.message.includes('already been registered')) {
-            // Tentar fazer sign in para ver se consegue autenticar
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-              email: formEmail,
-              password: password,
-            })
-            
-            if (!signInError && signInData?.user) {
-              // Login funcionou, redirecionar
-              setSuccess(true)
-              setTimeout(() => {
-                router.push('/dashboard')
-              }, 2000)
-            } else {
-              setError('Este email já está cadastrado, mas a senha informada está incorreta. Use a opção "Esqueci minha senha" para redefinir.')
-              setIsLoading(false)
-            }
-          } else {
-            const friendlyMessage = translatePasswordError(signupError.message)
-            setError(friendlyMessage)
-            setIsLoading(false)
-          }
-        } else if (data?.user) {
-          setSuccess(true)
-          setTimeout(() => {
-            router.push('/dashboard')
-          }, 2000)
-        }
+        return
+      } else if (exchangeError) {
+        console.error('[signup] Erro ao trocar code por sessão:', exchangeError)
+        setError('Erro ao processar código de convite: ' + exchangeError.message + '. Por favor, use o link de convite novamente.')
+        setIsLoading(false)
+        return
       }
+    }
+    
+    // Se tiver token_hash mas não code, redirecionar para callback
+    if (tokenHash && !code) {
+      console.log('[signup] Token_hash encontrado sem code, redirecionando para callback...')
+      setError('Processando convite... Por favor, aguarde.')
+      const callbackUrl = `/auth/callback?token_hash=${tokenHash}&type=invite`
+      window.location.href = callbackUrl
+      return
+    }
+
+    // Sem sessão, code ou token_hash válido
+    // Se o email foi preenchido automaticamente (veio de token), significa que deveria ter sessão
+    if (emailFromToken) {
+      console.error('[signup] Email veio de token mas não há sessão válida')
+      setError('Link de convite inválido ou expirado. Por favor, solicite um novo convite ou use o link do email novamente.')
+      setIsLoading(false)
+      return
+    }
+
+    // Caso contrário, tentar fazer signup normal (cadastro direto, sem convite)
+    console.log('[signup] Tentando cadastro direto (sem convite)...')
+    const { data, error: signupError } = await supabase.auth.signUp({
+      email: formEmail,
+      password: password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }
+    })
+
+    if (signupError) {
+      console.error('[signup] Erro no signup:', signupError)
+      // Se der erro de "already registered", o usuário já existe
+      if (signupError.message.includes('already registered') || 
+          signupError.message.includes('already been registered')) {
+        setError('Este email já está cadastrado. Se você foi convidado, use o link do email de convite. Caso contrário, faça login ou use "Esqueci minha senha".')
+      } else {
+        const friendlyMessage = translatePasswordError(signupError.message)
+        setError(friendlyMessage)
+      }
+      setIsLoading(false)
+    } else if (data?.user) {
+      console.log('[signup] Cadastro direto realizado com sucesso!')
+      setSuccess(true)
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 2000)
+    } else {
+      setError('Erro desconhecido ao criar conta. Tente novamente.')
+      setIsLoading(false)
     }
   }
 

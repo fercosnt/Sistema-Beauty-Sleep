@@ -180,26 +180,57 @@ export default function LoginPage() {
     
     checkUser()
 
-    // Get error/message from URL params
+    // Get error/message from URL params (executar sempre que searchParams mudar)
     const errorParam = searchParams.get('error')
     const messageParam = searchParams.get('message')
+    
     if (errorParam) {
       // Traduzir mensagens de erro do Supabase para português
-      const translatedError = translateError(errorParam)
+      const decodedError = decodeURIComponent(errorParam)
+      const translatedError = translateError(decodedError)
+      console.log('[login] Erro encontrado na URL:', decodedError, 'Traduzido:', translatedError)
       setError(translatedError)
+      // Limpar o parâmetro da URL após exibir o erro (mas manter o estado)
+      setTimeout(() => {
+        const newUrl = new URL(window.location.href)
+        newUrl.searchParams.delete('error')
+        window.history.replaceState({}, '', newUrl.toString())
+      }, 100)
+    } else {
+      // Se não há erro na URL, não limpar o estado de erro (pode ter sido definido pelo handleLogin)
     }
-    if (messageParam) setMessage(messageParam)
+    
+    if (messageParam) {
+      const decodedMessage = decodeURIComponent(messageParam)
+      console.log('[login] Mensagem encontrada na URL:', decodedMessage)
+      setMessage(decodedMessage)
+      // Limpar o parâmetro da URL após exibir a mensagem
+      setTimeout(() => {
+        const newUrl = new URL(window.location.href)
+        newUrl.searchParams.delete('message')
+        window.history.replaceState({}, '', newUrl.toString())
+      }, 100)
+    }
   }, [router, searchParams])
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+    setMessage(null)
     
     const formData = new FormData(e.currentTarget)
-    await login(formData)
     
-    setIsLoading(false)
+    try {
+      await login(formData)
+    } catch (err: any) {
+      console.error('[login] Erro ao processar login:', err)
+      setError(err.message || 'Erro ao fazer login. Tente novamente.')
+      setIsLoading(false)
+    }
+    
+    // Não definir setIsLoading(false) aqui porque o redirect vai acontecer
+    // Se não houver redirect, o erro será mostrado via URL params no useEffect
   }
 
   const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {

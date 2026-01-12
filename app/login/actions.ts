@@ -12,12 +12,23 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  console.log('[login] Tentando fazer login para:', data.email)
+
+  const { data: signInData, error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/login?error=' + encodeURIComponent(error.message))
+    console.error('[login] Erro no login:', error.message)
+    // Normalizar email para evitar problemas de case sensitivity
+    const normalizedEmail = data.email?.toLowerCase().trim()
+    redirect(`/login?error=${encodeURIComponent(error.message)}&email=${encodeURIComponent(normalizedEmail || '')}`)
   }
 
+  if (!signInData?.user) {
+    console.error('[login] Login retornou sem usuário')
+    redirect('/login?error=' + encodeURIComponent('Erro ao fazer login. Tente novamente.'))
+  }
+
+  console.log('[login] Login bem-sucedido para:', signInData.user.email)
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
