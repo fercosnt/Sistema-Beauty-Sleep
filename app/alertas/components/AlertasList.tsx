@@ -82,14 +82,20 @@ export default function AlertasList() {
 
     // Aguardar um pouco para garantir que os elementos estejam renderizados
     const timer = setTimeout(() => {
+      // Verificar se os elementos existem antes de iniciar o tour
+      const cardElement = document.querySelector('[data-tour="alertas-card"]')
+      console.log('[AlertasList] Elemento encontrado:', cardElement)
+      console.log('[AlertasList] filteredAlertas.length:', filteredAlertas.length)
+      console.log('[AlertasList] paginatedAlertas.length:', paginatedAlertas.length)
+      
       // Importação dinâmica para evitar problemas de SSR
       import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
         startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
       })
-    }, 500)
+    }, 1000)
 
     return () => clearTimeout(timer)
-  }, [searchParams, userRole])
+  }, [searchParams, userRole, filteredAlertas, paginatedAlertas])
 
   // Aplicar filtros
   useEffect(() => {

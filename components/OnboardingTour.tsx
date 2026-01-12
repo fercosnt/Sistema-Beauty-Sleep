@@ -878,6 +878,20 @@ export function startAlertasTour(
         element: '[data-tour="alertas-card"]',
         on: 'top',
       },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alertas-card"]')
+            console.log('[Tour] Procurando elemento alertas-card:', element)
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
+      },
       buttons: [
         {
           text: 'Voltar',
