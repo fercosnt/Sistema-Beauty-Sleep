@@ -22,6 +22,15 @@ export function OnboardingTour({ role, tourCompleted, userId }: OnboardingTourPr
     // Only start tour if not completed
     if (tourCompleted) return
 
+    // Não iniciar tour se já houver um tourFlow ativo (tour guiado em andamento)
+    const urlParams = new URLSearchParams(window.location.search)
+    const tourFlow = urlParams.get('tourFlow')
+    const showNotifications = urlParams.get('showNotifications')
+    if (tourFlow || showNotifications) {
+      // Já estamos em um fluxo de tour guiado, não iniciar o tour inicial
+      return
+    }
+
     // Wait for DOM to be ready
     const timer = setTimeout(() => {
       const steps = getTourSteps(role)
