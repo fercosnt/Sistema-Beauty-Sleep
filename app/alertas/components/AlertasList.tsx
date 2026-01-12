@@ -110,7 +110,8 @@ export default function AlertasList() {
       setIsLoading(true)
       const supabase = createClient()
 
-      const { data, error } = await supabase
+      // Buscar alertas sem join para evitar erro 406
+      const { data: alertasData, error: alertasError } = await supabase
         .from('alertas')
         .select(`
           id,
@@ -122,25 +123,48 @@ export default function AlertasList() {
           paciente_id,
           exame_id,
           created_at,
-          resolvido_em,
-          pacientes(id, nome)
+          resolvido_em
         `)
         .order('created_at', { ascending: false })
 
-      if (error) {
-        console.error('Erro ao buscar alertas:', error)
+      if (alertasError) {
+        console.error('Erro ao buscar alertas:', alertasError)
         showError('Erro ao carregar alertas')
         setAlertas([])
-      } else {
-        // Transformar dados para o formato esperado
-        const alertasFormatados = (data || []).map((alerta: any) => ({
-          ...alerta,
-          pacientes: Array.isArray(alerta.pacientes) && alerta.pacientes.length > 0
-            ? alerta.pacientes[0]
-            : null
-        }))
-        setAlertas(alertasFormatados)
+        return
       }
+
+      // Buscar pacientes separadamente para evitar erro 406
+      const pacienteIds = (alertasData || [])
+        .map(a => a.paciente_id)
+        .filter((id): id is string => id !== null)
+      
+      let pacientesMap: Record<string, PacienteInfo> = {}
+      
+      if (pacienteIds.length > 0) {
+        const { data: pacientesData, error: pacientesError } = await supabase
+          .from('pacientes')
+          .select('id, nome')
+          .in('id', pacienteIds)
+
+        if (pacientesError) {
+          console.error('Erro ao buscar pacientes:', pacientesError)
+          // Continuar mesmo se houver erro ao buscar pacientes
+        } else {
+          pacientesMap = (pacientesData || []).reduce((acc, p) => {
+            acc[p.id] = p
+            return acc
+          }, {} as Record<string, PacienteInfo>)
+        }
+      }
+
+      // Combinar alertas com pacientes
+      const alertasFormatados = (alertasData || []).map((alerta: any) => ({
+        ...alerta,
+        pacientes: alerta.paciente_id ? pacientesMap[alerta.paciente_id] || null : null
+      }))
+      
+      setAlertas(alertasFormatados)
     } catch (error) {
       console.error('Erro ao buscar alertas:', error)
       showError('Erro ao carregar alertas')
