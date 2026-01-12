@@ -199,7 +199,7 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
             </div>
 
             {/* Metadados em grid - mais destacado */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200" data-tour="alerta-metadados">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">Tipo:</span>
@@ -249,7 +249,7 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
             )}
 
             {/* Ações */}
-            <div className="mt-5 relative">
+            <div className="mt-5 relative" data-tour="alerta-acoes">
               <div className="flex items-center gap-2">
                 {alerta.paciente_id && (
                   <Link href={`/pacientes/${alerta.paciente_id}`}>
