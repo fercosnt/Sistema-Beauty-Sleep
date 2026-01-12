@@ -246,9 +246,10 @@ export default function SignupPage() {
         console.log('[signup] Senha atualizada com sucesso via API!')
         console.log('[signup] Dados retornados pela API:', updatePasswordData)
         
-        // IMPORTANTE: Aguardar um pouco mais para garantir que a senha foi salva no banco
-        console.log('[signup] Aguardando processamento da senha...')
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        // IMPORTANTE: Aguardar mais tempo para garantir que a senha foi salva no banco
+        // O Supabase pode levar alguns segundos para processar a atualização de senha
+        console.log('[signup] Aguardando processamento da senha (4 segundos)...')
+        await new Promise(resolve => setTimeout(resolve, 4000))
         
         // Atualizar a sessão para refletir as mudanças
         await supabase.auth.refreshSession()
@@ -267,15 +268,15 @@ export default function SignupPage() {
         return
       }
       
-      // Aguardar um pouco para garantir que a atualização foi processada
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Aguardar mais um pouco para garantir que tudo foi processado
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       // Verificar novamente o usuário após atualização
       const { data: { user: updatedUser }, error: getUserError } = await supabase.auth.getUser()
       
       if (getUserError) {
         console.error('[signup] Erro ao buscar usuário após atualização:', getUserError)
-        setError('Erro ao verificar cadastro. Por favor, tente fazer login.')
+        setError('Erro ao verificar cadastro. Por favor, aguarde alguns segundos e tente fazer login.')
         setIsLoading(false)
         return
       }
@@ -303,7 +304,7 @@ export default function SignupPage() {
           
           if (confirmResponse.ok && confirmData.success) {
             console.log('[signup] Email confirmado na segunda tentativa')
-            await new Promise(resolve => setTimeout(resolve, 500))
+            await new Promise(resolve => setTimeout(resolve, 1000))
             await supabase.auth.refreshSession()
           }
         } catch (confirmError) {
@@ -315,16 +316,22 @@ export default function SignupPage() {
       const { data: { session: finalSession } } = await supabase.auth.getSession()
       if (!finalSession) {
         console.error('[signup] Sessão perdida após atualizar senha!')
-        setError('Erro ao finalizar cadastro. Por favor, faça login com suas credenciais.')
-        setIsLoading(false)
+        // Não mostrar erro - apenas redirecionar para login
+        // A senha foi salva, mas a sessão pode ter expirado
+        setSuccess(true)
+        setTimeout(() => {
+          router.push('/login?message=' + encodeURIComponent('Cadastro concluído! Aguarde alguns segundos antes de fazer login para que a senha seja processada.'))
+        }, 2000)
         return
       }
       
       console.log('[signup] Sessão final válida, redirecionando para dashboard...')
       setSuccess(true)
-      // Redirecionar imediatamente sem delay para evitar problemas
-      router.push('/dashboard')
-      router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
+      // Aguardar mais um pouco antes de redirecionar para garantir que tudo foi processado
+      setTimeout(() => {
+        router.push('/dashboard')
+        router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
+      }, 2000)
       return
     }
 

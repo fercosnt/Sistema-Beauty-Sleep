@@ -79,12 +79,44 @@ export async function POST(request: NextRequest) {
     })
     
     // IMPORTANTE: Verificar se a senha foi realmente salva testando login
-    // Aguardar um pouco para garantir que a atualização foi processada
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // Aguardar mais tempo para garantir que a atualização foi processada completamente
+    console.log('[update-password] Aguardando processamento da senha (3 segundos)...')
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    
+    // Verificar dados do usuário via Admin API antes do teste
+    const testClient = createAdminClient()
+    const { data: testUser } = await testClient.auth.admin.getUserById(user.id)
+    
+    if (testUser?.user) {
+      console.log('[update-password] Estado do usuário após atualização:', {
+        id: testUser.user.id,
+        email: testUser.user.email,
+        emailConfirmed: testUser.user.email_confirmed_at ? 'Sim' : 'Não',
+        lastSignIn: testUser.user.last_sign_in_at,
+        updatedAt: testUser.user.updated_at
+      })
+      
+      // Se o email não estiver confirmado, confirmar agora
+      if (!testUser.user.email_confirmed_at) {
+        console.log('[update-password] Email não confirmado, confirmando agora...')
+        const { error: confirmError } = await testClient.auth.admin.updateUserById(user.id, {
+          email_confirm: true
+        })
+        
+        if (confirmError) {
+          console.error('[update-password] Erro ao confirmar email:', confirmError.message)
+        } else {
+          console.log('[update-password] Email confirmado com sucesso')
+          // Aguardar mais um pouco após confirmar
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+      }
+    }
     
     // Testar se o login funciona com a senha que acabamos de definir
     // Usar Admin API para criar um cliente temporário e testar login
     console.log('[update-password] Testando login com a senha recém-definida...')
+    let loginTestPassed = false
     try {
       // Criar um cliente anônimo para testar login
       const { createClient: createClientBrowser } = await import('@supabase/supabase-js')
@@ -101,17 +133,38 @@ export async function POST(request: NextRequest) {
       
       if (testLoginError) {
         console.error('[update-password] ⚠️ TESTE DE LOGIN FALHOU:', testLoginError.message)
-        console.error('[update-password] Isso pode indicar que a senha não foi salva corretamente')
-        // Não retornar erro aqui - pode ser um problema de timing
-        // A senha pode estar sendo processada ainda
+        console.error('[update-password] Detalhes do erro:', {
+          message: testLoginError.message,
+          status: testLoginError.status
+        })
+        // Tentar mais uma vez após mais um segundo
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        const { data: retryLogin, error: retryError } = await testSupabase.auth.signInWithPassword({
+          email: user.email!,
+          password: password
+        })
+        
+        if (retryError) {
+          console.error('[update-password] ⚠️ RETRY DE LOGIN TAMBÉM FALHOU:', retryError.message)
+        } else {
+          console.log('[update-password] ✅ RETRY DE LOGIN BEM-SUCEDIDO!')
+          loginTestPassed = true
+          await testSupabase.auth.signOut()
+        }
       } else {
         console.log('[update-password] ✅ TESTE DE LOGIN BEM-SUCEDIDO! Senha foi salva corretamente.')
+        loginTestPassed = true
         // Fazer logout do cliente de teste
         await testSupabase.auth.signOut()
       }
     } catch (testError: any) {
       console.warn('[update-password] Erro ao testar login (não crítico):', testError.message)
       // Não falhar a requisição por causa do teste
+    }
+    
+    if (!loginTestPassed) {
+      console.warn('[update-password] ⚠️ AVISO: Teste de login falhou, mas continuando...')
+      console.warn('[update-password] A senha pode levar mais tempo para ser processada pelo Supabase')
     }
     
     // Verificar dados do usuário via Admin API
