@@ -270,8 +270,16 @@ export default function SignupPage() {
           await new Promise(resolve => setTimeout(resolve, 500))
           
           // Tentar fazer login
+          const userEmail = updatedUser?.email || session.user.email
+          if (!userEmail) {
+            console.error('[signup] Email não disponível para teste de login')
+            setError('Erro ao verificar cadastro. Por favor, tente fazer login.')
+            setIsLoading(false)
+            return
+          }
+          
           const { data: testLogin, error: testLoginError } = await supabase.auth.signInWithPassword({
-            email: updatedUser?.email || session.user.email,
+            email: userEmail,
             password: password
           })
           

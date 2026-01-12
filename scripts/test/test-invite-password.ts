@@ -123,12 +123,38 @@ async function testInvitePassword(email: string) {
   }
 }
 
-const email = process.argv[2]
+import * as readline from 'readline'
 
-if (!email) {
-  console.error('❌ Forneça um email como argumento')
-  console.error('Uso: npx tsx scripts/test/test-invite-password.ts <email>')
-  process.exit(1)
+// Função para ler input do usuário
+function askQuestion(query: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+
+  return new Promise(resolve => {
+    rl.question(query, answer => {
+      rl.close()
+      resolve(answer)
+    })
+  })
 }
 
-testInvitePassword(email)
+async function main() {
+  let email = process.argv[2]
+
+  // Se não foi passado como argumento, pedir ao usuário
+  if (!email) {
+    console.log('\n📧 Digite o email do usuário para testar:')
+    email = await askQuestion('Email: ')
+    
+    if (!email || !email.includes('@')) {
+      console.error('❌ Email inválido')
+      process.exit(1)
+    }
+  }
+
+  await testInvitePassword(email.trim())
+}
+
+main()
