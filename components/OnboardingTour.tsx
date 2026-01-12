@@ -1077,7 +1077,7 @@ export function startAlertasTour(
   const tour = new Shepherd.Tour({
     useModalOverlay: true,
     defaultStepOptions: {
-      scrollTo: true,
+      scrollTo: false, // Desabilitar scroll automático para manter página centralizada
       cancelIcon: { enabled: true },
       classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
     },
