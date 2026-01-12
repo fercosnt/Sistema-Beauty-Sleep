@@ -831,23 +831,6 @@ export function startAlertasTour(
   }
   const steps: ShepherdStepOptions[] = [
     {
-      id: 'alertas-pagina-geral',
-      text: 'Esta é a página de Alertas, onde você gerencia todos os alertas do sistema. Aqui você pode ver alertas críticos, de manutenção e follow-up, filtrá-los e resolvê-los.',
-      title: 'Página de Alertas',
-      attachTo: {
-        element: 'main',
-        on: 'top',
-      },
-      buttons: [
-        {
-          text: 'Próximo',
-          action: function (this: any) {
-            return this.next()
-          },
-        },
-      ],
-    },
-    {
       id: 'alertas-filtros',
       text: 'Use os filtros para encontrar alertas específicos por tipo (Crítico, Manutenção, Follow-up), urgência (Alta, Média, Baixa) e status (Pendente, Resolvido, Ignorado).',
       title: 'Filtros de Alertas',
@@ -857,12 +840,6 @@ export function startAlertasTour(
       },
       buttons: [
         {
-          text: 'Voltar',
-          action: function (this: any) {
-            return this.back()
-          },
-        },
-        {
           text: 'Próximo',
           action: function (this: any) {
             return this.next()
@@ -871,96 +848,12 @@ export function startAlertasTour(
       ],
     },
     {
-      id: 'alertas-card-exemplo',
-      text: 'Cada card representa um alerta. A borda colorida à esquerda indica a urgência: vermelho (alta), laranja (média) ou verde (baixa). O card mostra o título, descrição, tipo, urgência e paciente relacionado.',
-      title: 'Card de Alerta',
+      id: 'alertas-lista',
+      text: 'Aqui você vê todos os alertas do sistema. Cada alerta mostra o tipo, urgência, título e paciente relacionado. Você pode marcar como resolvido, ignorar ou ver detalhes do paciente.',
+      title: 'Lista de Alertas',
       attachTo: {
-        element: '[data-tour="alerta-card"]',
+        element: '[data-tour="alertas-lista"]',
         on: 'top',
-      },
-      beforeShowPromise: function() {
-        return new Promise((resolve) => {
-          // Verificar se o elemento existe
-          const element = document.querySelector('[data-tour="alerta-card"]')
-          if (element) {
-            resolve(undefined)
-          } else {
-            // Tentar novamente após um pequeno delay
-            setTimeout(() => {
-              resolve(undefined)
-            }, 300)
-          }
-        })
-      },
-      buttons: [
-        {
-          text: 'Voltar',
-          action: function (this: any) {
-            return this.back()
-          },
-        },
-        {
-          text: 'Próximo',
-          action: function (this: any) {
-            return this.next()
-          },
-        },
-      ],
-    },
-    {
-      id: 'alertas-metadados',
-      text: 'Esta seção mostra os metadados do alerta: Tipo (Crítico, Manutenção ou Follow-up), Urgência (Alta, Média ou Baixa), tempo desde a criação e o paciente relacionado. Use essas informações para priorizar os alertas.',
-      title: 'Metadados do Alerta',
-      attachTo: {
-        element: '[data-tour="alerta-metadados"]',
-        on: 'top',
-      },
-      beforeShowPromise: function() {
-        return new Promise((resolve) => {
-          const element = document.querySelector('[data-tour="alerta-metadados"]')
-          if (element) {
-            resolve(undefined)
-          } else {
-            setTimeout(() => {
-              resolve(undefined)
-            }, 300)
-          }
-        })
-      },
-      buttons: [
-        {
-          text: 'Voltar',
-          action: function (this: any) {
-            return this.back()
-          },
-        },
-        {
-          text: 'Próximo',
-          action: function (this: any) {
-            return this.next()
-          },
-        },
-      ],
-    },
-    {
-      id: 'alertas-acoes',
-      text: 'Use os botões de ação: "Ver Paciente" para acessar o perfil completo do paciente relacionado ao alerta, e "Marcar como Resolvido" para resolver o alerta. Alertas resolvidos são automaticamente deletados após 3 dias.',
-      title: 'Ações do Alerta',
-      attachTo: {
-        element: '[data-tour="alerta-acoes"]',
-        on: 'top',
-      },
-      beforeShowPromise: function() {
-        return new Promise((resolve) => {
-          const element = document.querySelector('[data-tour="alerta-acoes"]')
-          if (element) {
-            resolve(undefined)
-          } else {
-            setTimeout(() => {
-              resolve(undefined)
-            }, 300)
-          }
-        })
       },
       buttons: [
         {

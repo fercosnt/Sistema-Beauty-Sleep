@@ -54,47 +54,42 @@ export default function AlertasList() {
   // Buscar role do usuário
   useEffect(() => {
     const fetchUserRole = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .single()
-        if (profile) {
-          setUserRole(profile.role)
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data: profile, error } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+          if (!error && profile) {
+            setUserRole(profile.role)
+          }
         }
+      } catch (error) {
+        console.error('Erro ao buscar role do usuário:', error)
       }
     }
+
     fetchUserRole()
   }, [])
 
   // Iniciar tour específico da página de alertas quando vier de outra página
   useEffect(() => {
     const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
-    if (!tourFlow || !userRole || isLoading) return
+    if (!tourFlow || !userRole) return
 
-    // Aguardar os cards serem renderizados antes de iniciar o tour
+    // Aguardar um pouco para garantir que os elementos estejam renderizados
     const timer = setTimeout(() => {
-      // Verificar se os elementos existem antes de iniciar o tour
-      const cardElement = document.querySelector('[data-tour="alerta-card"]')
-      if (cardElement) {
-        import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
-          startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
-        })
-      } else {
-        // Se não encontrar, tentar novamente após um delay maior
-        setTimeout(() => {
-          import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
-            startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
-          })
-        }, 1000)
-      }
+      // Importação dinâmica para evitar problemas de SSR
+      import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
+        startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
+      })
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [searchParams, userRole, isLoading, filteredAlertas])
+  }, [searchParams, userRole])
 
   // Aplicar filtros
   useEffect(() => {
