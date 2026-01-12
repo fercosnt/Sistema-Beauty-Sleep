@@ -329,7 +329,7 @@ export function startLogsTour(role: 'admin') {
           text: 'Próximo',
           action: function (this: any) {
             this.complete()
-            window.location.href = '/logs?tourFlow=admin'
+            window.location.href = '/configuracoes?tourFlow=admin'
           },
         },
       ],
