@@ -178,7 +178,9 @@ export default function SignupPage() {
       console.log('[signup] Usuário tem sessão, atualizando senha...')
       console.log('[signup] Email confirmado?', session.user.email_confirmed_at ? 'Sim' : 'Não')
       
-      const { error: updateError } = await supabase.auth.updateUser({
+      console.log('[signup] Atualizando senha para usuário:', session.user.id, session.user.email)
+      
+      const { data: updateData, error: updateError } = await supabase.auth.updateUser({
         password: password,
         email: session.user.email, // Garantir que o email está presente
       })
@@ -188,58 +190,80 @@ export default function SignupPage() {
         const friendlyMessage = translatePasswordError(updateError.message)
         setError(friendlyMessage)
         setIsLoading(false)
-      } else {
-        console.log('[signup] Senha atualizada com sucesso!')
-        
-        // Verificar se o email está confirmado após atualizar senha
-        const { data: { user: updatedUser } } = await supabase.auth.getUser()
-        console.log('[signup] Email confirmado após atualização?', updatedUser?.email_confirmed_at ? 'Sim' : 'Não')
-        
-        // Se o email não estiver confirmado, confirmar via API
-        // Isso é necessário porque usuários criados via invite podem não ter email confirmado
-        if (!updatedUser?.email_confirmed_at) {
-          console.log('[signup] Email não confirmado, confirmando via API...')
-          try {
-            const confirmResponse = await fetch('/api/auth/confirm-email-after-signup', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            })
-            
-            const confirmData = await confirmResponse.json()
-            
-            if (confirmResponse.ok && confirmData.success) {
-              console.log('[signup] Email confirmado com sucesso via API')
-              // Atualizar a sessão para refletir a confirmação
-              await supabase.auth.refreshSession()
-            } else {
-              console.warn('[signup] Erro ao confirmar email via API:', confirmData.error)
-              // Continuar mesmo assim - o usuário pode fazer login depois
-            }
-          } catch (confirmError) {
-            console.error('[signup] Erro ao chamar API de confirmação:', confirmError)
-            // Continuar mesmo assim
-          }
-        }
-        
-        // Aguardar um pouco para garantir que a atualização foi processada
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Verificar novamente a sessão antes de redirecionar
-        const { data: { session: finalSession } } = await supabase.auth.getSession()
-        if (!finalSession) {
-          console.error('[signup] Sessão perdida após atualizar senha!')
-          setError('Erro ao finalizar cadastro. Por favor, faça login com suas credenciais.')
-          setIsLoading(false)
-          return
-        }
-        
-        setSuccess(true)
-        // Redirecionar imediatamente sem delay para evitar problemas
-        router.push('/dashboard')
-        router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
+        return
       }
+
+      console.log('[signup] Senha atualizada com sucesso!')
+      console.log('[signup] Dados retornados:', {
+        user: updateData?.user?.id,
+        email: updateData?.user?.email,
+        emailConfirmed: updateData?.user?.email_confirmed_at ? 'Sim' : 'Não'
+      })
+      
+      // Aguardar um pouco para garantir que a atualização foi processada
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Verificar novamente o usuário após atualização
+      const { data: { user: updatedUser }, error: getUserError } = await supabase.auth.getUser()
+      
+      if (getUserError) {
+        console.error('[signup] Erro ao buscar usuário após atualização:', getUserError)
+        setError('Erro ao verificar cadastro. Por favor, tente fazer login.')
+        setIsLoading(false)
+        return
+      }
+      
+      console.log('[signup] Estado do usuário após atualização:', {
+        id: updatedUser?.id,
+        email: updatedUser?.email,
+        emailConfirmed: updatedUser?.email_confirmed_at ? 'Sim' : 'Não',
+        hasPassword: 'Sim' // Assumimos que tem senha se updateUser não deu erro
+      })
+      
+      // Se o email não estiver confirmado, confirmar via API
+      if (!updatedUser?.email_confirmed_at) {
+        console.log('[signup] Email não confirmado, confirmando via API...')
+        try {
+          const confirmResponse = await fetch('/api/auth/confirm-email-after-signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          
+          const confirmData = await confirmResponse.json()
+          console.log('[signup] Resposta da API de confirmação:', confirmData)
+          
+          if (confirmResponse.ok && confirmData.success) {
+            console.log('[signup] Email confirmado com sucesso via API')
+            // Aguardar um pouco para a confirmação ser processada
+            await new Promise(resolve => setTimeout(resolve, 500))
+            // Atualizar a sessão para refletir a confirmação
+            await supabase.auth.refreshSession()
+          } else {
+            console.warn('[signup] Erro ao confirmar email via API:', confirmData.error)
+            // Continuar mesmo assim - o usuário pode fazer login depois
+          }
+        } catch (confirmError) {
+          console.error('[signup] Erro ao chamar API de confirmação:', confirmError)
+          // Continuar mesmo assim
+        }
+      }
+      
+      // Verificar novamente a sessão antes de redirecionar
+      const { data: { session: finalSession } } = await supabase.auth.getSession()
+      if (!finalSession) {
+        console.error('[signup] Sessão perdida após atualizar senha!')
+        setError('Erro ao finalizar cadastro. Por favor, faça login com suas credenciais.')
+        setIsLoading(false)
+        return
+      }
+      
+      console.log('[signup] Sessão final válida, redirecionando para dashboard...')
+      setSuccess(true)
+      // Redirecionar imediatamente sem delay para evitar problemas
+      router.push('/dashboard')
+      router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
       return
     }
 

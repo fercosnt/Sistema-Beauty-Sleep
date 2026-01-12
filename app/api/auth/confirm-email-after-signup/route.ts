@@ -25,6 +25,9 @@ export async function POST(request: NextRequest) {
 
     // Confirmar email usando Admin API
     const supabaseAdmin = createAdminClient()
+    
+    console.log('[confirm-email] Confirmando email para usuário:', user.id, user.email)
+    
     const { data: updateData, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       user.id,
       {
@@ -41,6 +44,11 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('[confirm-email] Email confirmado com sucesso para:', user.email)
+    console.log('[confirm-email] Dados atualizados:', {
+      userId: updateData?.user?.id,
+      email: updateData?.user?.email,
+      emailConfirmed: updateData?.user?.email_confirmed_at ? 'Sim' : 'Não'
+    })
     
     return NextResponse.json({
       success: true,
