@@ -278,6 +278,28 @@ footer.shepherd-footer.shepherd-theme-admin {
   box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
 }
 
+/* Fazer o highlight do Shepherd.js seguir a curvatura da borda do elemento */
+.shepherd-target {
+  border-radius: inherit !important;
+}
+
+.shepherd-target-attached-bottom .shepherd-target,
+.shepherd-target-attached-top .shepherd-target,
+.shepherd-target-attached-left .shepherd-target,
+.shepherd-target-attached-right .shepherd-target {
+  border-radius: inherit !important;
+}
+
+/* Aplicar border-radius do elemento destacado ao highlight */
+.shepherd-element-attached .shepherd-target {
+  border-radius: inherit !important;
+}
+
+/* Usar JavaScript para copiar o border-radius do elemento para o highlight */
+.shepherd-enabled[data-shepherd-step] {
+  border-radius: inherit !important;
+}
+
 /* Shepherd.js Theme - Light (Non-Admin) - Glass Effect */
 .shepherd-theme-light {
   max-width: 400px;

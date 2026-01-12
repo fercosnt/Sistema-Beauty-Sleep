@@ -202,6 +202,30 @@ export function startPerfilTour(
   })
 
   steps.forEach((step) => tour.addStep(step))
+  
+  // Salvar tour_completed quando o tour de perfil é concluído
+  tour.on('complete', async () => {
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user?.email) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single()
+        if (userData?.id) {
+          await supabase
+            .from('users')
+            .update({ tour_completed: true })
+            .eq('id', userData.id)
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao salvar tour_completed:', error)
+    }
+  })
+  
   tour.start()
 
   return tour
@@ -1018,8 +1042,17 @@ export function startAlertasTour(
       beforeShowPromise: function() {
         return new Promise((resolve) => {
           const checkElement = () => {
-            const element = document.querySelector('[data-tour="alertas-card"] [data-tour="alerta-metadados"]')
+            const element = document.querySelector('[data-tour="alertas-card"] [data-tour="alerta-metadados"]') as HTMLElement
             if (element) {
+              // Copiar border-radius do elemento para o highlight
+              setTimeout(() => {
+                const computedStyle = window.getComputedStyle(element)
+                const borderRadius = computedStyle.borderRadius
+                const highlight = document.querySelector('.shepherd-target') as HTMLElement
+                if (highlight && borderRadius) {
+                  highlight.style.borderRadius = borderRadius
+                }
+              }, 50)
               resolve(undefined)
             } else {
               setTimeout(checkElement, 100)
@@ -1054,8 +1087,17 @@ export function startAlertasTour(
       beforeShowPromise: function() {
         return new Promise((resolve) => {
           const checkElement = () => {
-            const element = document.querySelector('[data-tour="alertas-card"] [data-tour="alerta-acoes"]')
+            const element = document.querySelector('[data-tour="alertas-card"] [data-tour="alerta-acoes"]') as HTMLElement
             if (element) {
+              // Copiar border-radius do elemento para o highlight
+              setTimeout(() => {
+                const computedStyle = window.getComputedStyle(element)
+                const borderRadius = computedStyle.borderRadius
+                const highlight = document.querySelector('.shepherd-target') as HTMLElement
+                if (highlight && borderRadius) {
+                  highlight.style.borderRadius = borderRadius
+                }
+              }, 50)
               resolve(undefined)
             } else {
               setTimeout(checkElement, 100)
