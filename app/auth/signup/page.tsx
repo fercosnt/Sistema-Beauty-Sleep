@@ -178,6 +178,43 @@ export default function SignupPage() {
       console.log('[signup] Usuário tem sessão, atualizando senha...')
       console.log('[signup] Email confirmado?', session.user.email_confirmed_at ? 'Sim' : 'Não')
       
+      console.log('[signup] Estado inicial do usuário:', {
+        id: session.user.id,
+        email: session.user.email,
+        emailConfirmed: session.user.email_confirmed_at ? 'Sim' : 'Não'
+      })
+      
+      // PRIMEIRO: Confirmar email se não estiver confirmado
+      // Isso é importante porque alguns fluxos do Supabase podem exigir email confirmado
+      if (!session.user.email_confirmed_at) {
+        console.log('[signup] Email não confirmado, confirmando ANTES de atualizar senha...')
+        try {
+          const confirmResponse = await fetch('/api/auth/confirm-email-after-signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          
+          const confirmData = await confirmResponse.json()
+          console.log('[signup] Resposta da API de confirmação:', confirmData)
+          
+          if (confirmResponse.ok && confirmData.success) {
+            console.log('[signup] Email confirmado com sucesso via API')
+            // Aguardar um pouco para a confirmação ser processada
+            await new Promise(resolve => setTimeout(resolve, 500))
+            // Atualizar a sessão para refletir a confirmação
+            await supabase.auth.refreshSession()
+          } else {
+            console.warn('[signup] Erro ao confirmar email via API:', confirmData.error)
+            // Continuar mesmo assim - vamos tentar atualizar a senha
+          }
+        } catch (confirmError) {
+          console.error('[signup] Erro ao chamar API de confirmação:', confirmError)
+          // Continuar mesmo assim
+        }
+      }
+      
       console.log('[signup] Atualizando senha para usuário:', session.user.id, session.user.email)
       
       const { data: updateData, error: updateError } = await supabase.auth.updateUser({
@@ -213,16 +250,16 @@ export default function SignupPage() {
         return
       }
       
-      console.log('[signup] Estado do usuário após atualização:', {
+      console.log('[signup] Estado final do usuário:', {
         id: updatedUser?.id,
         email: updatedUser?.email,
         emailConfirmed: updatedUser?.email_confirmed_at ? 'Sim' : 'Não',
         hasPassword: 'Sim' // Assumimos que tem senha se updateUser não deu erro
       })
       
-      // Se o email não estiver confirmado, confirmar via API
+      // Se ainda não estiver confirmado após atualizar senha, tentar confirmar novamente
       if (!updatedUser?.email_confirmed_at) {
-        console.log('[signup] Email não confirmado, confirmando via API...')
+        console.log('[signup] Email ainda não confirmado após atualizar senha, tentando confirmar novamente...')
         try {
           const confirmResponse = await fetch('/api/auth/confirm-email-after-signup', {
             method: 'POST',
@@ -232,21 +269,15 @@ export default function SignupPage() {
           })
           
           const confirmData = await confirmResponse.json()
-          console.log('[signup] Resposta da API de confirmação:', confirmData)
+          console.log('[signup] Resposta da segunda tentativa de confirmação:', confirmData)
           
           if (confirmResponse.ok && confirmData.success) {
-            console.log('[signup] Email confirmado com sucesso via API')
-            // Aguardar um pouco para a confirmação ser processada
+            console.log('[signup] Email confirmado na segunda tentativa')
             await new Promise(resolve => setTimeout(resolve, 500))
-            // Atualizar a sessão para refletir a confirmação
             await supabase.auth.refreshSession()
-          } else {
-            console.warn('[signup] Erro ao confirmar email via API:', confirmData.error)
-            // Continuar mesmo assim - o usuário pode fazer login depois
           }
         } catch (confirmError) {
-          console.error('[signup] Erro ao chamar API de confirmação:', confirmError)
-          // Continuar mesmo assim
+          console.error('[signup] Erro na segunda tentativa de confirmação:', confirmError)
         }
       }
       
