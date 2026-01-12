@@ -130,9 +130,38 @@ export async function GET(request: NextRequest) {
   if (tokenHash && type === 'invite') {
     const supabase = await createClient()
     
-    // Tentar verificar o token_hash e criar sessão
-    // O Supabase processa token_hash através da URL, mas precisamos verificar se funciona
-    // Vamos redirecionar para signup com o token_hash para que seja processado
+    // Tentar verificar o token_hash através do endpoint verify do Supabase
+    try {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const verifyResponse = await fetch(
+        `${supabaseUrl}/auth/v1/verify?token_hash=${encodeURIComponent(tokenHash)}&type=invite`,
+        {
+          method: 'GET',
+          headers: {
+            'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+          },
+        }
+      )
+
+      // Se o token foi processado, verificar se está autenticado
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Token processado com sucesso, redirecionar para signup
+        const forwardedHost = request.headers.get('x-forwarded-host')
+        const isLocalEnv = process.env.NODE_ENV === 'development'
+        const redirectUrl = isLocalEnv 
+          ? `${origin}/auth/signup`
+          : forwardedHost 
+            ? `https://${forwardedHost}/auth/signup`
+            : `${origin}/auth/signup`
+        return NextResponse.redirect(redirectUrl)
+      }
+    } catch (err) {
+      console.error('Erro ao processar token_hash de invite:', err)
+    }
+    
+    // Se falhar, redirecionar mesmo assim para signup que tentará processar
     const redirectUrl = `${origin}/auth/signup?token_hash=${tokenHash}&type=invite`
     return NextResponse.redirect(redirectUrl)
   }
