@@ -51,6 +51,35 @@ export default function AlertasList() {
     fetchAlertas()
   }, [])
 
+  // Buscar role do usuário
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        if (profile) {
+          setUserRole(profile.role)
+        }
+      }
+    }
+    fetchUserRole()
+  }, [])
+
+  // Iniciar tour específico da página de alertas quando vier de outra página
+  useEffect(() => {
+    const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
+    if (!tourFlow || !userRole) return
+
+    import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
+      startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
+    })
+  }, [searchParams, userRole])
+
   // Aplicar filtros
   useEffect(() => {
     applyFilters()
