@@ -75,6 +75,12 @@ export default function AlertasList() {
     fetchUserRole()
   }, [])
 
+  // Paginação
+  const paginatedAlertas = filteredAlertas.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
+
   // Iniciar tour específico da página de alertas quando vier de outra página
   useEffect(() => {
     const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
