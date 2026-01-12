@@ -75,12 +75,6 @@ export default function AlertasList() {
     fetchUserRole()
   }, [])
 
-  // Paginação
-  const paginatedAlertas = filteredAlertas.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
-
   // Iniciar tour específico da página de alertas quando vier de outra página
   useEffect(() => {
     const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
@@ -92,7 +86,6 @@ export default function AlertasList() {
       const cardElement = document.querySelector('[data-tour="alertas-card"]')
       console.log('[AlertasList] Elemento encontrado:', cardElement)
       console.log('[AlertasList] filteredAlertas.length:', filteredAlertas.length)
-      console.log('[AlertasList] paginatedAlertas.length:', paginatedAlertas.length)
       
       // Importação dinâmica para evitar problemas de SSR
       import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
@@ -101,7 +94,7 @@ export default function AlertasList() {
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [searchParams, userRole, filteredAlertas, paginatedAlertas])
+  }, [searchParams, userRole, filteredAlertas])
 
   // Aplicar filtros
   useEffect(() => {
