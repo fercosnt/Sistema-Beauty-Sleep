@@ -146,6 +146,7 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
         alerta.status === 'resolvido' && 'opacity-75',
         !isSelected && 'border-gray-200 hover:border-gray-300'
       )}
+      data-tour="alerta-card"
     >
       {/* Borda lateral colorida por urgência - mais espessa e visível */}
       <div className={cn(
