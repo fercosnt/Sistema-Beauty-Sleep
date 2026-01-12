@@ -458,7 +458,7 @@ export default function AlertasList() {
           </div>
         ) : (
           <>
-            <div data-tour="alertas-lista">
+            <div data-tour="alertas-lista" className="space-y-4">
               {paginatedAlertas.map((alerta) => (
                 <AlertaCard
                   key={alerta.id}

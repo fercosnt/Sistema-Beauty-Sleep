@@ -141,21 +141,21 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
   return (
     <div
       className={cn(
-        'group relative rounded-xl border-l-0 border-t border-r border-b bg-white shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden',
-        isSelected && 'ring-2 ring-primary-500 border-primary-300',
+        'group relative rounded-xl border-2 bg-white shadow-md transition-all duration-200 hover:shadow-lg overflow-hidden',
+        isSelected && 'ring-2 ring-primary-500 border-primary-300 shadow-lg',
         alerta.status === 'resolvido' && 'opacity-75',
         !isSelected && 'border-gray-200 hover:border-gray-300'
       )}
     >
-      {/* Borda lateral colorida por urgência - cobre toda a borda esquerda */}
+      {/* Borda lateral colorida por urgência - mais espessa e visível */}
       <div className={cn(
-        'absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl',
+        'absolute left-0 top-0 bottom-0 w-2 rounded-l-xl',
         alerta.urgencia === 'alta' && 'bg-error-500',
         alerta.urgencia === 'media' && 'bg-warning-500',
         alerta.urgencia === 'baixa' && 'bg-success-500'
       )} />
 
-      <div className="p-5 pl-7">
+      <div className="p-6 pl-8">
         <div className="flex items-start gap-4">
           {/* Checkbox para seleção */}
           <div className="flex-shrink-0 pt-0.5">
@@ -167,12 +167,12 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
             />
           </div>
 
-          {/* Ícone do tipo com fundo */}
+          {/* Ícone do tipo com fundo - mais destacado */}
           <div className={cn(
-            'flex-shrink-0 p-2.5 rounded-lg',
-            alerta.tipo === 'critico' && 'bg-error-50',
-            alerta.tipo === 'manutencao' && 'bg-warning-50',
-            alerta.tipo === 'followup' && 'bg-primary-50'
+            'flex-shrink-0 p-3 rounded-xl shadow-sm border-2',
+            alerta.tipo === 'critico' && 'bg-error-50 border-error-200',
+            alerta.tipo === 'manutencao' && 'bg-warning-50 border-warning-200',
+            alerta.tipo === 'followup' && 'bg-primary-50 border-primary-200'
           )}>
             {getTipoIcon(alerta.tipo)}
           </div>
@@ -180,47 +180,57 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
           {/* Conteúdo */}
           <div className="flex-1 min-w-0">
             {/* Header com título e status */}
-            <div className="flex items-start justify-between gap-3 mb-2">
+            <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <h3 className="text-base font-semibold text-gray-900">{alerta.titulo}</h3>
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="text-lg font-bold text-gray-900">{alerta.titulo}</h3>
                   <span className={cn(
-                    'px-2.5 py-0.5 rounded-full text-xs font-semibold',
-                    getStatusColor(alerta.status)
+                    'px-3 py-1 rounded-full text-xs font-bold shadow-sm border',
+                    getStatusColor(alerta.status),
+                    alerta.status === 'pendente' && 'border-warning-300',
+                    alerta.status === 'resolvido' && 'border-success-300',
+                    alerta.status === 'ignorado' && 'border-gray-300'
                   )}>
                     {alerta.status === 'pendente' ? 'Pendente' : alerta.status === 'resolvido' ? 'Resolvido' : 'Ignorado'}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{alerta.mensagem}</p>
+                <p className="text-sm text-gray-700 leading-relaxed font-medium">{alerta.mensagem}</p>
               </div>
             </div>
 
-            {/* Metadados em grid */}
-            <div className="mt-5">
+            {/* Metadados em grid - mais destacado */}
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">Tipo</span>
-                  <span className="text-xs text-gray-700 font-medium">{getTipoLabel(alerta.tipo)}</span>
+                  <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">Tipo:</span>
+                  <span className={cn(
+                    'text-xs font-bold whitespace-nowrap',
+                    alerta.tipo === 'critico' && 'text-error-700',
+                    alerta.tipo === 'manutencao' && 'text-warning-700',
+                    alerta.tipo === 'followup' && 'text-primary-700'
+                  )}>
+                    {getTipoLabel(alerta.tipo)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">Urgência</span>
+                  <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">Urgência:</span>
                   <span className={cn(
-                    'px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap',
-                    alerta.urgencia === 'alta' && 'bg-error-100 text-error-700',
-                    alerta.urgencia === 'media' && 'bg-warning-100 text-warning-700',
-                    alerta.urgencia === 'baixa' && 'bg-success-100 text-success-700'
+                    'px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap shadow-sm',
+                    alerta.urgencia === 'alta' && 'bg-error-100 text-error-800 border border-error-300',
+                    alerta.urgencia === 'media' && 'bg-warning-100 text-warning-800 border border-warning-300',
+                    alerta.urgencia === 'baixa' && 'bg-success-100 text-success-800 border border-success-300'
                   )}>
                     {getUrgenciaLabel(alerta.urgencia)}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-                  <span className="text-xs text-gray-600 whitespace-nowrap">{formatTimeAgo(alerta.created_at)}</span>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                  <span className="text-xs text-gray-700 font-medium whitespace-nowrap">{formatTimeAgo(alerta.created_at)}</span>
                 </div>
                 {alerta.pacientes && (
-                  <div className="flex items-center gap-1.5">
-                    <User className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-                    <span className="text-xs text-gray-600 truncate">{alerta.pacientes.nome}</span>
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                    <span className="text-xs text-gray-700 font-medium truncate">{alerta.pacientes.nome}</span>
                   </div>
                 )}
               </div>
