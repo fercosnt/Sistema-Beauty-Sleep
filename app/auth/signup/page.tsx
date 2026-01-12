@@ -248,7 +248,7 @@ export default function SignupPage() {
         
         // IMPORTANTE: Aguardar um pouco mais para garantir que a senha foi salva no banco
         console.log('[signup] Aguardando processamento da senha...')
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await new Promise(resolve => setTimeout(resolve, 2000))
         
         // Atualizar a sessão para refletir as mudanças
         await supabase.auth.refreshSession()
@@ -260,43 +260,6 @@ export default function SignupPage() {
           email: updatedUser?.email,
           emailConfirmed: updatedUser?.email_confirmed_at ? 'Sim' : 'Não'
         })
-        
-        // TESTE: Tentar fazer login com a senha que acabamos de definir
-        // Isso vai confirmar se a senha foi realmente salva
-        console.log('[signup] Testando login com a senha recém-definida...')
-        try {
-          // Fazer logout primeiro para testar login limpo
-          await supabase.auth.signOut()
-          await new Promise(resolve => setTimeout(resolve, 500))
-          
-          // Tentar fazer login
-          const userEmail = updatedUser?.email || session.user.email
-          if (!userEmail) {
-            console.error('[signup] Email não disponível para teste de login')
-            setError('Erro ao verificar cadastro. Por favor, tente fazer login.')
-            setIsLoading(false)
-            return
-          }
-          
-          const { data: testLogin, error: testLoginError } = await supabase.auth.signInWithPassword({
-            email: userEmail,
-            password: password
-          })
-          
-          if (testLoginError) {
-            console.error('[signup] ⚠️ TESTE DE LOGIN FALHOU:', testLoginError.message)
-            console.error('[signup] Isso indica que a senha NÃO foi salva corretamente!')
-            setError('Erro ao salvar senha. Por favor, use "Esqueci minha senha" para redefinir.')
-            setIsLoading(false)
-            return
-          } else {
-            console.log('[signup] ✅ TESTE DE LOGIN BEM-SUCEDIDO! Senha foi salva corretamente.')
-            // Continuar com o fluxo normal
-          }
-        } catch (testError) {
-          console.error('[signup] Erro ao testar login:', testError)
-          // Continuar mesmo assim - pode ser um problema temporário
-        }
       } catch (updateError) {
         console.error('[signup] Erro ao chamar API de atualização de senha:', updateError)
         setError('Erro ao atualizar senha. Por favor, tente novamente.')

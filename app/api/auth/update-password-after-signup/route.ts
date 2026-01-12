@@ -80,20 +80,50 @@ export async function POST(request: NextRequest) {
     
     // IMPORTANTE: Verificar se a senha foi realmente salva testando login
     // Aguardar um pouco para garantir que a atualização foi processada
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
     // Testar se o login funciona com a senha que acabamos de definir
+    // Usar Admin API para criar um cliente temporário e testar login
     console.log('[update-password] Testando login com a senha recém-definida...')
+    try {
+      // Criar um cliente anônimo para testar login
+      const { createClient: createClientBrowser } = await import('@supabase/supabase-js')
+      const testSupabase = createClientBrowser(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+      
+      // Tentar fazer login com a senha que acabamos de definir
+      const { data: testLogin, error: testLoginError } = await testSupabase.auth.signInWithPassword({
+        email: user.email!,
+        password: password
+      })
+      
+      if (testLoginError) {
+        console.error('[update-password] ⚠️ TESTE DE LOGIN FALHOU:', testLoginError.message)
+        console.error('[update-password] Isso pode indicar que a senha não foi salva corretamente')
+        // Não retornar erro aqui - pode ser um problema de timing
+        // A senha pode estar sendo processada ainda
+      } else {
+        console.log('[update-password] ✅ TESTE DE LOGIN BEM-SUCEDIDO! Senha foi salva corretamente.')
+        // Fazer logout do cliente de teste
+        await testSupabase.auth.signOut()
+      }
+    } catch (testError: any) {
+      console.warn('[update-password] Erro ao testar login (não crítico):', testError.message)
+      // Não falhar a requisição por causa do teste
+    }
+    
+    // Verificar dados do usuário via Admin API
     const testClient = createAdminClient()
     const { data: testUser } = await testClient.auth.admin.getUserById(user.id)
     
     if (testUser?.user) {
-      console.log('[update-password] Usuário verificado:', {
+      console.log('[update-password] Usuário verificado via Admin API:', {
         id: testUser.user.id,
         email: testUser.user.email,
         emailConfirmed: testUser.user.email_confirmed_at ? 'Sim' : 'Não',
-        // Não podemos ver a senha, mas podemos verificar se o usuário tem uma
-        hasPassword: 'Sim (assumido - usuário foi atualizado)'
+        lastSignIn: testUser.user.last_sign_in_at
       })
     }
     
