@@ -405,6 +405,11 @@ export default function SignupPage() {
           // Redirecionar imediatamente sem delay para evitar problemas
           router.push('/dashboard')
           router.refresh() // Forçar refresh para garantir que a sessão seja reconhecida
+        } catch (updateError) {
+          console.error('[signup] Erro ao chamar API de atualização de senha:', updateError)
+          setError('Erro ao atualizar senha. Por favor, tente novamente.')
+          setIsLoading(false)
+          return
         }
         return
       } else if (exchangeError) {
