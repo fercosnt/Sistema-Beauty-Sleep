@@ -86,7 +86,7 @@ async function testSMTP(email: string) {
 
     // Passo 3: Enviar email de convite
     console.log('3️⃣ Enviando email de convite...')
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || SUPABASE_URL.replace(/\/$/, '')
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (SUPABASE_URL ? SUPABASE_URL.replace(/\/$/, '') : 'http://localhost:3000')
     
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
       redirectTo: `${siteUrl}/login?reset=true`,
