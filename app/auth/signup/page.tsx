@@ -440,6 +440,45 @@ export default function SignupPage() {
           return
         }
         
+        // IMPORTANTE: Verificar e criar perfil na tabela users se não existir
+        console.log('[signup] Verificando se perfil existe na tabela users (após exchange)...')
+        try {
+          const { data: existingProfile, error: profileError } = await supabase
+            .from('users')
+            .select('id, email, nome, role')
+            .eq('email', updatedUser?.email || '')
+            .single()
+          
+          if (profileError && profileError.code === 'PGRST116') {
+            // Perfil não existe, criar usando user_metadata do invite
+            console.log('[signup] Perfil não encontrado, criando na tabela users...')
+            const userMetadata = updatedUser?.user_metadata || {}
+            const nome = userMetadata.nome || updatedUser?.email?.split('@')[0] || 'Usuário'
+            const role = userMetadata.role || 'equipe'
+            
+            const { error: insertError } = await supabase
+              .from('users')
+              .insert({
+                email: updatedUser?.email || '',
+                nome: nome,
+                role: role,
+                ativo: true,
+              })
+            
+            if (insertError) {
+              console.error('[signup] Erro ao criar perfil na tabela users:', insertError)
+            } else {
+              console.log('[signup] Perfil criado com sucesso na tabela users')
+            }
+          } else if (profileError) {
+            console.error('[signup] Erro ao verificar perfil:', profileError)
+          } else {
+            console.log('[signup] Perfil já existe na tabela users:', existingProfile)
+          }
+        } catch (profileCheckError) {
+          console.error('[signup] Erro ao verificar/criar perfil:', profileCheckError)
+        }
+        
         setSuccess(true)
         // Redirecionar imediatamente sem delay para evitar problemas
         router.push('/dashboard')
