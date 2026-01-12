@@ -217,25 +217,46 @@ export default function SignupPage() {
       
       console.log('[signup] Atualizando senha para usuário:', session.user.id, session.user.email)
       
-      const { data: updateData, error: updateError } = await supabase.auth.updateUser({
-        password: password,
-        email: session.user.email, // Garantir que o email está presente
-      })
-
-      if (updateError) {
-        console.error('[signup] Erro ao atualizar senha:', updateError)
-        const friendlyMessage = translatePasswordError(updateError.message)
-        setError(friendlyMessage)
+      // IMPORTANTE: Usar API route com Admin API para atualizar senha
+      // O updateUser do cliente pode não funcionar corretamente para usuários convidados
+      try {
+        const updatePasswordResponse = await fetch('/api/auth/update-password-after-signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password }),
+        })
+        
+        const updatePasswordData = await updatePasswordResponse.json()
+        console.log('[signup] Resposta da API de atualização de senha:', updatePasswordData)
+        
+        if (!updatePasswordResponse.ok || !updatePasswordData.success) {
+          console.error('[signup] Erro ao atualizar senha via API:', updatePasswordData.error)
+          const friendlyMessage = translatePasswordError(updatePasswordData.error || 'Erro ao atualizar senha')
+          setError(friendlyMessage)
+          setIsLoading(false)
+          return
+        }
+        
+        console.log('[signup] Senha atualizada com sucesso via API!')
+        
+        // Atualizar a sessão para refletir as mudanças
+        await supabase.auth.refreshSession()
+        
+        // Buscar dados atualizados do usuário
+        const { data: { user: updatedUser } } = await supabase.auth.getUser()
+        console.log('[signup] Dados do usuário após atualização:', {
+          user: updatedUser?.id,
+          email: updatedUser?.email,
+          emailConfirmed: updatedUser?.email_confirmed_at ? 'Sim' : 'Não'
+        })
+      } catch (updateError) {
+        console.error('[signup] Erro ao chamar API de atualização de senha:', updateError)
+        setError('Erro ao atualizar senha. Por favor, tente novamente.')
         setIsLoading(false)
         return
       }
-
-      console.log('[signup] Senha atualizada com sucesso!')
-      console.log('[signup] Dados retornados:', {
-        user: updateData?.user?.id,
-        email: updateData?.user?.email,
-        emailConfirmed: updateData?.user?.email_confirmed_at ? 'Sim' : 'Não'
-      })
       
       // Aguardar um pouco para garantir que a atualização foi processada
       await new Promise(resolve => setTimeout(resolve, 1000))
