@@ -505,16 +505,16 @@ export default function AlertasList() {
           <>
             <div className="space-y-4">
               {paginatedAlertas.map((alerta, index) => (
-                <div key={alerta.id} {...(index === 0 ? { 'data-tour': 'alertas-card' } : {})}>
-                  <AlertaCard
-                    alerta={alerta}
-                    isSelected={selectedIds.has(alerta.id)}
-                    onSelect={handleSelect}
-                    onMarkAsResolved={handleMarkAsResolved}
-                    onReopen={handleReopen}
-                    onDelete={handleDelete}
-                  />
-                </div>
+                <AlertaCard
+                  key={alerta.id}
+                  alerta={alerta}
+                  isSelected={selectedIds.has(alerta.id)}
+                  onSelect={handleSelect}
+                  onMarkAsResolved={handleMarkAsResolved}
+                  onReopen={handleReopen}
+                  onDelete={handleDelete}
+                  dataTour={index === 0 ? 'alertas-card' : undefined}
+                />
               ))}
             </div>
 

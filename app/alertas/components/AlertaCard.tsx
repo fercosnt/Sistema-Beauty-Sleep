@@ -31,9 +31,10 @@ interface AlertaCardProps {
   onMarkAsResolved: (id: string) => void
   onReopen?: (id: string) => void
   onDelete?: (id: string) => void
+  dataTour?: string
 }
 
-export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResolved, onReopen, onDelete }: AlertaCardProps) {
+export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResolved, onReopen, onDelete, dataTour }: AlertaCardProps) {
   const getTipoIcon = (tipo: string) => {
     switch (tipo) {
       case 'critico':
@@ -146,6 +147,7 @@ export default function AlertaCard({ alerta, isSelected, onSelect, onMarkAsResol
         alerta.status === 'resolvido' && 'opacity-75',
         !isSelected && 'border-gray-200 hover:border-gray-300'
       )}
+      {...(dataTour ? { 'data-tour': dataTour } : {})}
     >
       {/* Borda lateral colorida por urgência - mais espessa e visível */}
       <div className={cn(
