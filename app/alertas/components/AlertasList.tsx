@@ -88,9 +88,13 @@ export default function AlertasList() {
       console.log('[AlertasList] filteredAlertas.length:', filteredAlertas.length)
       
       // Importação dinâmica para evitar problemas de SSR
-      import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
-        startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
-      })
+      import('@/components/OnboardingTour')
+        .then(({ startAlertasTour }) => {
+          startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
+        })
+        .catch((error) => {
+          console.error('[AlertasList] Erro ao importar OnboardingTour:', error)
+        })
     }, 1000)
 
     return () => clearTimeout(timer)
