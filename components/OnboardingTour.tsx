@@ -1091,14 +1091,17 @@ export function startAlertasTour(
 }
 
 // Tour específico para Notificações (chamado via query string ?showNotifications=true)
-export function startNotificationsTour(role: 'admin' | 'equipe' | 'recepcao') {
+export function startNotificationsTour(
+  role: 'admin' | 'equipe' | 'recepcao',
+  flow: 'admin' | 'equipe',
+) {
   if (Shepherd.activeTour) {
     Shepherd.activeTour.cancel()
   }
   const steps: ShepherdStepOptions[] = [
     {
       id: 'notificacoes-botao',
-      text: 'O ícone de sino mostra quantos alertas pendentes você tem. A cor do badge indica a urgência máxima: vermelho (alta), amarelo (média) ou verde (baixa). Clique para ver os alertas.',
+      text: 'O ícone de sino mostra quantos alertas pendentes você tem. A cor do badge indica a urgência máxima: vermelho (alta), amarelo (média) ou verde (baixa). Clique para ver os alertas. Você também pode marcar alertas como resolvidos diretamente daqui, sem precisar ir até a página de alertas.',
       title: 'Centro de Notificações',
       attachTo: {
         element: '[data-tour="notificacoes-botao"]',
@@ -1106,9 +1109,16 @@ export function startNotificationsTour(role: 'admin' | 'equipe' | 'recepcao') {
       },
       buttons: [
         {
-          text: 'Concluir',
+          text: 'Próximo',
           action: function (this: any) {
-            return this.complete()
+            this.complete()
+            // Continuar para Configurações (admin) ou finalizar (equipe)
+            if (role === 'admin') {
+              window.location.href = `/configuracoes?tourFlow=${flow}`
+            } else {
+              // Para equipe, finalizar o tour
+              window.location.href = '/dashboard'
+            }
           },
         },
       ],

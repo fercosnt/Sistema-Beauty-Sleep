@@ -69,17 +69,20 @@ export default function DashboardClient({ userRole, userEmail }: DashboardClient
   // Iniciar tour de notificações quando solicitado
   useEffect(() => {
     if (showNotifications && userRole) {
+      const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
+      if (!tourFlow) return
+      
       // Aguardar um pouco para garantir que os elementos estejam renderizados
       const timer = setTimeout(() => {
         // Importação dinâmica para evitar problemas de SSR
         import('@/components/OnboardingTour').then(({ startNotificationsTour }) => {
-          startNotificationsTour(userRole as 'admin' | 'equipe' | 'recepcao')
+          startNotificationsTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
         })
       }, 500)
 
       return () => clearTimeout(timer)
     }
-  }, [showNotifications, userRole])
+  }, [showNotifications, userRole, searchParams])
 
   if (!userRole) return null
 
