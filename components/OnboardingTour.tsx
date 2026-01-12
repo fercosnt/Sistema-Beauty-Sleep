@@ -1131,6 +1131,28 @@ export function startAlertasTour(
       scrollTo: false, // Desabilitar scroll automático para manter página centralizada
       cancelIcon: { enabled: true },
       classes: role === 'admin' ? 'shepherd-theme-admin' : 'shepherd-theme-light',
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          // Copiar border-radius do elemento destacado para o highlight
+          setTimeout(() => {
+            const step = this as any
+            if (step.el && step.el.attachTo) {
+              const element = typeof step.el.attachTo.element === 'string' 
+                ? document.querySelector(step.el.attachTo.element) as HTMLElement
+                : step.el.attachTo.element as HTMLElement
+              if (element) {
+                const computedStyle = window.getComputedStyle(element)
+                const borderRadius = computedStyle.borderRadius
+                const highlight = document.querySelector('.shepherd-target') as HTMLElement
+                if (highlight && borderRadius) {
+                  highlight.style.borderRadius = borderRadius
+                }
+              }
+            }
+            resolve(undefined)
+          }, 50)
+        })
+      },
     },
   })
 
