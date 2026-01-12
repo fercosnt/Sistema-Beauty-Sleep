@@ -78,28 +78,18 @@ export default function AlertasList() {
   // Iniciar tour específico da página de alertas quando vier de outra página
   useEffect(() => {
     const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
-    if (!tourFlow || !userRole || isLoading) return
+    if (!tourFlow || !userRole) return
 
-    // Aguardar os cards serem renderizados antes de iniciar o tour
+    // Aguardar um pouco para garantir que os elementos estejam renderizados
     const timer = setTimeout(() => {
-      // Verificar se os elementos existem antes de iniciar o tour
-      const checkElements = () => {
-        const cardElement = document.querySelector('[data-tour="alerta-card"]')
-        if (cardElement) {
-          // Importação dinâmica para evitar problemas de SSR
-          import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
-            startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
-          })
-        } else {
-          // Tentar novamente após um delay
-          setTimeout(checkElements, 200)
-        }
-      }
-      checkElements()
-    }, 800)
+      // Importação dinâmica para evitar problemas de SSR
+      import('@/components/OnboardingTour').then(({ startAlertasTour }) => {
+        startAlertasTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
+      })
+    }, 500)
 
     return () => clearTimeout(timer)
-  }, [searchParams, userRole, isLoading, filteredAlertas])
+  }, [searchParams, userRole])
 
   // Aplicar filtros
   useEffect(() => {
