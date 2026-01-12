@@ -314,6 +314,48 @@ export default function SignupPage() {
         return
       }
       
+      // IMPORTANTE: Verificar e criar perfil na tabela users se não existir
+      // O usuário foi criado via invite, mas o perfil pode não ter sido criado na tabela users
+      console.log('[signup] Verificando se perfil existe na tabela users...')
+      try {
+        const { data: existingProfile, error: profileError } = await supabase
+          .from('users')
+          .select('id, email, nome, role')
+          .eq('email', updatedUser?.email || '')
+          .single()
+        
+        if (profileError && profileError.code === 'PGRST116') {
+          // Perfil não existe, criar usando user_metadata do invite
+          console.log('[signup] Perfil não encontrado, criando na tabela users...')
+          const userMetadata = updatedUser?.user_metadata || {}
+          const nome = userMetadata.nome || updatedUser?.email?.split('@')[0] || 'Usuário'
+          const role = userMetadata.role || 'equipe'
+          
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              email: updatedUser?.email || '',
+              nome: nome,
+              role: role,
+              ativo: true,
+            })
+          
+          if (insertError) {
+            console.error('[signup] Erro ao criar perfil na tabela users:', insertError)
+            // Não bloquear o fluxo - o usuário pode criar o perfil depois
+          } else {
+            console.log('[signup] Perfil criado com sucesso na tabela users')
+          }
+        } else if (profileError) {
+          console.error('[signup] Erro ao verificar perfil:', profileError)
+        } else {
+          console.log('[signup] Perfil já existe na tabela users:', existingProfile)
+        }
+      } catch (profileCheckError) {
+        console.error('[signup] Erro ao verificar/criar perfil:', profileCheckError)
+        // Não bloquear o fluxo
+      }
+      
       console.log('[signup] Sessão final válida, redirecionando para dashboard...')
       setSuccess(true)
       // Aguardar mais um pouco antes de redirecionar para garantir que tudo foi processado
@@ -424,9 +466,49 @@ export default function SignupPage() {
     // Se o email foi preenchido automaticamente (veio de token), significa que deveria ter sessão
     if (emailFromToken) {
       console.error('[signup] Email veio de token mas não há sessão válida')
-      setError('Link de convite inválido ou expirado. Por favor, solicite um novo convite ou use o link do email novamente.')
-      setIsLoading(false)
-      return
+      // Tentar fazer login com a senha fornecida (usuário pode estar tentando completar cadastro)
+      console.log('[signup] Tentando fazer login com as credenciais fornecidas...')
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        email: formEmail,
+        password: password,
+      })
+      
+      if (!loginError && loginData?.user) {
+        console.log('[signup] Login bem-sucedido após signup via invite')
+        // Verificar e criar perfil se necessário
+        try {
+          const { data: existingProfile, error: profileError } = await supabase
+            .from('users')
+            .select('id, email, nome, role')
+            .eq('email', loginData.user.email || '')
+            .single()
+          
+          if (profileError && profileError.code === 'PGRST116') {
+            const userMetadata = loginData.user.user_metadata || {}
+            const nome = userMetadata.nome || loginData.user.email?.split('@')[0] || 'Usuário'
+            const role = userMetadata.role || 'equipe'
+            
+            await supabase.from('users').insert({
+              email: loginData.user.email || '',
+              nome: nome,
+              role: role,
+              ativo: true,
+            })
+          }
+        } catch (profileError) {
+          console.error('[signup] Erro ao verificar/criar perfil:', profileError)
+        }
+        
+        setSuccess(true)
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+        return
+      } else {
+        setError('Link de convite inválido ou expirado. Por favor, solicite um novo convite ou use o link do email novamente.')
+        setIsLoading(false)
+        return
+      }
     }
 
     // Caso contrário, tentar fazer signup normal (cadastro direto, sem convite)
@@ -441,10 +523,49 @@ export default function SignupPage() {
 
     if (signupError) {
       console.error('[signup] Erro no signup:', signupError)
-      // Se der erro de "already registered", o usuário já existe
+      // Se der erro de "already registered", tentar fazer login
       if (signupError.message.includes('already registered') || 
           signupError.message.includes('already been registered')) {
-        setError('Este email já está cadastrado. Se você foi convidado, use o link do email de convite. Caso contrário, faça login ou use "Esqueci minha senha".')
+        console.log('[signup] Usuário já existe, tentando fazer login...')
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email: formEmail,
+          password: password,
+        })
+        
+        if (!loginError && loginData?.user) {
+          console.log('[signup] Login bem-sucedido após signup com usuário existente')
+          // Verificar e criar perfil se necessário
+          try {
+            const { data: existingProfile, error: profileError } = await supabase
+              .from('users')
+              .select('id, email, nome, role')
+              .eq('email', loginData.user.email || '')
+              .single()
+            
+            if (profileError && profileError.code === 'PGRST116') {
+              const userMetadata = loginData.user.user_metadata || {}
+              const nome = userMetadata.nome || loginData.user.email?.split('@')[0] || 'Usuário'
+              const role = userMetadata.role || 'equipe'
+              
+              await supabase.from('users').insert({
+                email: loginData.user.email || '',
+                nome: nome,
+                role: role,
+                ativo: true,
+              })
+            }
+          } catch (profileError) {
+            console.error('[signup] Erro ao verificar/criar perfil:', profileError)
+          }
+          
+          setSuccess(true)
+          setTimeout(() => {
+            router.push('/dashboard')
+          }, 2000)
+          return
+        } else {
+          setError('Este email já está cadastrado. Se você foi convidado, use o link do email de convite. Caso contrário, faça login ou use "Esqueci minha senha".')
+        }
       } else {
         const friendlyMessage = translatePasswordError(signupError.message)
         setError(friendlyMessage)
@@ -452,6 +573,22 @@ export default function SignupPage() {
       setIsLoading(false)
     } else if (data?.user) {
       console.log('[signup] Cadastro direto realizado com sucesso!')
+      // Criar perfil na tabela users
+      try {
+        const userMetadata = data.user.user_metadata || {}
+        const nome = userMetadata.nome || data.user.email?.split('@')[0] || 'Usuário'
+        const role = userMetadata.role || 'equipe'
+        
+        await supabase.from('users').insert({
+          email: data.user.email || '',
+          nome: nome,
+          role: role,
+          ativo: true,
+        })
+      } catch (profileError) {
+        console.error('[signup] Erro ao criar perfil:', profileError)
+      }
+      
       setSuccess(true)
       setTimeout(() => {
         router.push('/dashboard')
