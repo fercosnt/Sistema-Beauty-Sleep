@@ -875,8 +875,21 @@ export function startAlertasTour(
       text: 'Cada card representa um alerta. A borda colorida à esquerda indica a urgência: vermelho (alta), laranja (média) ou verde (baixa). O card mostra o título, descrição, tipo, urgência e paciente relacionado.',
       title: 'Card de Alerta',
       attachTo: {
-        element: '[data-tour="alerta-card"]:first-of-type',
+        element: '[data-tour="alerta-card"]',
         on: 'bottom',
+      },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alerta-card"]')
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
       },
       buttons: [
         {
@@ -898,8 +911,21 @@ export function startAlertasTour(
       text: 'Esta seção mostra os metadados do alerta: Tipo (Crítico, Manutenção ou Follow-up), Urgência (Alta, Média ou Baixa), tempo desde a criação e o paciente relacionado. Use essas informações para priorizar os alertas.',
       title: 'Metadados do Alerta',
       attachTo: {
-        element: '[data-tour="alerta-metadados"]:first-of-type',
+        element: '[data-tour="alerta-metadados"]',
         on: 'bottom',
+      },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alerta-metadados"]')
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
       },
       buttons: [
         {
@@ -921,8 +947,21 @@ export function startAlertasTour(
       text: 'Use os botões de ação: "Ver Paciente" para acessar o perfil completo do paciente relacionado ao alerta, e "Marcar como Resolvido" para resolver o alerta. Alertas resolvidos são automaticamente deletados após 3 dias.',
       title: 'Ações do Alerta',
       attachTo: {
-        element: '[data-tour="alerta-acoes"]:first-of-type',
+        element: '[data-tour="alerta-acoes"]',
         on: 'bottom',
+      },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alerta-acoes"]')
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
       },
       buttons: [
         {
