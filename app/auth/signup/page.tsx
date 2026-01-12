@@ -250,11 +250,11 @@ export default function SignupPage() {
       await supabase.auth.refreshSession()
       
       // Buscar dados atualizados do usuário
-      const { data: { user: updatedUser } } = await supabase.auth.getUser()
+      const { data: { user: userAfterUpdate } } = await supabase.auth.getUser()
       console.log('[signup] Dados do usuário após atualização:', {
-        user: updatedUser?.id,
-        email: updatedUser?.email,
-        emailConfirmed: updatedUser?.email_confirmed_at ? 'Sim' : 'Não'
+        user: userAfterUpdate?.id,
+        email: userAfterUpdate?.email,
+        emailConfirmed: userAfterUpdate?.email_confirmed_at ? 'Sim' : 'Não'
       })
       
       // Aguardar mais um pouco para garantir que tudo foi processado
