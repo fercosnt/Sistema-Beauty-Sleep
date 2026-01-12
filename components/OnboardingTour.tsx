@@ -174,10 +174,9 @@ export function startPerfilTour(
           },
         },
         {
-          text: 'Concluir',
+          text: 'Concluir Tour',
           action: function (this: any) {
-            this.complete()
-            // Tour completo - não navega mais
+            return this.complete()
           },
         },
       ],
