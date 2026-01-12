@@ -60,9 +60,28 @@ async function testInvitePassword(email: string) {
     console.log(`   Email confirmado: ${user.email_confirmed_at ? 'Sim' : 'Não'}`)
     console.log(`   Criado em: ${new Date(user.created_at).toLocaleString('pt-BR')}`)
 
+    // Se email não estiver confirmado, confirmar primeiro
+    if (!user.email_confirmed_at) {
+      console.log(`\n📧 Email não confirmado. Confirmando email primeiro...`)
+      const { data: confirmData, error: confirmError } = await supabase.auth.admin.updateUserById(
+        user.id,
+        {
+          email_confirm: true,
+        }
+      )
+
+      if (confirmError) {
+        console.error(`   ❌ Erro ao confirmar email: ${confirmError.message}`)
+      } else {
+        console.log(`   ✅ Email confirmado com sucesso`)
+        // Aguardar um pouco para processar
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
+
     // 2. Testar login com senha de teste
-    const testPassword = 'Teste123!@#'
-    console.log(`\n🔑 Testando login com senha de teste: ${testPassword}`)
+    const testPassword = 'Henri331!@#'
+    console.log(`\n🔑 Testando login com senha: ${testPassword}`)
     
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: email,
@@ -77,6 +96,7 @@ async function testInvitePassword(email: string) {
         console.log(`   💡 Vamos tentar atualizar a senha usando Admin API...`)
         
         // Tentar atualizar senha
+        console.log(`   📝 Atualizando senha para: ${testPassword}`)
         const { data: updateData, error: updateError } = await supabase.auth.admin.updateUserById(
           user.id,
           {
@@ -86,7 +106,31 @@ async function testInvitePassword(email: string) {
 
         if (updateError) {
           console.error(`   ❌ Erro ao atualizar senha: ${updateError.message}`)
-          return
+          
+          // Se o erro for de senha fraca, tentar com uma senha mais forte
+          if (updateError.message.includes('weak') || updateError.message.includes('easy to guess')) {
+            console.log(`   💡 Senha considerada fraca. Tentando com senha mais forte...`)
+            const strongPassword = 'Henri331!@#Strong2024'
+            const { data: updateData2, error: updateError2 } = await supabase.auth.admin.updateUserById(
+              user.id,
+              {
+                password: strongPassword,
+              }
+            )
+            
+            if (updateError2) {
+              console.error(`   ❌ Erro ao atualizar com senha forte: ${updateError2.message}`)
+              return
+            } else {
+              console.log(`   ✅ Senha atualizada com senha forte: ${strongPassword}`)
+              // Usar a senha forte para o teste
+              testPassword = strongPassword
+            }
+          } else {
+            return
+          }
+        } else {
+          console.log(`   ✅ Senha atualizada via Admin API`)
         }
 
         console.log(`   ✅ Senha atualizada via Admin API`)
