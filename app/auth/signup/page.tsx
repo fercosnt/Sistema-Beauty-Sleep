@@ -332,19 +332,33 @@ export default function SignupPage() {
         console.log('[signup] Sessão obtida via code, atualizando senha...')
         console.log('[signup] Email confirmado?', exchangeData.user.email_confirmed_at ? 'Sim' : 'Não')
         
-        // Agora temos sessão, atualizar senha
-        const { error: updateError } = await supabase.auth.updateUser({
-          password: password,
-          email: exchangeData.user.email, // Garantir que o email está presente
-        })
-
-        if (updateError) {
-          console.error('[signup] Erro ao atualizar senha após exchange:', updateError)
-          const friendlyMessage = translatePasswordError(updateError.message)
-          setError(friendlyMessage)
-          setIsLoading(false)
-        } else {
-          console.log('[signup] Senha atualizada com sucesso após exchange!')
+        // Agora temos sessão, atualizar senha via API (Admin API é mais confiável)
+        console.log('[signup] Atualizando senha após exchange para usuário:', exchangeData.user.id, exchangeData.user.email)
+        
+        try {
+          const updatePasswordResponse = await fetch('/api/auth/update-password-after-signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+          })
+          
+          const updatePasswordData = await updatePasswordResponse.json()
+          console.log('[signup] Resposta da API de atualização de senha (após exchange):', updatePasswordData)
+          
+          if (!updatePasswordResponse.ok || !updatePasswordData.success) {
+            console.error('[signup] Erro ao atualizar senha via API:', updatePasswordData.error)
+            const friendlyMessage = translatePasswordError(updatePasswordData.error || 'Erro ao atualizar senha')
+            setError(friendlyMessage)
+            setIsLoading(false)
+            return
+          }
+          
+          console.log('[signup] Senha atualizada com sucesso após exchange via API!')
+          
+          // Atualizar a sessão para refletir as mudanças
+          await supabase.auth.refreshSession()
           
           // Verificar se o email está confirmado após atualizar senha
           const { data: { user: updatedUser } } = await supabase.auth.getUser()
