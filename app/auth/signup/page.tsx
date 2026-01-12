@@ -27,15 +27,75 @@ export default function SignupPage() {
 
       console.log('[signup] Parâmetros da URL:', { code: code ? 'presente' : 'ausente', tokenHash: tokenHash ? 'presente' : 'ausente', type })
 
-      // Fluxo principal: Se tiver code, trocar por sessão (Supabase já processou o token_hash)
-      if (code) {
+      // IMPORTANTE: Verificar também tokens no hash da URL (#)
+      const hash = window.location.hash
+      let hashCode = null
+      let hashType = null
+      let hashTokenHash = null
+      let hashAccessToken = null
+      let hashRefreshToken = null
+      
+      if (hash) {
+        const hashParams = new URLSearchParams(hash.substring(1))
+        hashCode = hashParams.get('code')
+        hashType = hashParams.get('type')
+        hashTokenHash = hashParams.get('token_hash')
+        hashAccessToken = hashParams.get('access_token')
+        hashRefreshToken = hashParams.get('refresh_token')
+        
+        console.log('[signup] Hash da URL:', { 
+          code: hashCode ? 'presente' : 'ausente', 
+          type: hashType,
+          tokenHash: hashTokenHash ? 'presente' : 'ausente',
+          accessToken: hashAccessToken ? 'presente' : 'ausente'
+        })
+        
+        // Se tiver access_token no hash, criar sessão diretamente
+        if (hashAccessToken && (hashType === 'invite' || hashType === 'signup')) {
+          console.log('[signup] Access token encontrado no hash, criando sessão...')
+          try {
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token: hashAccessToken,
+              refresh_token: hashRefreshToken || '',
+            })
+            
+            if (!sessionError) {
+              // Limpar hash da URL
+              window.history.replaceState({}, '', window.location.pathname + window.location.search)
+              
+              const { data: { user } } = await supabase.auth.getUser()
+              if (user?.email) {
+                console.log('[signup] Sessão criada com sucesso do hash, email:', user.email)
+                setEmail(user.email)
+                setEmailFromToken(user.email)
+                setIsValidatingToken(false)
+                return
+              }
+            } else {
+              console.error('[signup] Erro ao criar sessão do hash:', sessionError)
+            }
+          } catch (hashError) {
+            console.error('[signup] Erro ao processar hash:', hashError)
+          }
+        }
+      }
+
+      // Fluxo principal: Se tiver code (na query ou no hash), trocar por sessão
+      const finalCode = code || hashCode
+      if (finalCode) {
         console.log('[signup] Processando code...')
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(finalCode)
         if (!exchangeError && data?.user) {
           const userEmail = data.user.email || ''
           console.log('[signup] Code processado com sucesso, email:', userEmail)
           setEmail(userEmail)
           setEmailFromToken(userEmail) // Marcar como email do token (não editável)
+          
+          // Limpar hash se existir
+          if (hash) {
+            window.history.replaceState({}, '', window.location.pathname + window.location.search)
+          }
+          
           setIsValidatingToken(false)
           return
         } else if (exchangeError) {
@@ -47,8 +107,9 @@ export default function SignupPage() {
       }
 
       // Se tiver token_hash diretamente (sem code), o Supabase ainda não processou
-      // Isso pode acontecer se o usuário acessar o link diretamente
-      if (tokenHash && type === 'invite' && !code) {
+      const finalTokenHash = tokenHash || hashTokenHash
+      const finalType = type || hashType
+      if (finalTokenHash && finalType === 'invite' && !finalCode) {
         console.log('[signup] Token_hash encontrado, verificando sessão...')
         // Verificar se já temos uma sessão válida
         const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -65,7 +126,7 @@ export default function SignupPage() {
         console.log('[signup] Sem sessão, redirecionando para callback...')
         // Se não tiver sessão, redirecionar para callback que processará o token_hash
         // O callback redirecionará de volta para signup com code
-        const callbackUrl = `/auth/callback?token_hash=${tokenHash}&type=invite`
+        const callbackUrl = `/auth/callback?token_hash=${finalTokenHash}&type=invite`
         window.location.href = callbackUrl
         return
       }
