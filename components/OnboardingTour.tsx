@@ -1112,13 +1112,8 @@ export function startNotificationsTour(
           text: 'Próximo',
           action: function (this: any) {
             this.complete()
-            // Continuar para Configurações (admin) ou finalizar (equipe)
-            if (role === 'admin') {
-              window.location.href = `/configuracoes?tourFlow=${flow}`
-            } else {
-              // Para equipe, finalizar o tour
-              window.location.href = '/dashboard'
-            }
+            // Continuar para Configurações (admin e equipe)
+            window.location.href = `/configuracoes?tourFlow=${flow}`
           },
         },
       ],
