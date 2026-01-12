@@ -1,0 +1,6 @@
+# pack-refs with: peeled fully-peeled sorted 
+2c89f784c6dcb1d4e1a98e49e8c69bbc1c4dbb39 refs/heads/feature/fase2-melhorias-alertas
+7c1111557d38261b3bf6fda35e1a14f735202ee2 refs/heads/main
+559924f3399158d79605bf7a4136024457e665bf refs/heads/vercel/react-server-components-cve-vu-5wvu3q
+559924f3399158d79605bf7a4136024457e665bf refs/pull/1/head
+b2fc1674fb55d24912b6cd912c90d5788c350cc3 refs/pull/1/merge

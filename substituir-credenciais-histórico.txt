@@ -1,0 +1,9 @@
+AKIAIOSFODNN7EXAMPLE==>[SEU_USERNAME_SMTP_AWS]
+wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY==>[SUA_SENHA_SMTP_AWS]
+SG\.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==>[SUA_API_KEY_SENDGRID_COMPLETA]
+
+
+
+
+
+

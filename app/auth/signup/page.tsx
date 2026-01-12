@@ -617,42 +617,12 @@ export default function SignupPage() {
     if (signupError) {
       console.error('[signup] Erro no signup:', signupError)
       // Se der erro de "already registered", o usuário já existe
-      // Neste caso, não mostrar erro genérico - o usuário pode estar tentando completar um convite
       if (signupError.message.includes('already registered') || 
           signupError.message.includes('already been registered')) {
-        // Se o email veio preenchido (emailFromToken), significa que é um convite
-        // Tentar usar a API para atualizar a senha via Admin API
+        // Se o email veio de token, significa que é um convite mas não há sessão
+        // Neste caso, orientar o usuário a usar o link de convite corretamente
         if (emailFromToken) {
-          console.log('[signup] Email já existe e veio de token, tentando atualizar senha via API...')
-          try {
-            const updateResponse = await fetch('/api/auth/update-password-via-email', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ 
-                email: formEmail,
-                password: password 
-              }),
-            })
-            
-            const updateData = await updateResponse.json()
-            
-            if (updateResponse.ok && updateData.success) {
-              console.log('[signup] Senha atualizada com sucesso via API!')
-              setSuccess(true)
-              setTimeout(() => {
-                router.push('/login?message=' + encodeURIComponent('Senha definida com sucesso! Faça login com suas credenciais.'))
-              }, 2000)
-              return
-            } else {
-              console.error('[signup] Erro ao atualizar senha via API:', updateData.error)
-              setError('Não foi possível definir a senha. Use "Esqueci minha senha" para redefinir ou solicite um novo convite.')
-            }
-          } catch (apiError) {
-            console.error('[signup] Erro ao chamar API:', apiError)
-            setError('Este email já está cadastrado. Se você foi convidado, use o link do email de convite. Caso contrário, faça login ou use "Esqueci minha senha".')
-          }
+          setError('Link de convite inválido ou expirado. Use o link completo do email de convite ou use "Esqueci minha senha" para redefinir sua senha.')
         } else {
           setError('Este email já está cadastrado. Se você foi convidado, use o link do email de convite. Caso contrário, faça login ou use "Esqueci minha senha".')
         }
