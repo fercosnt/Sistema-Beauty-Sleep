@@ -261,10 +261,10 @@ export function startConfigTour(
           },
         },
         {
-          text: 'Próximo',
+          text: 'Concluir Tour',
           action: function (this: any) {
             this.complete()
-            window.location.href = `/configuracoes?tourFlow=${flow}`
+            window.location.href = '/dashboard'
           },
         },
       ],
