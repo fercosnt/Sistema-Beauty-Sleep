@@ -389,6 +389,7 @@ export default function NotificationCenter() {
         className="relative p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
         aria-label="Notificações"
         type="button"
+        data-tour="notificacoes-botao"
       >
         <Bell className="h-5 w-5 sm:h-6 sm:w-6" />
         <NotificationBadge count={totalAlertas} urgency={urgenciaMaxima} />

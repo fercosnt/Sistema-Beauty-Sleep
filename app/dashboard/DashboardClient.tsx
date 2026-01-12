@@ -20,6 +20,8 @@ export default function DashboardClient({ userRole, userEmail }: DashboardClient
   const forceRefazerTour = searchParams.get('refazerTour') === '1'
   const emailConfirmed = searchParams.get('email_confirmed')
   const magicLinkLogin = searchParams.get('magic_link_login')
+  const showNotifications = searchParams.get('showNotifications') === 'true'
+  const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -63,6 +65,21 @@ export default function DashboardClient({ userRole, userEmail }: DashboardClient
       }, 5000)
     }
   }, [emailConfirmed, magicLinkLogin, router])
+
+  // Iniciar tour de notificações quando solicitado
+  useEffect(() => {
+    if (showNotifications && userRole) {
+      // Aguardar um pouco para garantir que os elementos estejam renderizados
+      const timer = setTimeout(() => {
+        // Importação dinâmica para evitar problemas de SSR
+        import('@/components/OnboardingTour').then(({ startNotificationsTour }) => {
+          startNotificationsTour(userRole as 'admin' | 'equipe' | 'recepcao')
+        })
+      }, 500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showNotifications, userRole])
 
   if (!userRole) return null
 

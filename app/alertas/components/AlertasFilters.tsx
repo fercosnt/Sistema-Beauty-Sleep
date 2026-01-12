@@ -65,7 +65,7 @@ export default function AlertasFilters({ filters, onFiltersChange }: AlertasFilt
   const activeCount = getActiveFiltersCount()
 
   return (
-    <Card>
+    <Card data-tour="alertas-filtros">
       <CardHeader 
         className="flex flex-row items-center justify-between space-y-0 pb-2 cursor-pointer hover:bg-gray-50/50 transition-colors rounded-t-lg"
         onClick={() => setIsOpen(!isOpen)}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { RefreshCw, CheckSquare, Square, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -29,6 +30,7 @@ interface Alerta {
 }
 
 export default function AlertasList() {
+  const searchParams = useSearchParams()
   const [alertas, setAlertas] = useState<Alerta[]>([])
   const [filteredAlertas, setFilteredAlertas] = useState<Alerta[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -36,6 +38,7 @@ export default function AlertasList() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const itemsPerPage = 20
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   const [filters, setFilters] = useState<AlertasFiltersState>({
     tipo: [],
@@ -455,17 +458,19 @@ export default function AlertasList() {
           </div>
         ) : (
           <>
-            {paginatedAlertas.map((alerta) => (
-              <AlertaCard
-                key={alerta.id}
-                alerta={alerta}
-                isSelected={selectedIds.has(alerta.id)}
-                onSelect={handleSelect}
-                onMarkAsResolved={handleMarkAsResolved}
-                onReopen={handleReopen}
-                onDelete={handleDelete}
-              />
-            ))}
+            <div data-tour="alertas-lista">
+              {paginatedAlertas.map((alerta) => (
+                <AlertaCard
+                  key={alerta.id}
+                  alerta={alerta}
+                  isSelected={selectedIds.has(alerta.id)}
+                  onSelect={handleSelect}
+                  onMarkAsResolved={handleMarkAsResolved}
+                  onReopen={handleReopen}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
 
             {/* Paginação */}
             {totalPages > 1 && (

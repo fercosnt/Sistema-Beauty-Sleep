@@ -49,6 +49,7 @@ interface Paciente {
 export default function PacienteDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const pacienteId = params.id as string
   const { isCollapsed } = useSidebar()
 
@@ -56,6 +57,7 @@ export default function PacienteDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
   const [activeTab, setActiveTab] = useState('exames')
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   const fetchPaciente = async () => {
     try {
@@ -114,6 +116,50 @@ export default function PacienteDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pacienteId, refreshKey])
 
+  // Buscar role do usuário
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user?.email) {
+          return
+        }
+
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('email', user.email)
+          .single()
+
+        if (userData) {
+          setUserRole(userData.role)
+        }
+      } catch (error) {
+        console.error('Erro ao buscar role do usuário:', error)
+      }
+    }
+
+    fetchUserRole()
+  }, [])
+
+  // Iniciar tour específico da página de perfil de paciente quando vier do tour
+  useEffect(() => {
+    const tourFlow = searchParams.get('tourFlow') as 'admin' | 'equipe' | null
+    if (!tourFlow || !userRole) return
+
+    // Aguardar um pouco para garantir que os elementos estejam renderizados
+    const timer = setTimeout(() => {
+      // Importação dinâmica para evitar problemas de SSR
+      import('@/components/OnboardingTour').then(({ startPacienteDetailTour }) => {
+        startPacienteDetailTour(userRole as 'admin' | 'equipe' | 'recepcao', tourFlow)
+      })
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchParams, userRole])
+
   if (isLoading) {
     return (
       <div className="pl-8 pr-4 md:pl-12 md:pr-8 pt-8">
@@ -159,7 +205,7 @@ export default function PacienteDetailPage() {
       </div>
 
       {/* Resumo de Tratamento */}
-      <div className="mb-6">
+      <div className="mb-6" data-tour="paciente-resumo-tratamento">
         <ResumoTratamento
           paciente={paciente}
           onPacienteUpdate={() => {
@@ -172,7 +218,7 @@ export default function PacienteDetailPage() {
       <PacienteTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Conteúdo das Tabs */}
-      <div className="mt-6 mb-4">
+      <div className="mt-6 mb-4" data-tour="paciente-dashboards">
         {activeTab === 'exames' && <TabExames pacienteId={paciente.id} />}
         {activeTab === 'sessoes' && <TabSessoes pacienteId={paciente.id} onSessionUpdate={() => setRefreshKey(prev => prev + 1)} />}
         {activeTab === 'evolucao' && <TabEvolucao pacienteId={paciente.id} />}

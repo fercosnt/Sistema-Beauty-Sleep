@@ -408,12 +408,27 @@ export function startPacientesTour(
         },
         {
           text: 'Próximo',
-          action: function (this: any) {
+          action: async function (this: any) {
             this.complete()
-            if (flow === 'admin') {
-              window.location.href = '/usuarios?tourFlow=admin'
-            } else {
-              window.location.href = '/configuracoes?tourFlow=equipe'
+            // Buscar um paciente aleatório para mostrar os dashboards
+            try {
+              const supabase = createClient()
+              const { data: pacientes, error } = await supabase
+                .from('pacientes')
+                .select('id')
+                .limit(1)
+                .order('created_at', { ascending: false })
+              
+              if (!error && pacientes && pacientes.length > 0) {
+                const pacienteAleatorio = pacientes[0]
+                window.location.href = `/pacientes/${pacienteAleatorio.id}?tourFlow=${flow}`
+              } else {
+                // Se não houver pacientes, ir para alertas
+                window.location.href = `/alertas?tourFlow=${flow}`
+              }
+            } catch (err) {
+              console.error('Erro ao buscar paciente:', err)
+              window.location.href = `/alertas?tourFlow=${flow}`
             }
           },
         },
