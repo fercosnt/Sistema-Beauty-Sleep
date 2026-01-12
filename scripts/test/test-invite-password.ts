@@ -5,6 +5,19 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
+import * as path from 'path'
+import * as fs from 'fs'
+
+// Carregar variáveis do .env.local
+const envPath = path.join(process.cwd(), '.env.local')
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath })
+  console.log('✅ Variáveis carregadas do .env.local')
+} else {
+  console.warn('⚠️  Arquivo .env.local não encontrado, usando variáveis de ambiente do sistema')
+  dotenv.config() // Tenta carregar do .env se existir
+}
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
