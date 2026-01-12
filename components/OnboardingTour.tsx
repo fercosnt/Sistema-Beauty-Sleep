@@ -871,12 +871,88 @@ export function startAlertasTour(
       ],
     },
     {
-      id: 'alertas-lista',
-      text: 'Aqui você vê todos os alertas do sistema. Cada alerta mostra o tipo, urgência, título e paciente relacionado. Você pode marcar como resolvido, ignorar ou ver detalhes do paciente.',
-      title: 'Lista de Alertas',
+      id: 'alertas-card-exemplo',
+      text: 'Cada card representa um alerta. A borda colorida à esquerda indica a urgência: vermelho (alta), laranja (média) ou verde (baixa). O card mostra o título, descrição, tipo, urgência e paciente relacionado.',
+      title: 'Card de Alerta',
       attachTo: {
-        element: '[data-tour="alertas-lista"]',
-        on: 'top',
+        element: '[data-tour="alerta-card"]',
+        on: 'bottom',
+      },
+      popperOptions: {
+        modifiers: [
+          {
+            name: 'zIndex',
+            options: {
+              zIndex: 10000,
+            },
+          },
+        ],
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'alertas-metadados',
+      text: 'Esta seção mostra os metadados do alerta: Tipo (Crítico, Manutenção ou Follow-up), Urgência (Alta, Média ou Baixa), tempo desde a criação e o paciente relacionado. Use essas informações para priorizar os alertas.',
+      title: 'Metadados do Alerta',
+      attachTo: {
+        element: '[data-tour="alerta-metadados"]',
+        on: 'bottom',
+      },
+      popperOptions: {
+        modifiers: [
+          {
+            name: 'zIndex',
+            options: {
+              zIndex: 10000,
+            },
+          },
+        ],
+      },
+      buttons: [
+        {
+          text: 'Voltar',
+          action: function (this: any) {
+            return this.back()
+          },
+        },
+        {
+          text: 'Próximo',
+          action: function (this: any) {
+            return this.next()
+          },
+        },
+      ],
+    },
+    {
+      id: 'alertas-acoes',
+      text: 'Use os botões de ação: "Ver Paciente" para acessar o perfil completo do paciente relacionado ao alerta, e "Marcar como Resolvido" para resolver o alerta. Alertas resolvidos são automaticamente deletados após 3 dias.',
+      title: 'Ações do Alerta',
+      attachTo: {
+        element: '[data-tour="alerta-acoes"]',
+        on: 'bottom',
+      },
+      popperOptions: {
+        modifiers: [
+          {
+            name: 'zIndex',
+            options: {
+              zIndex: 10000,
+            },
+          },
+        ],
       },
       buttons: [
         {
