@@ -1006,8 +1006,17 @@ export function startAlertasTour(
       beforeShowPromise: function() {
         return new Promise((resolve) => {
           const checkElement = () => {
-            const element = document.querySelector('[data-tour="alertas-card"]')
+            const element = document.querySelector('[data-tour="alertas-card"]') as HTMLElement
             if (element) {
+              // Copiar border-radius do elemento para o highlight após um pequeno delay
+              setTimeout(() => {
+                const computedStyle = window.getComputedStyle(element)
+                const borderRadius = computedStyle.borderRadius
+                const highlight = document.querySelector('.shepherd-target') as HTMLElement
+                if (highlight && borderRadius) {
+                  highlight.style.borderRadius = borderRadius
+                }
+              }, 50)
               resolve(undefined)
             } else {
               setTimeout(checkElement, 100)
