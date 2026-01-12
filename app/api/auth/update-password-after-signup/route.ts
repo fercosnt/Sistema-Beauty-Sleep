@@ -167,16 +167,16 @@ export async function POST(request: NextRequest) {
       console.warn('[update-password] A senha pode levar mais tempo para ser processada pelo Supabase')
     }
     
-    // Verificar dados do usuário via Admin API
-    const testClient = createAdminClient()
-    const { data: testUser } = await testClient.auth.admin.getUserById(user.id)
+    // Verificar dados do usuário via Admin API (verificação final)
+    const finalCheckClient = createAdminClient()
+    const { data: finalCheckUser } = await finalCheckClient.auth.admin.getUserById(user.id)
     
-    if (testUser?.user) {
-      console.log('[update-password] Usuário verificado via Admin API:', {
-        id: testUser.user.id,
-        email: testUser.user.email,
-        emailConfirmed: testUser.user.email_confirmed_at ? 'Sim' : 'Não',
-        lastSignIn: testUser.user.last_sign_in_at
+    if (finalCheckUser?.user) {
+      console.log('[update-password] Usuário verificado via Admin API (verificação final):', {
+        id: finalCheckUser.user.id,
+        email: finalCheckUser.user.email,
+        emailConfirmed: finalCheckUser.user.email_confirmed_at ? 'Sim' : 'Não',
+        lastSignIn: finalCheckUser.user.last_sign_in_at
       })
     }
     
