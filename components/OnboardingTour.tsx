@@ -878,6 +878,19 @@ export function startAlertasTour(
         element: '[data-tour="alertas-card"]',
         on: 'bottom',
       },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alertas-card"]')
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
+      },
       buttons: [
         {
           text: 'Voltar',
@@ -901,6 +914,19 @@ export function startAlertasTour(
         element: '[data-tour="alertas-card"] [data-tour="alerta-metadados"]',
         on: 'top',
       },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alertas-card"] [data-tour="alerta-metadados"]')
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
+      },
       buttons: [
         {
           text: 'Voltar',
@@ -923,6 +949,19 @@ export function startAlertasTour(
       attachTo: {
         element: '[data-tour="alertas-card"] [data-tour="alerta-acoes"]',
         on: 'top',
+      },
+      beforeShowPromise: function() {
+        return new Promise((resolve) => {
+          const checkElement = () => {
+            const element = document.querySelector('[data-tour="alertas-card"] [data-tour="alerta-acoes"]')
+            if (element) {
+              resolve(undefined)
+            } else {
+              setTimeout(checkElement, 100)
+            }
+          }
+          checkElement()
+        })
       },
       buttons: [
         {

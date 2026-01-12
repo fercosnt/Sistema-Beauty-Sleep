@@ -57,11 +57,11 @@ export default function AlertasList() {
       try {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
+        if (user?.email) {
           const { data: profile, error } = await supabase
             .from('users')
             .select('role')
-            .eq('id', user.id)
+            .eq('email', user.email)
             .single()
           if (!error && profile) {
             setUserRole(profile.role)
