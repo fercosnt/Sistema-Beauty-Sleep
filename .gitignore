@@ -102,3 +102,7 @@ Thumbs.db
 
 scripts/test-biologix-api.sh
 
+.env
+.env.*
+!.env.example
+node_modules/

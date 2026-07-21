@@ -294,7 +294,11 @@ Deno.serve(async (req: Request) => {
           );
         }
 
-        // Prepare exam data
+        // Prepare exam data with all extended fields
+        const oximetry = exam.result?.oximetry;
+        const snoring = exam.result?.snoring;
+        const cardiology = exam.result?.cardiology;
+
         const examData: any = {
           paciente_id: pacienteId,
           biologix_exam_id: exam.examId,
@@ -307,13 +311,56 @@ Deno.serve(async (req: Request) => {
           // IMC will be calculated by trigger
           score_ronco: scoreRonco,
           // DB column ido is NUMERIC(4,2) -> max ~99.99; clamp to avoid overflow
-          ido: clampNumeric(exam.result?.oximetry?.odi, 99.99),
-          ido_categoria: exam.result?.oximetry?.odiCategory ?? null,
+          ido: clampNumeric(oximetry?.odi, 99.99),
+          ido_categoria: oximetry?.odiCategory ?? null,
           // SpO2 columns are NUMERIC(4,2) as well; SpO2 clínica pode ser 100,
           // então clamp em 99.99 para caber no tipo
-          spo2_min: clampNumeric(exam.result?.oximetry?.spO2Min, 99.99),
-          spo2_avg: clampNumeric(exam.result?.oximetry?.spO2Avg, 99.99),
-          spo2_max: clampNumeric(exam.result?.oximetry?.spO2Max, 99.99),
+          spo2_min: clampNumeric(oximetry?.spO2Min, 99.99),
+          spo2_avg: clampNumeric(oximetry?.spO2Avg, 99.99),
+          spo2_max: clampNumeric(oximetry?.spO2Max, 99.99),
+
+          // Extended time fields
+          hora_inicio: exam.base?.startTime || null,
+          duracao_total_secs: exam.base?.durationSecs || null,
+          duracao_valida_secs: oximetry?.validDurationSecs || snoring?.validDurationSecs || null,
+
+          // Conditions and treatments (stored as JSONB arrays)
+          condicoes: exam.base?.conditions || [],
+          tratamentos: exam.base?.treatments || [],
+          sintomas: exam.base?.symptoms || [],
+          doencas: exam.base?.illnesses || [],
+          medicamentos: exam.base?.medicines || [],
+
+          // Extended oximetry fields
+          tempo_spo2_90_secs: oximetry?.spO2Under90Secs || null,
+          tempo_spo2_80_secs: oximetry?.spO2Under80Secs || null,
+          num_dessaturacoes: oximetry?.nbDesaturations || null,
+          carga_hipoxica: clampNumeric(oximetry?.hypoxicBurden, 9999.99),
+
+          // Heart rate fields
+          bpm_min: oximetry?.hrMin || null,
+          bpm_medio: oximetry?.hrAvg || null,
+          bpm_max: oximetry?.hrMax || null,
+
+          // Sleep estimation fields
+          tempo_sono_secs: oximetry?.sleepDurationSecs || null,
+          tempo_dormir_secs: oximetry?.sleepLatencySecs || null,
+          tempo_acordado_secs: oximetry?.wakeTimeAfterSleepSecs || null,
+          eficiencia_sono: clampNumeric(oximetry?.sleepEfficiencyPercent, 100),
+
+          // Cardiology field
+          fibrilacao_atrial: cardiology?.afNotification ?? null,
+
+          // Hypoxemia fields
+          num_eventos_hipoxemia: oximetry?.nbHypoxemiaEvents || null,
+          tempo_hipoxemia_secs: oximetry?.hypoxemiaTotalDurationSecs || null,
+
+          // Extended snoring fields
+          tempo_ronco_secs: snoring?.snoringDurationSecs || null,
+          silencio_percent: clampNumeric(snoring?.silentDurationPercent, 100),
+          ronco_baixo_percent: clampNumeric(snoring?.lowDurationPercent, 100),
+          ronco_medio_percent: clampNumeric(snoring?.mediumDurationPercent, 100),
+          ronco_alto_percent: clampNumeric(snoring?.highDurationPercent, 100),
         };
 
         // Upsert exam (unique by biologix_exam_id)
